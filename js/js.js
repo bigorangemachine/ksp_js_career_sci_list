@@ -123,3 +123,12 @@ function array_keys(objIn){//shallow get key
 	}
 	return false;
 }
+function str_rep_count(strIn,fChr){
+	if(typeof(strIn)!='string'){return 0;}
+	var rep_count=0;
+	for(var strrep=0;strrep<strIn.length;strrep++){
+		var t_chr=strIn[strrep];
+		if(t_chr===fChr){rep_count++;}
+	}
+	return rep_count;
+}

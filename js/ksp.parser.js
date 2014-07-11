@@ -1,11 +1,16 @@
+//https://github.com/bigorangemachine/ksp_js_career_sci_list
 function kspParser(){
 	this.tnl='[\t\r\n]*';//regexp for tab and new lines
+	this.tnl_p='[\t\r\n]+';
 	this.tnls='[\t\r\n]*';
 	this.tnls_='[^\t\r\n]*';//not the above
 	this.nl='[\r\n]*';
-	this.attr_regexp='('+this.tnls_+')+'+'(=+)(.*)[\r\n]+';
+	this.nl_p='[\r\n]+';
+	//this.attr_regexp='('+this.tnls_+')+'+'(=+)(.*)[\r\n]+';
+	this.attr_regexp='('+this.tnls_+')+'+'(=+)'+'('+this.tnls_+')+'+'[\r\n]+';
 	this.chunk_regexp_str_1='((.*))('+this.tnl;//starts with anything then some white space then the ##ISLAND## of an index key
 	this.chunk_regexp_str_2='(('+this.tnl+'\{){1}'+this.tnl+'))';//ending with some white space then '{' (at least once) <-that is wrong but not fixing it for now/<- follow by more white space
+	this.sci_id_regex='';
 
 	this.fsp_obj=false;
 
@@ -30,6 +35,10 @@ kspParser.prototype.i_callback=function(hookIn,argsIn){//internal callback - plu
 	}
 	return false;
 };
+kspParser.prototype.parse_sci_id=function(sciIdIn){
+	var self=this;
+	var attr_pat=new RegExp(self.sci_id_regex,'gi');
+};
 kspParser.prototype.attr_reader=function(strIn,doDebug){
 	var self=this,
 		child_obj=[],
@@ -40,20 +49,59 @@ kspParser.prototype.attr_reader=function(strIn,doDebug){
 			strIn=strIn.replace(pre_parse[p].clean_chunk,'');//clean while we are at it hasten parsing
 			child_obj.push({'key':pre_parse[p].key,'pos':pre_parse[p].open_pos});}
 	}
-	
 	var attr_pat=new RegExp(self.attr_regexp,'gim'),
+		attr_pat_test=new RegExp(self.attr_regexp,'gim'),
 		found_str=[],
 		attrs=[],
 		attrs_as_obj={};
 	//var out_meth='obj';
 	var out_meth='arr';
-	//if(!attr_pat.test(strIn)){return [];}
-	while((match = attr_pat.exec(strIn)) != null){found_str.push({'pos':match.index,'match':match,'key':check_strip_last(match[1],' '),'val':check_strip_first(match[3],' ')});}//pre-parse
+
+	var split_pat=new RegExp('([^=]+)','gim'),
+		line_patt=new RegExp(self.tnl_p,'im'),
+		t_arr=strIn.split(line_patt),
+		attr_lines=[];
+	for(var e=0;e<t_arr.length;e++){
+		if(basic_check(t_arr[e])){
+			var t_exp=t_arr[e].split(split_pat),
+				t_key='',
+				t_val='',
+				a_inc=0;
+//console.log('t_exp',t_exp);
+			for(var t=0;t<t_exp.length;t++){
+//console.log('-'+t,t_exp[t]);
+				if(basic_check(t_exp[t])){
+					if(a_inc==0){
+						t_key=t_key+t_exp[t];
+						var clean_regexp=new RegExp(self.tnl_p,'gim'),
+							clean_str=t_exp[t].replace(clean_regexp,'');
+//console.log('clean_str ',clean_str,JSON.stringify(clean_str),"\n","str_rep_count(clean_str,'=')",str_rep_count(clean_str,'='),'clean_str.length',clean_str.length);
+						if((str_rep_count(clean_str,'=')!=clean_str.length)){a_inc++;}//might start with some equals? Who knows?!
+					}else{
+//console.log('+t_val',t_exp[t],JSON.stringify(t_exp[t]),"\n",'a_inc',a_inc);
+						t_val=t_val+(a_inc>=2?t_exp[t]:self.l_trim(t_exp[t]));
+						a_inc++;
+					}
+				//}else{//fix damage from exploding.  We don't have a schema for the data lets be safe.
+					/*if(t==0){t_key=(a_inc==0?'=':'');}
+					else{t_val=t_val+(a_inc!=0?'=':'');}*/
+				}
+			}
+			var key_regexp=new RegExp('[ \t]*$','gim');
+			t_key=t_key.replace(key_regexp,'');
+			var val_regexp=new RegExp('^( )?(=)+( )+','gi');
+			t_val=t_val.replace(val_regexp,'');
+			found_str.push({'key':t_key,'val':t_val})
+		}
+	}
+	//console.log("strIn.split(split_pat)",strIn.split(split_pat),'t_arr',t_arr);
+
 	if(child_obj.length>0){
 		for(var i=0;i<child_obj.length;i++){//quick lazy
 			found_str.push({'val':(new kspDataChild(strIn,child_obj[i].key)),'key':child_obj[i].key});
 		}
 	}
+
 	for(var i=0;i<found_str.length;i++){
 		var clean_key=found_str[i].key,
 			clean_val=found_str[i].val,
@@ -87,6 +135,7 @@ kspParser.prototype.attr_reader=function(strIn,doDebug){
 			_vr='';
 		self.i_callback('attr_reader_line',_args);
 		for(var kl=0;kl<key_list.length;kl++){_vr=key_list[kl];eval(_vr+' = _args.'+_vr+';');}delete key_list;delete _vr;//populate into this scope
+
 if(doDebug){
 //console.log('found_str',found_str[i].match);
 //console.log('found_str',found_str[i],"\n",'attrs',attrs[attrs.length-1]);
@@ -109,10 +158,11 @@ kspParser.prototype.chunk_reader=function(strIn,islandStr,doDebug){
 	//since this isn't a universal format we are just 'seeking' the start of the island we're looking for.  Then string manipulate the rest
 	var self=this,
 		seek_pat=new RegExp(self.chunk_regexp_str_1+islandStr+self.chunk_regexp_str_2,'mg'),
+		seek_pat_test=new RegExp(self.chunk_regexp_str_1+islandStr+self.chunk_regexp_str_2,'mg'),
 		found_str=[],
 		scenario_groups=[];
-	//if(!seek_pat.test(strIn)){return [];}
-console.log('islandStr',islandStr,'strIn',strIn);
+	if(!seek_pat_test.test(strIn)){return [];}
+//console.log('islandStr',islandStr,'strIn',strIn);
 	while((match = seek_pat.exec(strIn)) != null){found_str.push({'pos':match.index,'match':match});}//pre-parse
 	for(var i=0;i<found_str.length;i++){
 if(doDebug){
@@ -152,7 +202,17 @@ console.log('-['+i+']['+m+']: ',"\n",found_str[i].match[m],"\n","json",JSON.stri
 */
 	}
 	return scenario_groups;
-}
+};
+kspParser.prototype.l_trim=function(strIn){//for parsing; trim the left side
+	var self=this,
+		regexp_trim_start=new RegExp('^'+self.tnl,'gi');
+	return strIn.replace(regexp_trim_start,'');
+};
+kspParser.prototype.r_trim=function(strIn){//for parsing; trim the right side
+	var self=this,
+		regexp_trim_end=new RegExp(self.tnl+'$','gi');
+	return strIn.replace(regexp_trim_end,'');
+};
 
 
 
