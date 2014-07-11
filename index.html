@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+<title>Kerbal Upload</title>
+
+<style type="text/css">
+#no-js-msg,
+#status {
+	padding: 5px;
+	color: #fff;
+	background: #ccc;
+}
+#no-js-msg{display:block;}
+body.hasJS #status {display:block;}
+body.hasJS #status.fail {background: #c00;}
+body.hasJS #status.success {background: #0c0;}
+body.hasJS #status.offline {background: #c00;}
+body.hasJS #status.online {background: #0c0;}
+#holder { border: 10px dashed #ccc; width: 300px; height: 300px; margin: 20px auto;}
+#holder.hover { border: 10px dashed #333; }
+</style>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="js/js.js"></script>
+<script src="js/fps.requestAnimate.js"></script>
+<script src="js/ksp.parser.js"></script>
+<body>
+
+
+<div id="holder"></div> 
+<noscript type="text/html"><p id="no-js-msg">JavaScript is Required</p></noscript>
+<p id="status">Please use the latest Chrome or Firefox Browser.</p>
+<p>Drag your KSP Save Game</p>
+
+<script type="text/javascript">
+	document.body.className=document.body.className+' hasJS';
+	var loading_stages={
+			'ready':'Awaiting ID',
+			'have_file':'Oh, Hello Jeb!',
+			'searching_file':'It seems that we have lost your file.  How about you get yourself some snacks while we find it...',
+			'searching_science':'Don\'t mind the radioactive goo; it always does that when there is someone new.',
+			'reviewing_science':'Let\'s see if we can make sense of this K-EB-A2',
+		},
+		kspObj=new kspParser(),
+		FPSObj=new fpsHandler(5),
+		scenarios={},
+		attribs={},
+		current_state_key='ready',
+		drag_target = $('#holder'),
+		state = $('#status');
+
+	if(typeof(FPSObj)!='undefined'){kspObj.fsp_obj=FPSObj;}
+		
+	function update_status_msg(keyIn){
+		if(bdcheck_key(loading_stages,keyIn)){
+			$(state).html(loading_stages[keyIn]);
+			current_state_key=keyIn;
+		}
+	}
+
+	if(typeof window.FileReader === 'undefined'){
+		$(state).addClass('fail');}
+	else{
+		update_status_msg('ready');
+		$(state).addClass('success');}
+	function dodrop(e){
+		this.className = '';
+		e.preventDefault();
+
+		if(e.originalEvent){var file = e.originalEvent.dataTransfer.files[0];}//jQuery
+		else{var file = e.dataTransfer.files[0];}
+		var reader = new FileReader();
+		reader.onload = function (event){
+			update_status_msg('have_file');
+			$(drag_target).trigger('dragend');
+			var tnl='[\t\r\n]*',//regexp for tab and new lines
+				tnls='[\t\r\n]*',
+				tnls_='[^\t\r\n]*',
+				nl='[\r\n]*';/*
+			var inputstr="asdfasdf"+"\n"+
+"	}"+"\n"+
+"	SCENARIO"+"\n"+
+"	{"+"\n"+
+//"		}"+"\n"+
+"		Science"+"\n"+
+"		{"+"\n"+
+"...."+"\n"+
+"		}"+"\n"+
+"		Science"+"\n"+
+"		{"+"\n"+
+"			id = evaReport@MinmusInSpaceLowFlats"+"\n"+
+"			title = EVA Report from space just above Minmus's Flats"+"\n"+
+"			dsc = 1"+"\n"+
+"			scv = 0"+"\n"+
+"			sbv = 4"+"\n"+
+"			sci = 32"+"\n"+
+"			cap = 32"+"\n"+
+"		}"+"\n"+
+"		Science"+"\n"+
+"		{"+"\n"+
+"			id = asteroidSample@KerbinSrfLandedGrasslands_PotatoRoid610034251"+"\n"+
+"			title = Sample from Pet Rock at Kerbin's Grasslands"+"\n"+
+"			dsc = 1"+"\n"+
+"			scv = 0.1428571"+"\n"+
+"			sbv = 1"+"\n"+
+"			sci = 60"+"\n"+
+"			cap = 70"+"\n"+
+"		}"+"\n"+
+"	}";*/
+			function on_chunk_found(dataSetIn){
+console.log('dataSetIn',dataSetIn);
+				update_status_msg('reviewing_science');
+				//
+				var sciences=kspObj.chunk_reader(dataSetIn.chunk,'Science');
+console.log('sciences',sciences);
+			}
+			var inputstr=reader.result,
+				scenario_inc=0,
+				use_data_set=false;
+			
+			FPSObj.add_once_callback(function(){
+				update_status_msg('searching_file');
+				
+				setTimeout(function(){
+					scenarios=kspObj.chunk_reader(inputstr,'SCENARIO');
+//console.log('scenarios',scenarios);
+					FPSObj.add_once_callback(function(){
+						update_status_msg('searching_science');
+						var scenario_iter=function(){
+							if(use_data_set!==false){FPSObj.remove_callback(scenario_iter);return;}
+							if(typeof(scenarios[scenario_inc])!='undefined'){
+								FPSObj.remove_callback(scenario_iter);//stop from stacking
+								kspObj.plugin.attr_reader_line=function(packObj){
+console.log('-kspObj.plugin.attr_reader_line-');
+									if(packObj.clean_key=='name' && packObj.clean_val=='ResearchAndDevelopment'){
+										packObj.do_break=true;
+										console.log('plugin break');
+									}
+								};
+								attribs=kspObj.attr_reader(scenarios[scenario_inc].clean_chunk);
+								kspObj.plugin.attr_reader_line=false;//unset
+								
+								if(attribs.length>0){
+								//attribs={'asdfasdfasdf':'adf'};
+console.log('-'+scenario_inc,'attribs',$.extend(true,{},attribs));
+									for(var a=0;a<attribs.length;a++){
+										if(attribs[a].key=='name' && attribs[a].val=='ResearchAndDevelopment'){
+											use_data_set=scenarios[scenario_inc];
+										}
+									}
+								}
+								FPSObj.add_callback(scenario_iter);//stop from stacking
+								if(scenario_inc>=scenarios.length || use_data_set!==false){
+									FPSObj.remove_callback(scenario_iter);
+									FPSObj.add_once_callback(function(){
+										if(use_data_set!==false){
+											on_chunk_found(use_data_set);
+										}else{
+											try{console.log(attribs, scenarios);}catch(e){}
+										}
+										delete inputstr;
+										delete scenarios;
+										delete attribs;
+									});
+								}
+								scenario_inc++;
+							}
+						};
+						setTimeout(function(){
+							FPSObj.add_callback(scenario_iter);
+						},2500);
+					});
+				},2500);
+			});
+		};
+		reader.readAsText(file);
+		return false;
+	}
+	$('body').on('dragover',function () {update_status_msg('ready');});
+	$(drag_target).on('dragover',function () { $(this).addClass('hover'); return false; });
+	$(drag_target).on('dragend',function () { $(this).removeClass('hover'); return false; });
+	$(drag_target).on('drop',dodrop);
+</script>
+</body>
+</html>
