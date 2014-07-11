@@ -1,6 +1,7 @@
 function fpsHandler(fpsIn){
 	this.fps=fpsIn;
 	this.interval_id=false;
+	this.request_animation_id=false;
 	this.callback_queue=[];
 	this.once_queue=[];
 	this.start_interval();
@@ -23,16 +24,21 @@ fpsHandler.prototype.remove_callback=function(func){
 	if(did_delete){this.callback_queue=array_redex(this.callback_queue);}
 	return did_delete;
 };
-
+fpsHandler.prototype.change_fps=function(fpsIn){
+	this.stop_interval();
+	this.fps=fpsIn;
+	this.start_interval();
+};
 fpsHandler.prototype.stop_interval=function(){
 	if(this.interval_id!==false){clearInterval(this.interval_id);}
+	if(this.request_animation_id!==false){cancelAnimationFrame(this.request_animation_id);}
 };
-
 fpsHandler.prototype.start_interval=function(){
 	var self=this;
 	self.interval_id=setInterval(function(){
 		try{
-			requestAnimationFrame(function(){
+			self.request_animation_id=requestAnimationFrame(function(){
+				self.request_animation_id=false;
 				if(self.once_queue.length>0){
 					for(var z=0;z<self.once_queue.length;z++){
 						if(typeof(self.once_queue[z])=='function'){

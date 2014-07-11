@@ -41,7 +41,8 @@ body.hasJS #status.online {background: #0c0;}
 			'searching_file':'It seems that we have lost your file.  How about you get yourself some snacks while we find it...',
 			'searching_science':'Don\'t mind the radioactive goo; it always does that when there is someone new.',
 			'reviewing_science':'Let\'s see if we can make sense of this K-EB-A2',
-			'count_off_science':' Scientific Achievement'
+			'count_off_science':' Scientific Mission',
+			'sorting_data':'Boss Kerman is going to fire someone. This data is a mess... '
 		},
 		page_data={
 			'parsed_science':[],
@@ -70,6 +71,111 @@ body.hasJS #status.online {background: #0c0;}
 		}
 	}
 
+	function on_captured_science(dataSetIn){
+		update_status_msg('sorting_data');
+		//str_rep('-',4);
+		for(var s=0;s<page_data.parsed_science.length;s++){
+			page_data.parsed_science[s].raw_id;
+			var parsed_attr=ksp.parse_sci_id(page_data.parsed_science[s].raw_id);
+			page_data.parsed_science[s]={
+				'raw_id':page_data.parsed_science[s].raw_id,
+				'percent':parsed_attr.percent,
+				'planet':parsed_attr.planet,
+				'biome':parsed_attr.biome,
+				'experiment':parsed_attr.experiment,
+				'location':parsed_attr.location
+			};
+		}
+	}
+	function read_scenario_chunks(strIn){
+		var scenario_inc=0,
+			use_data_set=false;
+		page_data.scenarios=kspObj.chunk_reader(strIn,'SCENARIO');
+		if(page_data.scenarios.length==0){//error handling
+			update_status_msg('error');
+			return;}
+//console.log('page_data.scenarios',page_data.scenarios);
+		FPSObj.add_once_callback(function(){
+			update_status_msg('searching_science');
+			var scenario_iter=function(){
+				if(use_data_set!==false){FPSObj.remove_callback(scenario_iter);return;}//probably not needed
+				FPSObj.remove_callback(scenario_iter);//stop from stacking
+				kspObj.plugin.attr_reader_line=function(packObj){
+					if(packObj.clean_key=='name' && packObj.clean_val=='ResearchAndDevelopment'){
+						packObj.do_break=true;}
+				};
+				page_data.scenarios_attribs=kspObj.attr_reader(page_data.scenarios[scenario_inc].clean_chunk);
+				kspObj.plugin.attr_reader_line=false;//unset
+				
+				if(page_data.scenarios_attribs.length>0){
+//console.log('-'+scenario_inc,'page_data.scenarios_attribs',$.extend(true,{},page_data.scenarios_attribs));
+					for(var a=0;a<page_data.scenarios_attribs.length;a++){
+						if(page_data.scenarios_attribs[a].key=='name' && page_data.scenarios_attribs[a].val=='ResearchAndDevelopment'){
+							use_data_set=page_data.scenarios[scenario_inc];}
+					}
+				}
+				FPSObj.add_callback(scenario_iter);//stop from stacking
+				if(scenario_inc>=(page_data.scenarios.length-1) || use_data_set!==false){
+					FPSObj.remove_callback(scenario_iter);
+					FPSObj.add_once_callback(function(){
+						if(use_data_set!==false){
+							on_chunk_found(use_data_set);
+						}else{
+							try{console.log(page_data.scenarios_attribs, page_data.scenarios);}catch(e){}
+						}
+						page_data.scenarios=false;
+						page_data.scenarios_attribs=false;
+						return;
+					});
+				}
+				scenario_inc++;
+			};
+			setTimeout(function(){
+				FPSObj.add_callback(scenario_iter);
+			},2500);
+		});
+	}
+	function on_chunk_found(dataSetIn){
+		var sci_inc=0,
+			sci_total=0;
+
+		FPSObj.change_fps(20);//lets speed it up!
+		update_status_msg('reviewing_science');
+		var chunk_tick=function(){
+			FPSObj.remove_callback(chunk_tick);//stop from stacking
+//console.log('chunk -=- tick',sci_inc+' of '+page_data.sciences.length);
+			var t_obj={},
+				_attribs=kspObj.attr_reader(page_data.sciences[sci_inc].clean_chunk,t_obj);
+//console.log('-_attribs',_attribs,'t_obj',t_obj,'floatval('+typeof(t_obj.sci)+' '+t_obj.sci+')',parseFloat(t_obj.sci));
+			sci_total=sci_total+parseFloat(t_obj.sci);
+			page_data.parsed_science.push({'raw_id':t_obj.id});
+
+			update_status_msg('count_off_science',{'pre':addCommas(sci_inc+1),'end':(sci_inc+1>1?'s':'')+' for '+addCommas(sci_total.toFixed(2))+' science'});
+			if(sci_inc>=(page_data.sciences.length-1)){
+				FPSObj.remove_callback(chunk_tick);
+				FPSObj.add_once_callback(function(){
+					setTimeout(function(){
+						FPSObj.change_fps(5);//revert
+						on_captured_science(page_data.parsed_science);
+					},2500);
+				});
+				return;
+			}
+			sci_inc++;
+			FPSObj.add_callback(chunk_tick);//stop from stacking
+		};
+
+	
+	
+		page_data.sciences=kspObj.chunk_reader(dataSetIn.chunk,'Science');
+//console.log('page_data.sciences',page_data.sciences);
+		update_status_msg('count_off_science',{'pre':sci_inc,'end':(sci_inc!=1?'s':'')});
+		
+		setTimeout(function(){
+			FPSObj.add_callback(chunk_tick);
+		},2500);
+	}
+
 	if(typeof window.FileReader === 'undefined'){
 		$(msg_obj).addClass('fail');}
 	else{
@@ -84,11 +190,10 @@ body.hasJS #status.online {background: #0c0;}
 		var reader = new FileReader();
 		reader.onload = function (event){
 			update_status_msg('have_file');
-			$(drag_target).trigger('dragend');
-			var tnl='[\t\r\n]*',//regexp for tab and new lines
-				tnls='[\t\r\n]*',
-				tnls_='[^\t\r\n]*',
-				nl='[\r\n]*';/*
+
+			setTimeout(function(){
+				$(drag_target).trigger('dragend');
+/*
 			var inputstr="asdfasdf"+"\n"+
 "	}"+"\n"+
 "	SCENARIO"+"\n"+
@@ -119,115 +224,14 @@ body.hasJS #status.online {background: #0c0;}
 "			cap = 70"+"\n"+
 "		}"+"\n"+
 "	}";*/
-			function on_chunk_found(dataSetIn){
-console.log('dataSetIn',dataSetIn);
-				var sci_inc=0;
-				update_status_msg('reviewing_science');
-				var chunk_tick=function(){
-					FPSObj.remove_callback(chunk_tick);//stop from stacking
-console.log('chunk tick',sci_inc,'page_data.sciences[sci_inc].clean_chunk',page_data.sciences[sci_inc].clean_chunk);
-					var _attribs=kspObj.attr_reader(page_data.sciences[sci_inc].clean_chunk,true);
-console.log('-page_data.sciences_attribs',page_data.sciences_attribs);
-return;
-					page_data.parsed_science.push({'raw_id':_attribs.id});
-
-					if(sci_inc>=page_data.sciences.length){
-						FPSObj.remove_callback(chunk_tick);
-						FPSObj.add_once_callback(function(){
-console.log('-done');
-							if(use_data_set!==false){
-								//on_chunk_found(use_data_set);
-							}else{
-								//try{console.log(page_data.scenarios_attribs, page_data.scenarios);}catch(e){}
-							}
-						});
-						return;
-					}
-					update_status_msg('count_off_science',{'pre':sci_inc,'end':(sci_inc>1?'s':'')});
-					sci_inc++;
-					FPSObj.add_callback(chunk_tick);//stop from stacking
-				};
-
-			
-			
-				page_data.sciences=kspObj.chunk_reader(dataSetIn.chunk,'Science');
-//console.log('page_data.sciences',page_data.sciences);
-				update_status_msg('count_off_science',{'pre':sci_inc,'end':(sci_inc>1?'s':'')});
-				
-				setTimeout(function(){
-console.log('page_data.sciences[0]',page_data.sciences[0],JSON.stringify(page_data.sciences[0].clean_chunk));
-//var _attribs=kspObj.attr_reader(page_data.sciences[0].clean_chunk,true);
-//console.log('-page_data.sciences_attribs',page_data.sciences_attribs);
-return;
-					//FPSObj.add_callback(chunk_tick);
-				},2500);
-			}
-			var inputstr=reader.result,
-				scenario_inc=0,
-				use_data_set=false;
-			
-			FPSObj.add_once_callback(function(){
-				update_status_msg('searching_file');
-				
-				setTimeout(function(){
-					page_data.scenarios=kspObj.chunk_reader(inputstr,'SCENARIO');
-					if(page_data.scenarios.length==0){
-						update_status_msg('error');
-						return;}
-//console.log('page_data.scenarios',page_data.scenarios);
-					FPSObj.add_once_callback(function(){
-						update_status_msg('searching_science');
-						var scenario_iter=function(){
-							if(use_data_set!==false){FPSObj.remove_callback(scenario_iter);return;}
-							if(typeof(page_data.scenarios[scenario_inc])!='undefined'){
-								FPSObj.remove_callback(scenario_iter);//stop from stacking
-								kspObj.plugin.attr_reader_line=function(packObj){
-//console.log('-kspObj.plugin.attr_reader_line-');
-									if(packObj.clean_key=='name' && packObj.clean_val=='ResearchAndDevelopment'){
-console.log('----page_data.scenarios_attribs[a].val----');
-										packObj.do_break=true;
-										console.log('plugin break');
-									}
-								};
-								page_data.scenarios_attribs=kspObj.attr_reader(page_data.scenarios[scenario_inc].clean_chunk);
-//FPSObj.remove_callback(scenario_iter);
-//return;
-								kspObj.plugin.attr_reader_line=false;//unset
-								
-								if(page_data.scenarios_attribs.length>0){
-								//page_data.scenarios_attribs={'asdfasdfasdf':'adf'};
-//console.log('-'+scenario_inc,'page_data.scenarios_attribs',$.extend(true,{},page_data.scenarios_attribs));
-									for(var a=0;a<page_data.scenarios_attribs.length;a++){
-										if(page_data.scenarios_attribs[a].key=='name' && page_data.scenarios_attribs[a].val=='ResearchAndDevelopment'){
-console.log('----page_data.scenarios_attribs[a].val----');
-											use_data_set=page_data.scenarios[scenario_inc];
-										}
-									}
-								}
-								FPSObj.add_callback(scenario_iter);//stop from stacking
-								if(scenario_inc>=page_data.scenarios.length || use_data_set!==false){
-									FPSObj.remove_callback(scenario_iter);
-									FPSObj.add_once_callback(function(){
-										if(use_data_set!==false){
-											on_chunk_found(use_data_set);
-										}else{
-											try{console.log(page_data.scenarios_attribs, page_data.scenarios);}catch(e){}
-										}
-										delete inputstr;
-										page_data.scenarios=false;
-										page_data.scenarios_attribs=false;
-										return;
-									});
-								}
-								scenario_inc++;
-							}
-						};
-						setTimeout(function(){
-							FPSObj.add_callback(scenario_iter);
-						},2500);
-					});
-				},2500);
-			});
+				var inputstr=reader.result;
+				FPSObj.add_once_callback(function(){
+					update_status_msg('searching_file');
+					setTimeout(function(){
+						read_scenario_chunks(inputstr);
+					},2500);
+				});
+			},2500);
 		};
 		reader.readAsText(file);
 		return false;

@@ -39,7 +39,7 @@ kspParser.prototype.parse_sci_id=function(sciIdIn){
 	var self=this;
 	var attr_pat=new RegExp(self.sci_id_regex,'gi');
 };
-kspParser.prototype.attr_reader=function(strIn,doDebug){
+kspParser.prototype.attr_reader=function(strIn,dataOutObj,doDebug){
 	var self=this,
 		child_obj=[],
 		seekObjs=true;
@@ -54,8 +54,6 @@ kspParser.prototype.attr_reader=function(strIn,doDebug){
 		found_str=[],
 		attrs=[],
 		attrs_as_obj={};
-	//var out_meth='obj';
-	var out_meth='arr';
 
 	var split_pat=new RegExp('([^=]+)','gim'),
 		line_patt=new RegExp(self.tnl_p,'im'),
@@ -113,9 +111,9 @@ kspParser.prototype.attr_reader=function(strIn,doDebug){
 		self.i_callback('pre_attr_reader_line',_args);
 		for(var kl=0;kl<key_list.length;kl++){_vr=key_list[kl];eval(_vr+' = _args.'+_vr+';');}delete key_list;delete _vr;//populate into this scope
 
-		if(out_meth=='arr'){
+		//if(out_meth=='arr'){
 			attrs.push({'key':clean_key,'val':clean_val});
-		}else{
+		//}else{
 			if(typeof(attrs_as_obj[clean_key])=='undefined'){
 				attrs_as_obj[clean_key]=clean_val;
 			}else{
@@ -128,7 +126,7 @@ kspParser.prototype.attr_reader=function(strIn,doDebug){
 					delete old_val;
 				}
 			}
-		}
+		//}
 
 		var _args={'clean_key':clean_key,'clean_val':clean_val,'do_break':do_break,'attrs':attrs,'attrs_as_obj':attrs_as_obj},
 			key_list=array_keys(_args),
@@ -145,13 +143,12 @@ if(doDebug){
 	}
 
 if(doDebug){
+//console.log('attrs',attrs);
 console.log('found_str',found_str);
 //console.log('attrs_as_obj',attrs_as_obj);
 }
-	if(out_meth=='arr'){
-		return attrs;}
-	else{
-		return attrs_as_obj;}
+	if(typeof(dataOutObj)=='object'){for(var k in attrs_as_obj){if(bdcheck_key(attrs_as_obj,k)){dataOutObj[k]=attrs_as_obj[k];}}}//push up values
+	return attrs;
 };
 			
 kspParser.prototype.chunk_reader=function(strIn,islandStr,doDebug){
@@ -222,4 +219,52 @@ function kspDataChild(strIn,keyIn){
 	this.top_key=keyIn;
 }
 kspDataChild.prototype.get=function(){
+};
+
+
+
+////////////////////////////////////
+function kspUniverse(){
+	this.celestial_bodies=[];
+	this.celestial_bodies_schema={
+		'ident':'',//string
+		'name':'',//string
+		'orbiting_body':'',//string - false if sun
+		'body_type':'',//string star|gas|atm-yes-rocky|atm-no-rocky|asteroid
+		'can_high_orbit':true,
+		'can_low_orbit':true,
+		'can_surface':false,
+		'can_splash':false,
+		'biomes':[]
+	};
+	this.default_bodies=[
+	];
+}
+kspUniverse.prototype.add_body=function(orbitBodyId,ident,planetBioOrbsObj,metaObj){
+	var self=this;
+};
+kspUniverse.prototype.add_biome_orbit=function(planetIdent,ident,orbit,landTypes,biome){
+	var self=this;
+};
+
+
+
+////////////////////////////////////
+function kspSci(strIn,keyIn){
+	this.celestial_sciences=[];
+	this.celestial_sciences_schema={
+		'ident':'',//string
+		'name':'',//string
+		'orbiting_body':'',//string - false if sun
+		'body_type':'',//string star|gas|atm-yes-rocky|atm-no-rocky|asteroid
+		'can_high_orbit':true,
+		'can_low_orbit':true,
+		'can_surface':false,
+		'can_splash':false,
+		'biomes':[]
+	};
+	this.default_sciences=[
+	];
+}
+kspSci.prototype.get=function(){
 };

@@ -132,3 +132,22 @@ function str_rep_count(strIn,fChr){
 	}
 	return rep_count;
 }
+function str_rep(strIn,cnt){
+	if(typeof(strIn)!='string'){return strIn;}
+	var out='';
+	for(var c=0;c<cnt;c++){out=out+strIn;}
+	return out;
+}
+function addCommas(nStr) {
+    nStr += '';
+    var x = nStr.split('.');
+    var x1 = x[0];
+    var x2 = (x.length > 1 ? '.' + x[1] : '');
+    var rgx = /(\d+)(\d{3})/;
+
+    while (rgx.test(x1)) {
+        x1 = x1.replace(rgx, '$1' + ',' + '$2');
+    }
+
+    return x1.toString().trim() + x2.toString().trim();
+}
