@@ -151,3 +151,13 @@ function addCommas(nStr) {
 
     return x1.toString().trim() + x2.toString().trim();
 }
+function flatten_array(arrIn,keySeek){
+	if(typeof(keySeek)!='number' && typeof(keySeek)!='boolean' && typeof(keySeek)!='string'){return [];}
+	var output=[];
+	for(var ai in arrIn){
+		if(bdcheck_key(arrIn[ai],keySeek)){//valid key check
+			output[ai]=arrIn[ai][keySeek];
+		}
+	}
+	return output;
+}

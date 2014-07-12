@@ -225,46 +225,244 @@ kspDataChild.prototype.get=function(){
 
 ////////////////////////////////////
 function kspUniverse(){
+	this.body_rails={//where can experiments happen - splashes and surfaces are kinda of a rail
+		'high_orbit':false,
+		'low_orbit':false,
+		'high_fly':false,
+		'low_fly':false,
+		'surface':false,
+		'splash':false//aka ocean
+	};
+	this.body_types={
+		'asteroid':false,
+		'atm_rocky':false,
+		'atm_rocky_liquid':false,
+		'rocky':false,
+		'gas':false,
+		'star':false
+	};
 	this.celestial_bodies=[];
 	this.celestial_bodies_schema={
 		'ident':'',//string
 		'name':'',//string
-		'orbiting_body':'',//string - false if sun
-		'body_type':'',//string star|gas|atm-yes-rocky|atm-no-rocky|asteroid
-		'can_high_orbit':true,
-		'can_low_orbit':true,
-		'can_surface':false,
-		'can_splash':false,
+		'orbiting_body':false,//string - false if sun
+		'body_type':'',//string white list -> this.body_types
 		'biomes':[]
 	};
 	this.default_bodies=[
+		{'ident':'Sun','name':'Kerbold','orbiting_body':false,'body_type':'star'},
+		{
+			'ident':'Kerbin',
+			'name':'Kerbin',
+			'orbiting_body':'Sun',
+			'body_type':'atm_rocky_liquid',
+			'biomes':['Grasslands','Highlands','Mountains','Deserts','Badlands','Tundra','IceCaps','Water','Shores','KSC','LaunchPad','Runway']
+		},
+			{
+				'ident':'Mun',
+				'name':'Mun',
+				'orbiting_body':'Kerbin',
+				'body_type':'rocky',
+				'biomes':['NorthernBasin','HighlandCraters','Highlands','MidlandCraters','Midlands','Canyons','EastCrater','EastFarsideCrater',
+					'FarsideCrater','NorthwestCrater','Southwest Crater','TwinCraters','PolarCrater','PolarLowlands','Poles']
+			},
+			{
+				'ident':'Mun',
+				'name':'Mun',
+				'orbiting_body':'Kerbin',
+				'body_type':'rocky',
+				'biomes':['Highland','Midlands','Lowlands','Slopes','LesserFlats','Flats','GreatFlats','GreaterFlats','Poles']
+			},
+		{'ident':'Moho','name':'Moho','orbiting_body':'Sun','body_type':'rocky'},
+		{'ident':'Eve','name':'Eve','orbiting_body':'Sun','body_type':'atm_rocky_liquid'},
+			{'ident':'Gilly','name':'Gilly','orbiting_body':'Eve','body_type':'rocky'},
+		{'ident':'Duna','name':'Duna','orbiting_body':'Sun','body_type':'atm_rocky'},
+			{'ident':'Ike','name':'Ike','orbiting_body':'Duna','body_type':'rocky'},
+		{'ident':'Dres','name':'Dres','orbiting_body':'Sun','body_type':'atm_rocky'},
+		{'ident':'Jool','name':'Jool','orbiting_body':'Sun','body_type':'gas'},
+			{'ident':'Laythe','name':'Laythe','orbiting_body':'Jool','body_type':'atm_rocky_liquid'},
+			{'ident':'Vall','name':'Vall','orbiting_body':'Jool','body_type':'rocky'},
+			{'ident':'Tylo','name':'Tylo','orbiting_body':'Jool','body_type':'rocky'},
+			{'ident':'Bop','name':'Bop','orbiting_body':'Jool','body_type':'rocky'},
+			{'ident':'Pol','name':'Pol','orbiting_body':'Jool','body_type':'rocky'},
+		{'ident':'Eeloo','name':'Eeloo','orbiting_body':'Sun','body_type':'rocky'}
 	];
+
+
+	this.plugin={
+		'pre_add_body':false,
+		'add_body':false,
+		'pre_get_rail_rules':false,
+		'get_rail_rules':false
+	};
+	this.init();
 }
-kspUniverse.prototype.add_body=function(orbitBodyId,ident,planetBioOrbsObj,metaObj){
-	var self=this;
+kspUniverse.prototype.init=function(){
+	var self=this;console.log('-kspUniverse init-',self.plugin);
+	for(var b=0;b<self.default_bodies.length;b++){
+		var new_line=$.extend(true,{},self.celestial_bodies_schema,self.default_bodies[b]);
+		self.add_body(new_line.orbiting_body, new_line.ident, new_line.biomes, {'name':new_line.name});
+	}
 };
-kspUniverse.prototype.add_biome_orbit=function(planetIdent,ident,orbit,landTypes,biome){
-	var self=this;
+kspUniverse.prototype.i_callback=function(hookIn,argsIn){//internal callback - pluginable hooks
+	var self=this,
+		has_callback=false;
+	try{
+		//if(typeof(this.plugin[hookIn])=='object' &&  this.plugin[hookIn] instanceof Array){has_callback=true;}
+		//else 
+		if(typeof(self.plugin[hookIn])=='function'){has_callback=true;}
+	}catch(e){}
+	if(has_callback){
+		var args=Array(argsIn);
+		self.plugin[hookIn].apply(self, args);
+		obj=args[0];//push values up
+		return true;
+	}
+	return false;
+};
+kspUniverse.prototype.add_body=function(orbitBodyId,ident,planetType,planetBios,metaObj){
+	var self=this,
+		add_line=self.celestial_bodies_schema;
+	if($.inArray(planetType,array_keys(self.body_types))===-1){return false;}
+	if($.inArray(orbitBodyId,flatten_array(self.celestial_bodies,'ident'))===-1){return false;}
+	add_line.ident=ident;
+	add_line.name=(bdcheck_key(metaObj,'name')?metaObj.name:ident);
+	add_line.orbiting_body=orbitBodyId;
+	add_line.body_type=planetType;
+	add_line.biomes=(typeof(planetBios)!='object' && planetBios instanceof Array && planetBios.length>0?planetBios:[]);
+
+	var _args={'add_line':add_line},
+		key_list=array_keys(_args),
+		_vr='';
+	self.i_callback('pre_add_body',_args);
+	for(var kl=0;kl<key_list.length;kl++){_vr=key_list[kl];eval(_vr+' = _args.'+_vr+';');}delete key_list;delete _vr;//populate into this scope
+
+	self.celestial_bodies.push(add_line);
+
+	var _args={'add_line':add_line},
+		key_list=array_keys(_args),
+		_vr='';
+	self.i_callback('add_body',_args);
+	for(var kl=0;kl<key_list.length;kl++){_vr=key_list[kl];eval(_vr+' = _args.'+_vr+';');}delete key_list;delete _vr;//populate into this scope
+
+	return true;
+};
+kspUniverse.prototype.get_rail_rules=function(planetType,planetIdent){
+	var self=this,
+		rules=self.body_rails;
+
+	if($.inArray(planetType,array_keys(self.body_types))===-1){return false;}
+	if($.inArray(planetIdent,flatten_array(self.celestial_bodies,'ident'))===-1){return false;}
+
+	var _args={'planetType':planetType,'planetIdent':planetIdent,'rules':rules},
+		key_list=array_keys(_args),
+		_vr='';
+	self.i_callback('pre_get_rail_rules',_args);
+	for(var kl=0;kl<key_list.length;kl++){_vr=key_list[kl];eval(_vr+' = _args.'+_vr+';');}delete key_list;delete _vr;//populate into this scope
+
+	if(planetType=='asteroid'){
+		//do nothing
+	}else if(planetType=='atm_rocky_liquid'){
+		rules.high_orbit=true;
+		rules.low_orbit=true;
+		rules.high_fly=true;
+		rules.low_fly=true;
+		rules.surface=true;
+		rules.splash=true;
+	}else if(planetType=='atm_rocky'){
+		rules.high_orbit=true;
+		rules.low_orbit=true;
+		rules.high_fly=true;
+		rules.low_fly=true;
+		rules.surface=true;
+	}else if(planetType=='rocky'){
+		rules.high_orbit=true;
+		rules.low_orbit=true;
+		rules.surface=true;
+	}else if(planetType=='gas'){
+		rules.high_orbit=true;
+		rules.low_orbit=true;
+		rules.high_fly=true;
+		rules.low_fly=true;
+	}else{//planetType=='star'
+		rules.high_orbit=true;
+		rules.low_orbit=true;
+	}
+
+	var _args={'planetType':planetType,'planetIdent':planetIdent,'rules':rules},
+		key_list=array_keys(_args),
+		_vr='';
+	self.i_callback('get_rail_rules',_args);
+	for(var kl=0;kl<key_list.length;kl++){_vr=key_list[kl];eval(_vr+' = _args.'+_vr+';');}delete key_list;delete _vr;//populate into this scope
+	return rules;
 };
 
 
 
 ////////////////////////////////////
-function kspSci(strIn,keyIn){
+function kspSci(){
 	this.celestial_sciences=[];
 	this.celestial_sciences_schema={
-		'ident':'',//string
-		'name':'',//string
-		'orbiting_body':'',//string - false if sun
-		'body_type':'',//string star|gas|atm-yes-rocky|atm-no-rocky|asteroid
-		'can_high_orbit':true,
-		'can_low_orbit':true,
-		'can_surface':false,
-		'can_splash':false,
-		'biomes':[]
+			'ident':'',
+			'name':'',
+			'rail_context':false,
+			'biome_context':false
 	};
+
 	this.default_sciences=[
+		{'ident':'surfaceSample','name':'Surface Sample','biome_context':{'surface':true,'splash':true},'rail_context':{'splash':true,'surface':true}},
+		{'ident':'evaReport','name':'EVA Report','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':true},
+		{'ident':'crewReport','name':'Crew Report','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':true},
+		{'ident':'mysteryGoo','name':'Goo','biome_context':{'surface':true,'splash':true},'rail_context':true},
+		{'ident':'mobileMaterialsLab','name':'Materials Bay','biome_context':{'surface':true,'splash':true},'rail_context':true},
+		{'ident':'temperatureScan','name':'Temperature Scan','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':{'low_orbit':true,'high_fly':true,'low_fly':true,'splash':true,'surface':true}},
+		{'ident':'barometerScan','name':'Barometer Scan','biome_context':{'surface':true,'splash':true},'rail_context':{'high_fly':true,'low_fly':true,'splash':true,'surface':true}},
+		{'ident':'gravityScan','name':'Gravioli Particles','biome_context':{'high_orbit':true,'low_orbit':true,'surface':true,'splash':true},'rail_context':{'high_orbit':true,'low_orbit':true,'splash':true,'surface':true}},
+		{'ident':'seismicScan','name':'Seismic Scan','biome_context':{'surface':true},'rail_context':{'surface':true}},
+		{'ident':'atmosphereAnalysis','name':'Sensor Array Computing Nose Cone','biome_context':{'high_fly':true,'low_fly':true,'surface':true},'rail_context':{'high_fly':true,'low_fly':true,'surface':true}}
 	];
+
+	this.plugin={
+		'pre_get_rail_rules':false,
+		'get_rail_rules':false
+	};
+
+	this.init();
 }
-kspSci.prototype.get=function(){
+//kspSci.prototype = new kspUniverse();
+kspSci.prototype.init=function(){//kspSci.init fires then kspUniverse.init
+	$.extend(true,this,new kspUniverse(),this);//make universe the parent
+	var self=this;console.log('-kspSci init-',this.plugin);
+};
+kspSci.prototype.get_rail_rules=function(planetType,scienceIdent){
+
+	if(planetType=='asteroid'){
+		//do nothing
+	}else if(planetType=='atm_rocky_liquid'){
+		rules.high_orbit=true;
+		rules.low_orbit=true;
+		rules.high_fly=true;
+		rules.low_fly=true;
+		rules.surface=true;
+		rules.splash=true;
+	}else if(planetType=='atm_rocky'){
+		rules.high_orbit=true;
+		rules.low_orbit=true;
+		rules.high_fly=true;
+		rules.low_fly=true;
+		rules.surface=true;
+	}else if(planetType=='rocky'){
+		rules.high_orbit=true;
+		rules.low_orbit=true;
+		rules.surface=true;
+	}else if(planetType=='gas'){
+		rules.high_orbit=true;
+		rules.low_orbit=true;
+		rules.high_fly=true;
+		rules.low_fly=true;
+	}else{//planetType=='star'
+		rules.high_orbit=true;
+		rules.low_orbit=true;
+	}
+
 };
