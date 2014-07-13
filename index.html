@@ -193,37 +193,6 @@ body.hasJS #status.online {background: #0c0;}
 
 			setTimeout(function(){
 				$(drag_target).trigger('dragend');
-/*
-			var inputstr="asdfasdf"+"\n"+
-"	}"+"\n"+
-"	SCENARIO"+"\n"+
-"	{"+"\n"+
-//"		}"+"\n"+
-"		Science"+"\n"+
-"		{"+"\n"+
-"...."+"\n"+
-"		}"+"\n"+
-"		Science"+"\n"+
-"		{"+"\n"+
-"			id = evaReport@MinmusInSpaceLowFlats"+"\n"+
-"			title = EVA Report from space just above Minmus's Flats"+"\n"+
-"			dsc = 1"+"\n"+
-"			scv = 0"+"\n"+
-"			sbv = 4"+"\n"+
-"			sci = 32"+"\n"+
-"			cap = 32"+"\n"+
-"		}"+"\n"+
-"		Science"+"\n"+
-"		{"+"\n"+
-"			id = asteroidSample@KerbinSrfLandedGrasslands_PotatoRoid610034251"+"\n"+
-"			title = Sample from Pet Rock at Kerbin's Grasslands"+"\n"+
-"			dsc = 1"+"\n"+
-"			scv = 0.1428571"+"\n"+
-"			sbv = 1"+"\n"+
-"			sci = 60"+"\n"+
-"			cap = 70"+"\n"+
-"		}"+"\n"+
-"	}";*/
 				var inputstr=reader.result;
 				FPSObj.add_once_callback(function(){
 					update_status_msg('searching_file');
