@@ -32,12 +32,6 @@ kspParser.prototype.i_callback=function(hookIn,argsIn){//internal callback - plu
 	}
 	return false;
 };
-kspParser.prototype.parse_sci_id=function(sciIdIn){
-	var self=this,
-		regex_str='';
-	//bunch of loops and stuff
-	var sci_pat=new RegExp(regex_str,'gi');
-};
 kspParser.prototype.attr_reader=function(strIn,dataOutObj,doDebug){
 	var self=this,
 		child_obj=[],
@@ -229,7 +223,15 @@ kspDataChild.prototype.get=function(){
 ////////////////////////////////////
 function kspUniverse(){
 	//used for both setting default values as a schema and providing an index to check against
-	this.body_rails={//where can experiments happen - splashes and surfaces are kinda of a rail
+	this.body_rails={
+		'high_orbit':{'title':'Space High','ident':'InSpaceHigh','group_ident':'Orbited'},
+		'low_orbit':{'title':'Space Low','ident':'InSpaceLow','group_ident':'SubOrbited'},
+		'high_fly':{'title':'Fly High','ident':'FlyingHigh','group_ident':'Flew'},
+		'low_fly':{'title':'Fly Low','ident':'FlyingLow','group_ident':'Flew'},
+		'surface':{'title':'Surface','ident':'SrfLanded','group_ident':'Surfaced'},
+		'splash':{'title':'Surface','ident':'SrfSplashed','group_ident':'Surfaced'}//aka ocean
+	};
+	this.body_rails_schema={//where can experiments happen - splashes and surfaces are kinda of a rail
 		'high_orbit':false,
 		'low_orbit':false,
 		'high_fly':false,
@@ -238,7 +240,7 @@ function kspUniverse(){
 		'splash':false//aka ocean
 	};
 	//used for both setting default values as a schema and providing an index to check against
-	this.body_types={
+	this.body_types_schema={
 		'asteroid':false,//no astmosphere and not many rules/science
 		'atm_rocky':false,//you cannot splash!
 		'atm_rocky_liquid':false,//you can splash!
@@ -251,7 +253,7 @@ function kspUniverse(){
 		'ident':'',//string
 		'name':'',//string
 		'orbiting_body':false,//string - false if sun
-		'body_type':'',//string white list -> this.body_types
+		'body_type':'',//string white list -> this.body_types_schema
 		'biomes':[]
 	};
 	this.default_bodies=[
@@ -269,14 +271,14 @@ function kspUniverse(){
 				'orbiting_body':'Kerbin',
 				'body_type':'rocky',
 				'biomes':['NorthernBasin','HighlandCraters','Highlands','MidlandCraters','Midlands','Canyons','EastCrater','EastFarsideCrater',
-					'FarsideCrater','NorthwestCrater','Southwest Crater','TwinCraters','PolarCrater','PolarLowlands','Poles']
+					'FarsideCrater','NorthwestCrater','SouthwestCrater','TwinCraters','PolarCrater','PolarLowlands','Poles']
 			},
 			{
-				'ident':'Mun',
-				'name':'Mun',
+				'ident':'Minmus',
+				'name':'Minmus',
 				'orbiting_body':'Kerbin',
 				'body_type':'rocky',
-				'biomes':['Highland','Midlands','Lowlands','Slopes','LesserFlats','Flats','GreatFlats','GreaterFlats','Poles']
+				'biomes':['Highlands','Midlands','Lowlands','Slopes','LesserFlats','Flats','GreatFlats','GreaterFlats','Poles']
 			},
 		{'ident':'Moho','name':'Moho','orbiting_body':'Sun','body_type':'rocky'},
 		{'ident':'Eve','name':'Eve','orbiting_body':'Sun','body_type':'atm_rocky'},
@@ -298,7 +300,8 @@ function kspUniverse(){
 		'pre_add_body':false,
 		'add_body':false,
 		'pre_get_rail_rules':false,
-		'get_rail_rules':false
+		'get_rail_rules':false,
+		'is_celestial_body':false
 	};
 	this.init();
 }
@@ -306,7 +309,7 @@ kspUniverse.prototype.init=function(){
 	var self=this;//console.log('-kspUniverse init-',self.plugin);
 	for(var b=0;b<self.default_bodies.length;b++){
 		var new_line=$.extend(true,{},self.celestial_bodies_schema,self.default_bodies[b]);
-		self.add_body(new_line.orbiting_body, new_line.ident, new_line.biomes, {'name':new_line.name});
+		self.add_body(new_line.orbiting_body, new_line.ident, new_line.body_type, new_line.biomes, {'name':new_line.name});
 	}
 };
 kspUniverse.prototype.i_callback=function(hookIn,argsIn){//internal callback - pluginable hooks
@@ -328,14 +331,14 @@ kspUniverse.prototype.i_callback=function(hookIn,argsIn){//internal callback - p
 kspUniverse.prototype.add_body=function(orbitBodyId,ident,planetType,planetBios,metaObj){
 	var self=this,
 		add_line=$.extend(true,{},self.celestial_bodies_schema,{});//must break js 'pass by reference'
-	if($.inArray(planetType,array_keys(self.body_types))===-1){return false;}
-	if(!self.is_celestial_body(orbitBodyId)){return false;}//orbiting something check
+	if($.inArray(planetType,array_keys(self.body_types_schema))===-1){return false;}
+	if(orbitBodyId!==false && !self.is_celestial_body(orbitBodyId)){return false;}//orbiting something check -> false is allowed for the sun... or something that just needs to be there somehow
 	if(self.is_celestial_body(ident)){return false;}//existing check
 	add_line.ident=ident;
 	add_line.name=(bdcheck_key(metaObj,'name')?metaObj.name:ident);
 	add_line.orbiting_body=orbitBodyId;
 	add_line.body_type=planetType;
-	add_line.biomes=(typeof(planetBios)!='object' && planetBios instanceof Array && planetBios.length>0?planetBios:[]);
+	add_line.biomes=(typeof(planetBios)=='object' && planetBios instanceof Array && planetBios.length>0?planetBios:[]);
 
 	///////\\\\\\\\\\PLUGIN HOOK\\\\\\\\/////////
 	var _args={'add_line':add_line},
@@ -345,7 +348,9 @@ kspUniverse.prototype.add_body=function(orbitBodyId,ident,planetType,planetBios,
 	for(var kl=0;kl<key_list.length;kl++){_vr=key_list[kl];eval(_vr+' = _args.'+_vr+';');}delete key_list;delete _vr;//populate into this scope
 	///////\\\\\\\\\\END PLUGIN HOOK\\\\\\\\/////////
 
-	self.celestial_bodies.push(add_line);
+	
+	self.celestial_bodies.push($.extend(true,{},add_line,{'biomes':[]}));//extending so the biomes go through the method.  for future plugin hooks!
+	for(var b in add_line.biomes){self.add_biome(add_line.ident,add_line.biomes[b]);}
 
 	///////\\\\\\\\\\PLUGIN HOOK\\\\\\\\/////////
 	var _args={'add_line':add_line},
@@ -357,12 +362,20 @@ kspUniverse.prototype.add_body=function(orbitBodyId,ident,planetType,planetBios,
 
 	return true;
 };
+kspUniverse.prototype.add_biome=function(planetIdent,biomeIdent){
+	var self=this,
+		body_data={};
+	if(!self.is_celestial_body(planetIdent,body_data)){return false;}
+	if($.inArray(biomeIdent,body_data.biomes)!==-1){return false;}
+	self.celestial_bodies[body_data.pos].biomes.push(biomeIdent);
+	return true;
+};
 kspUniverse.prototype.get_rail_rules=function(planetType){
 	var self=this,
-		rails=$.extend(true,{},self.body_rails,{}),//must break js 'pass by reference'
+		rails=$.extend(true,{},self.body_rails_schema,{}),//must break js 'pass by reference'
 		has_atmosphere=false;
 
-	if($.inArray(planetType,array_keys(self.body_types))===-1){return false;}
+	if($.inArray(planetType,array_keys(self.body_types_schema))===-1){return false;}
 	//if(!self.is_celestial_body(planetIdent)){return false;}
 
 	///////\\\\\\\\\\PLUGIN HOOK\\\\\\\\/////////
@@ -418,13 +431,33 @@ kspUniverse.prototype.get_rail_rules=function(planetType){
 	///////\\\\\\\\\\END PLUGIN HOOK\\\\\\\\/////////
 	return {'rails':rails,'has_atmosphere':has_atmosphere};
 };
-kspUniverse.prototype.is_celestial_body=function(ident,foundObjRef){//foundObjRef is a 'push up' pass by reference
+kspUniverse.prototype.is_biome=function(biomeIdent,planetIdent,foundObjRef){//foundObjRef is a 'push up' pass by reference
+	var self=this,
+		body_info={};
+	if(!self.is_celestial_body(planetIdent,body_info)){return false;}
+	if($.inArray(biomeIdent,body_info.biomes)!==-1){foundObjRef=body_info;return true;}
+	return false;
+};
+kspUniverse.prototype.is_celestial_body=function(ident,foundObjRef,doDebug){//foundObjRef is a 'push up' pass by reference
 	var self=this,
 		result=$.inArray(ident,flatten_array(self.celestial_bodies,'ident'));
 	if(result!==-1 && typeof(foundObjRef)=='object'){
 		for(var cb in self.celestial_bodies[result]){
 			if(bdcheck_key(self.celestial_bodies[result],cb)){
-				foundObjRef[cb]=self.celestial_bodies[result][cb];}}}
+				foundObjRef[cb]=self.celestial_bodies[result][cb];
+			}
+		}
+		foundObjRef['pos']=result;
+	}
+	if(result!==-1){
+		///////\\\\\\\\\\PLUGIN HOOK\\\\\\\\/////////
+		var _args={'result':result,'foundObjRef':foundObjRef,'ident':ident},
+			key_list=array_keys(_args),
+			_vr='';
+		self.i_callback('is_celestial_body',_args);
+		for(var kl=0;kl<key_list.length;kl++){_vr=key_list[kl];eval(_vr+' = _args.'+_vr+';');}delete key_list;delete _vr;//populate into this scope
+		///////\\\\\\\\\\END PLUGIN HOOK\\\\\\\\/////////
+	}
 	return (result!==-1?true:false);//if not-not found
 };
 
@@ -437,7 +470,7 @@ function kspSci(kspUniObj){
 	this.sciences_schema={
 		'ident':'',
 		'name':'',
-		'meta':{'ignore_planet_rail':false,'require_atmosphere':false},
+		'meta':{'ignore_planet_rail':false,'require_atmosphere':false,'rails_as_groups':false},
 		'rail_context':false,
 		'biome_context':false
 	};
@@ -453,6 +486,7 @@ function kspSci(kspUniObj){
 	biomeMask = 7 -> first 3 added together
 */
 	this.default_sciences=[
+		{'ident':'recovery','name':'Recovery of a Vessel','biome_context':false,'rail_context':true,'meta':{'rails_as_groups':true}},
 		{'ident':'asteroidSample','name':'Asteroid Surface Sample','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':true},//,'meta':{'ignore_planet_rail':'asteroid'} <- was here but I realized you can't have astroids as places there are more like vessels
 		{'ident':'surfaceSample','name':'Surface Sample','biome_context':{'surface':true,'splash':true},'rail_context':{'splash':true,'surface':true}},
 		{'ident':'evaReport','name':'EVA Report','biome_context':{'low_orbit':true,'low_fly':true,'surface':true,'splash':true},'rail_context':true},
@@ -501,7 +535,7 @@ kspSci.prototype.i_callback=function(hookIn,argsIn){//internal callback - plugin
 };
 kspSci.prototype.add_science=function(ident,biomeObj,railObj,metaObj){
 	var self=this,
-		default_rails=$.extend(true,{},self.ksp_uni_obj.body_rails,{}),//must break js 'pass by reference'
+		default_rails=$.extend(true,{},self.ksp_uni_obj.body_rails_schema,{}),//must break js 'pass by reference'
 		add_line=$.extend(true,{},self.sciences_schema,{});//must break js 'pass by reference'
 	if(typeof(biomeObj)=='object'){//possible it comes through as boolean!
 		for(var tk in biomeObj){
@@ -554,12 +588,12 @@ kspSci.prototype.get_rail_rules=function(scienceIdent,planetType){
 	var self=this,
 		science_data={};//for a pass by reference
 
-	if($.inArray(planetType,array_keys(self.ksp_uni_obj.body_types))===-1){return false;}//valid body type
+	if($.inArray(planetType,array_keys(self.ksp_uni_obj.body_types_schema))===-1){return false;}//valid body type
 	if(!self.is_science(scienceIdent,science_data)){return false;}//valid science id
 
 	var rules={ //default values.  Should all be false!
-		'biome':$.extend(true,{},self.ksp_uni_obj.body_rails,{}),//must break js 'pass by reference'
-		'rail':$.extend(true,{},self.ksp_uni_obj.body_rails,{}) //must break js 'pass by reference'
+		'biome':$.extend(true,{},self.ksp_uni_obj.body_rails_schema,{}),//must break js 'pass by reference'
+		'rail':$.extend(true,{},self.ksp_uni_obj.body_rails_schema,{}) //must break js 'pass by reference'
 	};
 
 	///////\\\\\\\\\\PLUGIN HOOK\\\\\\\\/////////
@@ -614,12 +648,13 @@ kspSci.prototype.get_rail_rules=function(scienceIdent,planetType){
 			else if(science_data.meta.require_atmosphere instanceof Array && $.inArray(pr,science_data.meta.require_atmosphere)!==-1){has_atm_exception=true;}
 			if(pr=='high_fly' || pr=='low_fly'){has_atm_exception=true;}//you can only fly if there is an atmosphere!
 
-
 			if(line_rule.planet_rule===false && has_rail_exception===true){
 				line_rule.planet_rule=true;
 			}else if(line_rule.planet_rule===false){//no rail no experiment! unless there is an exception specifically listed (above)
 				line_rule.rail=false;
 				line_rule.biome=false;
+			}else if(line_rule.planet_rule && science_data.meta.rails_as_groups && self.ksp_uni_obj.body_rails[pr].group_ident){//just for recovery?!
+				line_rule.rail=true;
 			}
 			
 			//apply scientific dependancies!
@@ -653,12 +688,98 @@ kspSci.prototype.get_rail_rules=function(scienceIdent,planetType){
 console.log(scienceIdent,'rules: rail ',rules.rail,'biome',rules.biome);
 	//return rules;
 };
-kspSci.prototype.is_science=function(ident,foundObjRef){//foundObjRef is a 'push up' pass by reference
+kspSci.prototype.is_science=function(ident,foundObjRef){//foundObjRef is a 'push up' pass by reference ,doDeug
 	var self=this,
 		result=$.inArray(ident,flatten_array(self.sciences,'ident'));
+//if(doDeug){console.log('is_science('+ident+')',result,"\n","flatten_array(self.sciences,'ident')",flatten_array(self.sciences,'ident'));}
 	if(result!==-1 && typeof(foundObjRef)=='object'){
 		for(var s in self.sciences[result]){
 			if(bdcheck_key(self.sciences[result],s)){
 				foundObjRef[s]=self.sciences[result][s];}}}
 	return (result!==-1?true:false);//if not-not found
+};
+kspSci.prototype.parse_sci_id=function(sciIdIn){
+	var self=this,
+		rail_ident=false,
+		regex_str='',
+		rail_ids='',
+		rails_arr=[],
+		found_str=[];
+	
+	for(var br in self.ksp_uni_obj.body_rails){
+		if(bdcheck_key(self.ksp_uni_obj.body_rails,br)){
+			rails_arr.push(self.ksp_uni_obj.body_rails[br].ident);}}
+	for(var br in self.ksp_uni_obj.body_rails){
+		if(bdcheck_key(self.ksp_uni_obj.body_rails,br)){
+			if($.inArray(self.ksp_uni_obj.body_rails[br].group_ident,rails_arr)==-1){
+				rails_arr.push(self.ksp_uni_obj.body_rails[br].group_ident);}}}
+		rails_arr.sort(function ( a, b ){
+			if(a.length<b.length){return -1;}
+			if(a.length>b.length){return 1;}
+			return 0;});
+
+	rail_ids=check_strip_last(rails_arr.join('|'),'|');
+//console.log('regex_str',regex_str,"\n",'rail_ids',rail_ids);
+	//scienceIdent@	//Planet	//Rail	//Biome	//_PotatoRoid######
+	var rail_pat=new RegExp('('+rail_ids+')','gi'),
+		roid_pat=new RegExp('_PotatoRoid([0-9]+)?$','gi'),
+		test_str=sciIdIn,
+		roid_result=roid_pat.exec(test_str),
+		rail_result='',
+		asteroid_ident='',
+		biome='';
+	if(roid_result!==null && (roid_result instanceof Array && roid_result.length>0)){
+		test_str=check_strip_last(test_str,roid_result[0]);
+		asteroid_ident=check_strip_first(roid_result[0],'_');
+	}
+	delete roid_result;
+	//need to extract the rail to because when its mixed in JavaScript doesn't reliable match the string we're looking for
+
+	rail_result=rail_pat.exec(test_str);
+/*
+var testing_arr=['crewReport@KerbinSrfLandedLaunchPad','crewReport@KerbinFlyingLowShores','crewReport@KerbinSrfSplashedWater','evaReport@KerbinInSpaceLowHighlands'];
+if($.inArray(sciIdIn,testing_arr)!==-1){
+	console.log('rail_result',rail_result);}*/
+
+	if(rail_result!==null && (rail_result instanceof Array && rail_result.length>0)){
+		test_str=test_str.replace(new RegExp('('+rail_result[0]+')'),'|'+rail_result[0]+'|');//replace the found rail with something distinct.  Rails are pretty reliable as they probably won't change
+		rail=rail_result[0];
+	}//should return false because a bad rail is a justifyable halt
+	delete rail_result;
+	var regex_str='^(.+)@(.*)(\\|('+rail_ids+')\\|){1}(.*)',
+		sci_pat=new RegExp(regex_str,'gi');
+
+	while((match = sci_pat.exec(test_str)) != null){found_str.push({'pos':match.index,'match':match});}//pre-parse
+	if(found_str.length>0){
+		var science_ident=found_str[0].match[1],
+			planet_ident=found_str[0].match[2],
+			biome=found_str[0].match[5],
+			sci_data={};
+/*if($.inArray(sciIdIn,testing_arr)!==-1){
+	console.log('test_str',test_str,'found_str[0]',found_str[0],'biome',biome);}*/
+
+		var t_seek={'rail':inObject(rail,flatten_object(self.ksp_uni_obj.body_rails,'ident')),'group':inObject(rail,flatten_object(self.ksp_uni_obj.body_rails,'group_ident'))};
+
+		if(t_seek.rail!==-1){rail_ident=t_seek.rail;}
+		else if(t_seek.group!==-1){rail_ident=t_seek.group;}
+		else{try{console.warn('rail ',rail,' not found');}catch(e){}}
+
+		if(self.is_science(science_ident,sci_data)){//known science <- this is a patch for a 'FlyBy' is FlyBy Stock?
+			//if(sci_data.biome_context===false){}
+			if(sci_data.meta.rails_as_groups===true && sci_data.biome_context===false){//basically if its recovery?
+				rail=rail+found_str[0].match[5];//anything after the rail (which is also match[4]) is the rail.  Recovery has special rules.  Its not even in the science file
+				biome='';//biome should not be relavent
+			}
+		}
+		
+		return {
+				'science_ident':science_ident,
+				'planet_ident':planet_ident,
+				'biome_ident':(basic_check(biome)?biome:false),
+				'rail_ident':rail_ident,
+				'rail':rail,
+				'meta':{'asteroid_ident':(basic_check(asteroid_ident)?asteroid_ident:false)}
+		};
+	}
+	return false;
 };

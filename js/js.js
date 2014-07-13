@@ -161,3 +161,21 @@ function flatten_array(arrIn,keySeek){
 	}
 	return output;
 }
+function flatten_object(arrIn,keySeek){
+	if(typeof(keySeek)!='number' && typeof(keySeek)!='boolean' && typeof(keySeek)!='string'){return {};}
+	var output={};
+	for(var ai in arrIn){
+		if(bdcheck_key(arrIn[ai],keySeek)){//valid key check
+			output[ai]=arrIn[ai][keySeek];
+		}
+	}
+	return output;
+}
+function inObject(valIn,objectIn){
+	for(var oKey in objectIn){
+		if(bdcheck_key(objectIn,oKey)){
+			if(objectIn[oKey]===valIn){return oKey;}
+		}
+	}
+	return -1;
+}
