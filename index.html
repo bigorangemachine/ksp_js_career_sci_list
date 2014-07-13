@@ -58,7 +58,6 @@ body.hasJS #status.online {background: #0c0;}
 		current_state_key='ready',
 		drag_target = $('#holder'),
 		msg_obj = $('#status');
-
 //console.log(kspObj.attr_reader("\r\n\t\t\tid = crewReport@KerbinSrfLandedLaunchPad\r\n\t\t\ttitle = Crew Report from LaunchPad\r\n\t\t\tdsc = 1\r\n\t\t\tscv = 0\r\n\t\t\tsbv = 0.3\r\n\t\t\tsci = 1.5\r\n\t\t\tcap = 1.5",true));
 		
 	function update_status_msg(keyIn,extraStr){
@@ -242,5 +241,7 @@ body.hasJS #status.online {background: #0c0;}
 	$(drag_target).on('dragend',function () { $(this).removeClass('hover'); return false; });
 	$(drag_target).on('drop',dodrop);
 </script>
+<!-- quick science grid test -->
+<!-- <script src="js/quick.test.js"></script> -->
 </body>
 </html>

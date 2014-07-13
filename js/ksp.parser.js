@@ -359,13 +359,14 @@ kspUniverse.prototype.add_body=function(orbitBodyId,ident,planetType,planetBios,
 };
 kspUniverse.prototype.get_rail_rules=function(planetType){
 	var self=this,
-		rules=$.extend(true,{},self.body_rails,{});//must break js 'pass by reference'
+		rails=$.extend(true,{},self.body_rails,{}),//must break js 'pass by reference'
+		has_atmosphere=false;
 
 	if($.inArray(planetType,array_keys(self.body_types))===-1){return false;}
 	//if(!self.is_celestial_body(planetIdent)){return false;}
 
 	///////\\\\\\\\\\PLUGIN HOOK\\\\\\\\/////////
-	var _args={'planetType':planetType,'rules':rules},
+	var _args={'planetType':planetType,'rails':rails,'has_atmosphere':has_atmosphere},
 		key_list=array_keys(_args),
 		_vr='';
 	self.i_callback('pre_get_rail_rules',_args);
@@ -375,40 +376,47 @@ kspUniverse.prototype.get_rail_rules=function(planetType){
 	if(planetType=='asteroid'){
 		//do nothing
 	}else if(planetType=='atm_rocky_liquid'){
-		rules.high_orbit=true;
-		rules.low_orbit=true;
-		rules.high_fly=true;
-		rules.low_fly=true;
-		rules.surface=true;
-		rules.splash=true;
+		rails.high_orbit=true;
+		rails.low_orbit=true;
+		rails.high_fly=true;
+		rails.low_fly=true;
+		rails.surface=true;
+		rails.splash=true;
+		//non-rail rule
+		has_atmosphere=true;
 	}else if(planetType=='atm_rocky'){
-		rules.high_orbit=true;
-		rules.low_orbit=true;
-		rules.high_fly=true;
-		rules.low_fly=true;
-		rules.surface=true;
+		rails.high_orbit=true;
+		rails.low_orbit=true;
+		rails.high_fly=true;
+		rails.low_fly=true;
+		rails.surface=true;
+		//non-rail rule
+		has_atmosphere=true;
 	}else if(planetType=='rocky'){
-		rules.high_orbit=true;
-		rules.low_orbit=true;
-		rules.surface=true;
+		rails.high_orbit=true;
+		rails.low_orbit=true;
+		rails.surface=true;
 	}else if(planetType=='gas'){
-		rules.high_orbit=true;
-		rules.low_orbit=true;
-		rules.high_fly=true;
-		rules.low_fly=true;
+		rails.high_orbit=true;
+		rails.low_orbit=true;
+		rails.high_fly=true;
+		rails.low_fly=true;
+		rails.surface=true;
+		//non-rail rule
+		has_atmosphere=true;
 	}else{//planetType=='star'
-		rules.high_orbit=true;
-		rules.low_orbit=true;
+		rails.high_orbit=true;
+		rails.low_orbit=true;
 	}
 
 	///////\\\\\\\\\\PLUGIN HOOK\\\\\\\\/////////
-	var _args={'planetType':planetType,'rules':rules},
+	var _args={'planetType':planetType,'rails':rails,'has_atmosphere':has_atmosphere},
 		key_list=array_keys(_args),
 		_vr='';
 	self.i_callback('get_rail_rules',_args);
 	for(var kl=0;kl<key_list.length;kl++){_vr=key_list[kl];eval(_vr+' = _args.'+_vr+';');}delete key_list;delete _vr;//populate into this scope
 	///////\\\\\\\\\\END PLUGIN HOOK\\\\\\\\/////////
-	return rules;
+	return {'rails':rails,'has_atmosphere':has_atmosphere};
 };
 kspUniverse.prototype.is_celestial_body=function(ident,foundObjRef){//foundObjRef is a 'push up' pass by reference
 	var self=this,
@@ -429,7 +437,7 @@ function kspSci(kspUniObj){
 	this.sciences_schema={
 		'ident':'',
 		'name':'',
-		'meta':{'ignore_planet_rail':false},
+		'meta':{'ignore_planet_rail':false,'require_atmosphere':false},
 		'rail_context':false,
 		'biome_context':false
 	};
@@ -445,9 +453,9 @@ function kspSci(kspUniObj){
 	biomeMask = 7 -> first 3 added together
 */
 	this.default_sciences=[
-		{'ident':'asteroidSample','name':'Asteroid Surface Sample','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':true,'meta':{'ignore_planet_rail':true}},
+		{'ident':'asteroidSample','name':'Asteroid Surface Sample','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':true},//,'meta':{'ignore_planet_rail':'asteroid'} <- was here but I realized you can't have astroids as places there are more like vessels
 		{'ident':'surfaceSample','name':'Surface Sample','biome_context':{'surface':true,'splash':true},'rail_context':{'splash':true,'surface':true}},
-		{'ident':'evaReport','name':'EVA Report','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':true},
+		{'ident':'evaReport','name':'EVA Report','biome_context':{'low_orbit':true,'low_fly':true,'surface':true,'splash':true},'rail_context':true},
 		{'ident':'crewReport','name':'Crew Report','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':true},
 		{'ident':'mysteryGoo','name':'Goo','biome_context':{'surface':true,'splash':true},'rail_context':true},
 		{'ident':'mobileMaterialsLab','name':'Materials Bay','biome_context':{'surface':true,'splash':true},'rail_context':true},
@@ -588,23 +596,38 @@ kspSci.prototype.get_rail_rules=function(scienceIdent,planetType){
 	rules.biome=boolean_to_context_obj(science_data.biome_context,rules.biome);//expand the values
 
 	//cross reference planetary abilities
-	var planet_rails=self.ksp_uni_obj.get_rail_rules(planetType);
-/*console.log('planet_rails',planet_rails,"\n",
+	var planet=self.ksp_uni_obj.get_rail_rules(planetType);
+/*console.log('planet',planet,"\n",
 	'rules.rail',$.extend(true,{},rules.rail),"\n",
 	'rules.biome',$.extend(true,{},rules.biome),"\n");*/
-	for(var pr in planet_rails){
-		if(bdcheck_key(planet_rails,pr)){
-			var line_rule={'planet':planet_rails[pr],'rail':rules.rail[pr],'biome':rules.biome[pr]};
+	for(var pr in planet.rails){
+		if(bdcheck_key(planet.rails,pr)){
+			var line_rule={'planet_rule':planet.rails[pr],'has_atmosphere':planet.has_atmosphere,'rail':rules.rail[pr],'biome':rules.biome[pr]},
+				has_rail_exception=false,
+				has_atm_exception=false;
 
-			if(line_rule.planet===false && science_data.meta.ignore_planet_rail){
-				line_rule.planet=true;
-			}else if(line_rule.planet===false){//no rail no experiment! unless there is an exception specifically listed (above)
+			if(science_data.meta.ignore_planet_rail==planetType || science_data.meta.ignore_planet_rail==true){has_rail_exception=true;}
+			else if(science_data.meta.ignore_planet_rail instanceof Array && $.inArray(planetType, science_data.meta.ignore_planet_rail)!==-1){has_rail_exception=true;}
+
+			
+			if(science_data.meta.require_atmosphere==pr || science_data.meta.require_atmosphere==true){has_atm_exception=true;}
+			else if(science_data.meta.require_atmosphere instanceof Array && $.inArray(pr,science_data.meta.require_atmosphere)!==-1){has_atm_exception=true;}
+			if(pr=='high_fly' || pr=='low_fly'){has_atm_exception=true;}//you can only fly if there is an atmosphere!
+
+
+			if(line_rule.planet_rule===false && has_rail_exception===true){
+				line_rule.planet_rule=true;
+			}else if(line_rule.planet_rule===false){//no rail no experiment! unless there is an exception specifically listed (above)
 				line_rule.rail=false;
 				line_rule.biome=false;
 			}
 			
 			//apply scientific dependancies!
-			if(rules.rail[pr]===false){//no scientific rail... no biome!
+			if(line_rule.rail===false){//no scientific rail... no biome!
+				line_rule.biome=false;}
+			if(line_rule.has_atmosphere===false && has_atm_exception){//atmosphere required!
+//if(scienceIdent=='asteroidSample'){console.log('atm except',pr);}
+				line_rule.rail=false;
 				line_rule.biome=false;}
 			///////\\\\\\\\\\PLUGIN HOOK\\\\\\\\/////////
 			var _args={'planetType':planetType,'scienceIdent':scienceIdent,'rules':rules,'science_data':science_data,'line_rule':line_rule},
@@ -627,8 +650,8 @@ kspSci.prototype.get_rail_rules=function(scienceIdent,planetType){
 	self.i_callback('get_rail_rules',_args);
 	for(var kl=0;kl<key_list.length;kl++){_vr=key_list[kl];eval(_vr+' = _args.'+_vr+';');}delete key_list;delete _vr;//populate into this scope
 	///////\\\\\\\\\\END PLUGIN HOOK\\\\\\\\/////////
-//console.log('rules: rail ',rules.rail,'biome',rules.biome);
-	return rules;
+console.log(scienceIdent,'rules: rail ',rules.rail,'biome',rules.biome);
+	//return rules;
 };
 kspSci.prototype.is_science=function(ident,foundObjRef){//foundObjRef is a 'push up' pass by reference
 	var self=this,
