@@ -179,18 +179,18 @@ function inObject(valIn,objectIn){
 	}
 	return -1;
 }
-function array_object_search(arrIn,keyIn,valIn){
+function array_object_search(arrIn,keyIn,valIn){//if keyIn is an object it'll try reduce itself until it matches the key structure found
 	if(typeof(arrIn)!='object' || !arrIn instanceof Array){return [];}
 	var output=[],
 		key_index=(typeof(keyIn)=='object'?array_keys(keyIn):[]);
 	for(var ai=0;ai<arrIn.length;ai++){
-		if(typeof(keyIn)!='object'){
+		if(typeof(keyIn)!='object'){//not an object! Not a problem! Just do!
 			if(bdcheck_key(arrIn[ai],keyIn)){
 				if(arrIn[ai][keyIn]===valIn){output.push(arrIn[ai]);}
 			}
-		}else{
+		}else{//sifting down through the provided key
 			for(var ki=0;ki<key_index.length;ki++){
-				var is_reduced=(typeof(keyIn[key_index[ki]])=='object'?false:true),//keyIn[key_index[ki]]
+				var is_reduced=(typeof(keyIn[key_index[ki]])=='object'?false:true),//did we get reduced to a scalar value?  Basically anything but an object.  We might want a function!
 					tmp=array_object_search([ (is_reduced?arrIn[ai]:arrIn[ai][ (key_index[ki]) ]) ],(is_reduced?key_index[ki]:keyIn[key_index[ki]]),valIn);
 				if(tmp.length>0){output.push(arrIn[ai]);}
 			}
@@ -198,9 +198,15 @@ function array_object_search(arrIn,keyIn,valIn){
 	}
 	return output;
 }
+//this is a weird function. Will destroy the array index!
+//arrIn Array being evaluted.  Should contain an array like [{'foo': ..., 'bar': ....},{'foo': ..., 'bar': ....}]
+//whiteListIn Object with keys {'foo': ..., 'bar': ....}
+//keyIn String of the key we're specifically looking for
+//if the iteration of 'arrIn' is found with the 'keyIn' we want; 
 function del_non_whitelisted_shift_to_whitelist_vals(arrIn,whiteListIn,keyIn){//delete values not found. Convert values to the key that is found
 	var del_key=[],
 		arr_out=[];//break pass by reference
+console.log('b4 '+keyIn+' '+'flatten_array(whiteListIn,keyIn)',whiteListIn,"\n",'After',flatten_array(whiteListIn,keyIn));
 	for(var br=0;br<arrIn.length;br++){
 		var seek=inObject(arrIn[br],flatten_array(whiteListIn,keyIn));//can we convert?
 		if(seek!==-1){//its a group rail or unknown rail

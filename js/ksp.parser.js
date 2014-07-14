@@ -258,28 +258,28 @@ function kspUniverse(){
 	};
 	this.default_bodies=[
 		{'ident':'Sun','name':'Kerbold','orbiting_body':false,'body_type':'star'},
-		{
+		/*{
 			'ident':'Kerbin',
 			'name':'Kerbin',
 			'orbiting_body':'Sun',
 			'body_type':'atm_rocky_liquid',
 			'biomes':['Grasslands','Highlands','Mountains','Deserts','Badlands','Tundra','IceCaps','Water','Shores','KSC','LaunchPad','Runway']
 		},
-			/*{
+			{
 				'ident':'Mun',
 				'name':'Mun',
 				'orbiting_body':'Kerbin',
 				'body_type':'rocky',
 				'biomes':['NorthernBasin','HighlandCraters','Highlands','MidlandCraters','Midlands','Canyons','EastCrater','EastFarsideCrater',
 					'FarsideCrater','NorthwestCrater','SouthwestCrater','TwinCraters','PolarCrater','PolarLowlands','Poles']
-			},*/
+			},
 			{
 				'ident':'Minmus',
 				'name':'Minmus',
 				'orbiting_body':'Kerbin',
 				'body_type':'rocky',
 				'biomes':['Highlands','Midlands','Lowlands','Slopes','LesserFlats','Flats','GreatFlats','GreaterFlats','Poles']
-			},
+			},*/
 		{'ident':'Moho','name':'Moho','orbiting_body':'Sun','body_type':'rocky'},
 		{'ident':'Eve','name':'Eve','orbiting_body':'Sun','body_type':'atm_rocky'},
 			{'ident':'Gilly','name':'Gilly','orbiting_body':'Eve','body_type':'rocky'},
@@ -470,7 +470,7 @@ function kspSci(kspUniObj){
 	this.sciences_schema={
 		'ident':'',
 		'name':'',
-		'meta':{'ignore_planet_rail':false,'require_atmosphere':false,'rails_as_groups':false},
+		'meta':{'ignore_planet_rail':false,'require_atmosphere':false,'rails_as_groups':false},//'ignore_planet_rail':false is dead.  Left for reference
 		'rail_context':false,
 		'biome_context':false
 	};
@@ -514,7 +514,7 @@ kspSci.prototype.init=function(){//kspSci.init fires then kspUniverse.init
 	var self=this;//console.log('-kspSci init-',this.plugin);
 	for(var b=0;b<self.default_sciences.length;b++){
 		var new_line=$.extend(true,{},self.sciences_schema,self.default_sciences[b]);
-		self.add_science(new_line.ident, new_line.biome_context, new_line.rail_context, $.extend(true,{},new_line.meta,{'name':new_line.name}));
+		self.add_science(new_line.ident, new_line.biome_context, new_line.rail_context, $.extend(true,{},new_line.meta,{'name':new_line.name}));//adding name into the meta due to how I arrange the defaults
 	}
 };
 kspSci.prototype.i_callback=function(hookIn,argsIn){//internal callback - pluginable hooks
@@ -783,4 +783,57 @@ if($.inArray(sciIdIn,testing_arr)!==-1){
 		};
 	}
 	return false;
+};
+kspSci.prototype.guess_body_type_from_sci=function(sciArrIn){//needs a array of objects.  expected parsed extracted objects.  {'rail'://the extraced rail name aka SrfLanded, 'science_ident'://the extracted science id} <- required objects keys
+	var self=this,
+		sci_atm={//science with atmosphere
+		'atm':array_object_search(self.sciences,{'meta':{'require_atmosphere':true}},true,true),
+		//'fly_low_biome':array_object_search(self.sciences,{'biome_context':{'low_fly':true}},true),//if the rail is true the biome doesn't apply
+		//'fly_high_biome':array_object_search(self.sciences,{'biome_context':{'high_fly':true}},true),//if the rail is true the biome doesn't apply
+		'fly_low_rail':array_object_search(self.sciences,{'rail_context':{'low_fly':true}},true),
+		'fly_high_rail':array_object_search(self.sciences,{'rail_context':{'high_fly':true}},true)
+	},
+	sci_lqd=array_object_search(self.sciences,{'rail_context':{'splash':true}},true);
+	//build a profile for the planet
+	var this_body_sci=sciArrIn,//all the found science for this body
+		this_body_rails=$.unique(flatten_array(this_body_sci,'rail')),
+		has_obj={
+			'found_rails':[],
+			'atm':false,//atmosphere
+			'lqd':false//liquid
+		},
+		body_type=false;
+
+	this_body_rails=del_non_whitelisted_shift_to_whitelist_vals(this_body_rails,self.ksp_uni_obj.body_rails,'ident');//the list of rail_idents found! (non-group ids)
+	has_obj.found_rails=has_obj.found_rails.concat(this_body_rails);
+	delete this_body_rails;
+	
+	var flat_sci=flatten_array(this_body_sci,'science_ident');
+	for(var at=0;at<sci_atm.atm.length;at++){if($.inArray(sci_atm.atm[at].ident,flat_sci)!==-1){has_obj.atm=true;break;}}
+	for(var at=0;at<sci_atm.fly_low_rail.length;at++){if($.inArray(sci_atm.fly_low_rail[at].ident,flat_sci)!==-1){has_obj.atm=true;break;}}
+	for(var at=0;at<sci_atm.fly_high_rail.length;at++){if($.inArray(sci_atm.fly_high_rail[at].ident,flat_sci)!==-1){has_obj.atm=true;break;}}
+	for(var at=0;at<sci_lqd.length;at++){if($.inArray(sci_lqd[at].ident,flat_sci)!==-1){has_obj.lqd=true;break;}}
+
+	if(has_obj.found_rails.length==3 && $.inArray('surface',has_obj.found_rails)!==-1 && $.inArray('low_orbit',has_obj.found_rails)!==-1 && $.inArray('high_orbit',has_obj.found_rails)!==-1){//if only 3 rails found surface, low_orbit, high_orbit
+		body_type='rocky';
+	}else if(has_obj.lqd && (has_obj.lqd || has_obj.atm)){//if atmosphere and splash
+		body_type='atm_rocky_liquid';
+	}else if((!has_obj.lqd) && (has_obj.lqd || has_obj.atm)){//if atmosphere and surface -> since gas planets 'can' have a surface it can be hard to differentiate - We'll do best guess since body type isn't that important
+		if($.inArray('surface',has_obj.found_rails)!==-1){
+			body_type='atm_rocky';}
+		else{
+			body_type='gas';}
+	}else if(has_obj.found_rails.length==2  && $.inArray('low_orbit',has_obj.found_rails)!==-1 && $.inArray('high_orbit',has_obj.found_rails)!==-1){//starts have only 2 rails
+		body_type='star';
+	}else{//last chance asteroid or maybe a body
+		body_type='asteroid';//assume asteroid won't hurt
+		if(has_obj.found_rails.length>1){
+			if($.inArray('surface',has_obj.found_rails)!==-1){//well its probably rocky
+				body_type='rocky';
+			}else if(($.inArray('low_orbit',has_obj.found_rails)!==-1 || $.inArray('high_orbit',has_obj.found_rails)!==-1) && has_obj.found_rails.length==1){//probably a star
+				body_type='star';
+			}
+		}
+	}
+	return body_type;
 };
