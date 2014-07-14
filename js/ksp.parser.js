@@ -258,7 +258,7 @@ function kspUniverse(){
 	};
 	this.default_bodies=[
 		{'ident':'Sun','name':'Kerbold','orbiting_body':false,'body_type':'star'},
-		/*{
+		{
 			'ident':'Kerbin',
 			'name':'Kerbin',
 			'orbiting_body':'Sun',
@@ -279,7 +279,7 @@ function kspUniverse(){
 				'orbiting_body':'Kerbin',
 				'body_type':'rocky',
 				'biomes':['Highlands','Midlands','Lowlands','Slopes','LesserFlats','Flats','GreatFlats','GreaterFlats','Poles']
-			},*/
+			},/**/
 		{'ident':'Moho','name':'Moho','orbiting_body':'Sun','body_type':'rocky'},
 		{'ident':'Eve','name':'Eve','orbiting_body':'Sun','body_type':'atm_rocky'},
 			{'ident':'Gilly','name':'Gilly','orbiting_body':'Eve','body_type':'rocky'},
@@ -486,15 +486,15 @@ function kspSci(kspUniObj){
 	biomeMask = 7 -> first 3 added together
 */
 	this.default_sciences=[
-		{'ident':'recovery','name':'Recovery of a Vessel','biome_context':false,'rail_context':true,'meta':{'rails_as_groups':true}},//rails as groups says to ignore the rails labels and use the group labels.  This is just a hack for recovery
-		{'ident':'asteroidSample','name':'Asteroid Surface Sample','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':true},//,'meta':{'ignore_planet_rail':'asteroid'} <- was here but I realized you can't have astroids as places there are more like vessels
+		/*{'ident':'recovery','name':'Recovery of a Vessel','biome_context':false,'rail_context':true,'meta':{'rails_as_groups':true}},*///rails as groups says to ignore the rails labels and use the group labels.  This is just a hack for recovery
+		/*{'ident':'asteroidSample','name':'Asteroid Surface Sample','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':true},*///,'meta':{'ignore_planet_rail':'asteroid'} <- was here but I realized you can't have astroids as places there are more like vessels
 		{'ident':'surfaceSample','name':'Surface Sample','biome_context':{'surface':true,'splash':true},'rail_context':{'splash':true,'surface':true}},
 		{'ident':'evaReport','name':'EVA Report','biome_context':{'low_orbit':true,'low_fly':true,'surface':true,'splash':true},'rail_context':true},
 		{'ident':'crewReport','name':'Crew Report','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':true},
 		{'ident':'mysteryGoo','name':'Goo','biome_context':{'surface':true,'splash':true},'rail_context':true},
 		{'ident':'mobileMaterialsLab','name':'Materials Bay','biome_context':{'surface':true,'splash':true},'rail_context':true},
 		{'ident':'temperatureScan','name':'Temperature Scan','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':{'low_orbit':true,'high_fly':true,'low_fly':true,'splash':true,'surface':true}},
-		{'ident':'barometerScan','name':'Barometer Scan','biome_context':{'surface':true,'splash':true},'rail_context':{'high_fly':true,'low_fly':true,'splash':true,'surface':true},'meta':{'require_atmosphere':true}},
+		/*{'ident':'barometerScan','name':'Barometer Scan','biome_context':{'surface':true,'splash':true},'rail_context':{'high_fly':true,'low_fly':true,'splash':true,'surface':true},'meta':{'require_atmosphere':true}},*/
 		{'ident':'gravityScan','name':'Gravioli Particles','biome_context':{'high_orbit':true,'low_orbit':true,'surface':true,'splash':true},'rail_context':{'high_orbit':true,'low_orbit':true,'splash':true,'surface':true}},
 		{'ident':'seismicScan','name':'Seismic Scan','biome_context':{'surface':true},'rail_context':{'surface':true}},
 		{'ident':'atmosphereAnalysis','name':'Sensor Array Computing Nose Cone','biome_context':{'high_fly':true,'low_fly':true,'surface':true},'rail_context':{'high_fly':true,'low_fly':true,'surface':true},'meta':{'require_atmosphere':true}}
@@ -739,6 +739,7 @@ kspSci.prototype.parse_sci_id=function(sciIdIn){
 	rail_result=rail_pat.exec(test_str);
 /*
 var testing_arr=['crewReport@KerbinSrfLandedLaunchPad','crewReport@KerbinFlyingLowShores','crewReport@KerbinSrfSplashedWater','evaReport@KerbinInSpaceLowHighlands'];
+var testing_arr=['evaReport@MunInSpaceLowHighlands'];
 if($.inArray(sciIdIn,testing_arr)!==-1){
 	console.log('rail_result',rail_result);}*/
 
@@ -757,7 +758,7 @@ if($.inArray(sciIdIn,testing_arr)!==-1){
 			biome=found_str[0].match[5],
 			sci_data={};
 /*if($.inArray(sciIdIn,testing_arr)!==-1){
-	console.log('test_str',test_str,'found_str[0]',found_str[0],'biome',biome);}*/
+	console.log('test_str',test_str,'found_str[0].match',found_str[0].match,'biome',biome);}*/
 
 		var t_seek={'rail':inObject(rail,flatten_object(self.ksp_uni_obj.body_rails,'ident')),'group':inObject(rail,flatten_object(self.ksp_uni_obj.body_rails,'group_ident'))};
 
@@ -766,20 +767,21 @@ if($.inArray(sciIdIn,testing_arr)!==-1){
 		else{try{console.warn('rail ',rail,' not found');}catch(e){}}
 
 		if(self.is_science(science_ident,sci_data)){//known science <- this is a patch for a 'FlyBy' is FlyBy Stock?
+			var biome_compact=object_group_val(sci_data.biome_context);
 			//if(sci_data.biome_context===false){}
-			if(sci_data.meta.rails_as_groups===true && sci_data.biome_context===false){//basically if its recovery?
+			if(sci_data.meta.rails_as_groups===true && (biome_compact.length==1 && biome_compact[0]===false)){//basically if its recovery?
 				rail=rail+found_str[0].match[5];//anything after the rail (which is also match[4]) is the rail.  Recovery has special rules.  Its not even in the science file
 				biome='';//biome should not be relavent
 			}
 		}
 		
 		return {
-				'science_ident':science_ident,
-				'planet_ident':planet_ident,
-				'biome_ident':(basic_check(biome)?biome:false),
-				'rail_ident':rail_ident,
-				'rail':rail,
-				'meta':{'asteroid_ident':(basic_check(asteroid_ident)?asteroid_ident:false)}
+			'science_ident':science_ident,
+			'planet_ident':planet_ident,
+			'biome_ident':(basic_check(biome)?biome:false),
+			'rail_ident':rail_ident,
+			'rail':rail,
+			'meta':{'asteroid_ident':(basic_check(asteroid_ident)?asteroid_ident:false)}
 		};
 	}
 	return false;
@@ -804,7 +806,7 @@ kspSci.prototype.guess_body_type_from_sci=function(sciArrIn){//needs a array of 
 		},
 		body_type=false;
 
-	this_body_rails=del_non_whitelisted_shift_to_whitelist_vals(this_body_rails,self.ksp_uni_obj.body_rails,'ident');//the list of rail_idents found! (non-group ids)
+	this_body_rails=reduce_array_to_common_alias_values(this_body_rails,self.ksp_uni_obj.body_rails,'ident');//the list of rail_idents found! (non-group ids)
 	has_obj.found_rails=has_obj.found_rails.concat(this_body_rails);
 	delete this_body_rails;
 	

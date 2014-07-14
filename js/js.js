@@ -198,17 +198,30 @@ function array_object_search(arrIn,keyIn,valIn){//if keyIn is an object it'll tr
 	}
 	return output;
 }
+
+function object_group_val(objIn){
+	var found_vals=[];
+	for(var ov in objIn){
+		if(bdcheck_key(objIn,ov)){
+			if($.inArray(objIn[ov],found_vals)===-1){
+				found_vals.push(objIn[ov]);}}
+	}
+	return found_vals;
+}
 //this is a weird function. Will destroy the array index!
-//arrIn Array being evaluted.  Should contain an array like [{'foo': ..., 'bar': ....},{'foo': ..., 'bar': ....}]
-//whiteListIn Object with keys {'foo': ..., 'bar': ....}
-//keyIn String of the key we're specifically looking for
-//if the iteration of 'arrIn' is found with the 'keyIn' we want; 
-function del_non_whitelisted_shift_to_whitelist_vals(arrIn,whiteListIn,keyIn){//delete values not found. Convert values to the key that is found
-	var del_key=[],
-		arr_out=[];//break pass by reference
-console.log('b4 '+keyIn+' '+'flatten_array(whiteListIn,keyIn)',whiteListIn,"\n",'After',flatten_array(whiteListIn,keyIn));
+//helpful for converting aliases to standard ids
+// - arrIn Array being evaluted.  Should contain an array like [{'foo': ..., 'bar': ....},{'foo': ..., 'bar': ....}]
+// - aliasListIn Object with keys {'foo': ..., 'bar': ....}
+// - commonKeyIn String of the key we're specifically looking for
+// - if the iteration-value of 'arrIn' is found within the 'aliasListIn' index-key of 'commonKeyIn' we want to return just that whitelist value
+function reduce_array_to_common_alias_values(arrIn,aliasListIn,commonKeyIn){//delete values not found. Convert values to the key that is found
+	var arr_out=[],
+		flat_white=flatten_object(aliasListIn,commonKeyIn);
+
+//console.log('b4 '+commonKeyIn+' '+'inObject('+arrIn[0]+',',aliasListIn,')',"\n",'After',inObject(arrIn[0],flat_white),flat_white);
 	for(var br=0;br<arrIn.length;br++){
-		var seek=inObject(arrIn[br],flatten_array(whiteListIn,keyIn));//can we convert?
+		var seek=inObject(arrIn[br],flat_white);//can we convert?
+//console.log('-',arrIn[br],flat_white,seek);
 		if(seek!==-1){//its a group rail or unknown rail
 			arr_out.push(seek);}//convert it!
 	}
