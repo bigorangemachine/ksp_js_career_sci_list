@@ -265,14 +265,14 @@ function kspUniverse(){
 			'body_type':'atm_rocky_liquid',
 			'biomes':['Grasslands','Highlands','Mountains','Deserts','Badlands','Tundra','IceCaps','Water','Shores','KSC','LaunchPad','Runway']
 		},
-			{
+			/*{
 				'ident':'Mun',
 				'name':'Mun',
 				'orbiting_body':'Kerbin',
 				'body_type':'rocky',
 				'biomes':['NorthernBasin','HighlandCraters','Highlands','MidlandCraters','Midlands','Canyons','EastCrater','EastFarsideCrater',
 					'FarsideCrater','NorthwestCrater','SouthwestCrater','TwinCraters','PolarCrater','PolarLowlands','Poles']
-			},
+			},*/
 			{
 				'ident':'Minmus',
 				'name':'Minmus',
@@ -486,7 +486,7 @@ function kspSci(kspUniObj){
 	biomeMask = 7 -> first 3 added together
 */
 	this.default_sciences=[
-		{'ident':'recovery','name':'Recovery of a Vessel','biome_context':false,'rail_context':true,'meta':{'rails_as_groups':true}},
+		{'ident':'recovery','name':'Recovery of a Vessel','biome_context':false,'rail_context':true,'meta':{'rails_as_groups':true}},//rails as groups says to ignore the rails labels and use the group labels.  This is just a hack for recovery
 		{'ident':'asteroidSample','name':'Asteroid Surface Sample','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':true},//,'meta':{'ignore_planet_rail':'asteroid'} <- was here but I realized you can't have astroids as places there are more like vessels
 		{'ident':'surfaceSample','name':'Surface Sample','biome_context':{'surface':true,'splash':true},'rail_context':{'splash':true,'surface':true}},
 		{'ident':'evaReport','name':'EVA Report','biome_context':{'low_orbit':true,'low_fly':true,'surface':true,'splash':true},'rail_context':true},
@@ -564,6 +564,32 @@ kspSci.prototype.add_science=function(ident,biomeObj,railObj,metaObj){
 	else{
 		add_line.rail_context=(typeof(railObj)=='boolean'?railObj:false);}
 
+	var boolean_to_context_obj=function(objIn,objOut){
+		var output={};
+		for(var itm in objOut){//objOut aka science_data.biome_context looping through the defaults basically
+			if(bdcheck_key(objOut,itm)){//key not a prototype!
+				if(typeof(objIn)=='boolean'){//objIn aka science_data.biome_context -> might be boolean - just expand the boolean value into the object index one might be expecting
+					output[itm]=(objIn?true:false);
+//console.log(itm,'bool',objIn,"\n",'output['+itm+']',output[itm]);
+				}else{
+					if(bdcheck_key(objIn,itm)){//were we provided the value from the science rules
+//console.log('objIn['+itm+'](sci rule)',objIn[itm]);
+						output[itm]=(objIn[itm]?true:false);}
+					else{
+//console.log('objOut['+itm+'](default rule)',objOut[itm]);
+						output[itm]=objOut[itm];}//use the default!
+//console.log(itm,'obj!',"\n",'output['+itm+']',output[itm]);
+				}
+			}
+		}
+//console.log('context(science rules)',(typeof(objIn)=='boolean'?objIn:$.extend(true,{},objIn)),'rule(defaults)',(typeof(objOut)=='boolean'?objOut:$.extend(true,{},objOut)),'output',(typeof(output)=='boolean'?output:$.extend(true,{},output)));
+		return output;
+	};
+
+	add_line.rail_context=boolean_to_context_obj(add_line.rail_context, $.extend(true,{},self.ksp_uni_obj.body_rails_schema,{}));//expand the values
+//console.log('==========================================');
+	add_line.biome_context=boolean_to_context_obj(add_line.biome_context, $.extend(true,{},self.ksp_uni_obj.body_rails_schema,{}));//expand the values
+
 	///////\\\\\\\\\\PLUGIN HOOK\\\\\\\\/////////
 	var _args={'add_line':add_line},
 		key_list=array_keys(_args),
@@ -590,10 +616,10 @@ kspSci.prototype.get_rail_rules=function(scienceIdent,planetType){
 
 	if($.inArray(planetType,array_keys(self.ksp_uni_obj.body_types_schema))===-1){return false;}//valid body type
 	if(!self.is_science(scienceIdent,science_data)){return false;}//valid science id
-
-	var rules={ //default values.  Should all be false!
-		'biome':$.extend(true,{},self.ksp_uni_obj.body_rails_schema,{}),//must break js 'pass by reference'
-		'rail':$.extend(true,{},self.ksp_uni_obj.body_rails_schema,{}) //must break js 'pass by reference'
+ 
+	var rules={//this was here before when we expanded the contexts from boolean into the object.  however I moved it to the add phase at it was probably more helpful to keep the tree expanded
+		'biome':$.extend(true,{},science_data.biome_context,{}),//must break js 'pass by reference'
+		'rail':$.extend(true,{},science_data.rail_context,{}) //must break js 'pass by reference'
 	};
 
 	///////\\\\\\\\\\PLUGIN HOOK\\\\\\\\/////////
@@ -603,40 +629,15 @@ kspSci.prototype.get_rail_rules=function(scienceIdent,planetType){
 	self.i_callback('pre_get_rail_rules',_args);
 	for(var kl=0;kl<key_list.length;kl++){_vr=key_list[kl];eval(_vr+' = _args.'+_vr+';');}delete key_list;delete _vr;//populate into this scope
 	///////\\\\\\\\\\END PLUGIN HOOK\\\\\\\\/////////
-	var boolean_to_context_obj=function(objIn,objOut){
-		var output={};
-		for(var itm in objOut){//objOut aka rules.biome looping through the defaults basically
-			if(bdcheck_key(objOut,itm)){//key not a prototype!
-				if(typeof(objIn)=='boolean'){//objIn aka science_data.biome_context -> might be boolean - just expand the boolean value into the object index one might be expecting
-					output[itm]=(objIn?true:false);
-//console.log(itm,'bool',objIn,"\n",'output['+itm+']',output[itm]);
-				}else{
-					if(bdcheck_key(objIn,itm)){//were we provided the value from the science rules
-//console.log('objIn['+itm+'](sci rule)',objIn[itm]);
-						output[itm]=(objIn[itm]?true:false);}
-					else{
-//console.log('objOut['+itm+'](default rule)',objOut[itm]);
-						output[itm]=objOut[itm];}//use the default!
-//console.log(itm,'obj!',"\n",'output['+itm+']',output[itm]);
-				}
-			}
-		}
-//console.log('context(science rules)',(typeof(objIn)=='boolean'?objIn:$.extend(true,{},objIn)),'rule(defaults)',(typeof(objOut)=='boolean'?objOut:$.extend(true,{},objOut)),'output',(typeof(output)=='boolean'?output:$.extend(true,{},output)));
-		return output;
-	};
-
-	rules.rail=boolean_to_context_obj(science_data.rail_context,rules.rail);//expand the values
-//console.log('==========================================');
-	rules.biome=boolean_to_context_obj(science_data.biome_context,rules.biome);//expand the values
 
 	//cross reference planetary abilities
 	var planet=self.ksp_uni_obj.get_rail_rules(planetType);
 /*console.log('planet',planet,"\n",
-	'rules.rail',$.extend(true,{},rules.rail),"\n",
-	'rules.biome',$.extend(true,{},rules.biome),"\n");*/
+	'science_data.rail_context',$.extend(true,{},science_data.rail_context),"\n",
+	'science_data.biome_context',$.extend(true,{},science_data.biome_context),"\n");*/
 	for(var pr in planet.rails){
 		if(bdcheck_key(planet.rails,pr)){
-			var line_rule={'planet_rule':planet.rails[pr],'has_atmosphere':planet.has_atmosphere,'rail':rules.rail[pr],'biome':rules.biome[pr]},
+			var line_rule={'planet_rule':planet.rails[pr],'has_atmosphere':planet.has_atmosphere,'rail':science_data.rail_context[pr],'biome':science_data.biome_context[pr]},
 				has_rail_exception=false,
 				has_atm_exception=false;
 
@@ -673,8 +674,8 @@ kspSci.prototype.get_rail_rules=function(scienceIdent,planetType){
 			///////\\\\\\\\\\END PLUGIN HOOK\\\\\\\\/////////
 			
 			//transfer to the return output
-			rules.rail[pr]=line_rule.rail;
-			rules.biome[pr]=line_rule.biome;
+			science_data.rail_context[pr]=line_rule.rail;
+			science_data.biome_context[pr]=line_rule.biome;
 		}
 	}
 
@@ -685,8 +686,8 @@ kspSci.prototype.get_rail_rules=function(scienceIdent,planetType){
 	self.i_callback('get_rail_rules',_args);
 	for(var kl=0;kl<key_list.length;kl++){_vr=key_list[kl];eval(_vr+' = _args.'+_vr+';');}delete key_list;delete _vr;//populate into this scope
 	///////\\\\\\\\\\END PLUGIN HOOK\\\\\\\\/////////
-console.log(scienceIdent,'rules: rail ',rules.rail,'biome',rules.biome);
-	//return rules;
+//console.log(scienceIdent,'rules: rail ',science_data.rail_context,'biome',science_data.biome_context);
+	return rules;
 };
 kspSci.prototype.is_science=function(ident,foundObjRef){//foundObjRef is a 'push up' pass by reference ,doDeug
 	var self=this,

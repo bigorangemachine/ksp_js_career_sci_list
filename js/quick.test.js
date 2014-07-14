@@ -1,5 +1,5 @@
 (function(){
-	console.log(
+/*	console.log(
 kspSciObj.parse_sci_id('recovery@KerbinFlew'),
 kspSciObj.parse_sci_id('crewReport@KerbinSrfLandedLaunchPad'),
 kspSciObj.parse_sci_id('crewReport@KerbinFlyingLowShores'),
@@ -7,7 +7,7 @@ kspSciObj.parse_sci_id('crewReport@KerbinSrfSplashedWater'),
 kspSciObj.parse_sci_id('evaReport@KerbinInSpaceLowHighlands')
 );
 return;
-
+*/
 
 /*
 //quick copy-paste unit test
@@ -21,7 +21,7 @@ for(var kb in kspUniObj.body_types){
 	str=str+"}\n";}
 console.log('var do_test=\''+kb+'\';'+'//'+allkeys+"\n"+str);*/
 //this was out putted to console to do tests
-var do_test='star';//asteroid|atm_rocky|atm_rocky_liquid|rocky|gas|star|
+var do_test='atm_rocky';//asteroid|atm_rocky|atm_rocky_liquid|rocky|gas|star|
 //////////asteroid
 if(do_test=='asteroid'){
 console.log('do_test',do_test);

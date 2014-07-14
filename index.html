@@ -33,7 +33,7 @@ body.hasJS #status.online {background: #0c0;}
 <p>Drag your KSP Save Game</p>
 
 <script type="text/javascript">
-	//alert(:left off: update_status_msg('data_anomaly',{'end':fun_str});.  Readying the Expansion of the indexes to include plugins/mods");
+//alert("left off: update_status_msg('data_anomaly',{'end':fun_str});.  Readying the Expansion of the indexes to include plugins/mods.  Draw table");
 	document.body.className=document.body.className+' hasJS';
 	var loading_stages={
 			'error':'Something seems to have gone wrong',
@@ -102,7 +102,7 @@ kspUniObj.plugin.is_celestial_body=function(packObj){
 					new_props={};
 				if(parsed_attr!==false){
 					page_data.parsed_science[s]={
-						//'num':s,
+						'num':s,
 						'raw_id':page_data.parsed_science[s].raw_id,
 						'text':page_data.parsed_science[s].title,
 						'sci':page_data.parsed_science[s].sci,
@@ -158,12 +158,38 @@ console.log('biome('+page_data.parsed_science[s].biome_ident+')',page_data.parse
 				if(captured_body_ids.length>0){fun_str='Universe';}
 				else if(captured_biome_ids.length>0){fun_str='Planetary Geography';}
 				else if(captured_sci_ids.length>0){fun_str='Rules of Science';}
-				update_status_msg('data_anomaly',{'end':fun_str+
-					' len1: '+captured_sci_ids.length+' len2: '+captured_body_ids.length+' len3: '+captured_biome_ids.length
-				});
+				update_status_msg('data_anomaly',{'end':fun_str});
 				//all data should be considered clean as 
+				var sci_atm={//science with atmosphere
+					'atm':array_object_search(kspSciObj.sciences,{'meta':{'require_atmosphere':true}},true,true),
+					//'fly_low_biome':array_object_search(kspSciObj.sciences,{'biome_context':{'low_fly':true}},true),//if the rail is true the biome doesn't apply
+					//'fly_high_biome':array_object_search(kspSciObj.sciences,{'biome_context':{'high_fly':true}},true),//if the rail is true the biome doesn't apply
+					'fly_low_rail':array_object_search(kspSciObj.sciences,{'rail_context':{'low_fly':true}},true),
+					'fly_high_rail':array_object_search(kspSciObj.sciences,{'rail_context':{'high_fly':true}},true)
+				},
+				sci_lqd=array_object_search(kspSciObj.sciences,{'rail_context':{'splash':true}},true);
+//kspUniObj.body_rails.splash.ident
+
 				for(var bi=0;bi<captured_body_ids.length;bi++){//body_ids
-					kspUniObj.add_body('Sun', captured_body_ids[bi], new_line.body_type, new_line.biomes, {'name':new_line.name});//assume everything orbits the sun ^_^
+console.log('planet_ident',captured_body_ids[bi]);
+					//build a profile for the planet
+					var this_body_sci=array_object_search(page_data.parsed_science,'planet_ident',captured_body_ids[bi])//all the found science for this body
+						this_body_rails=$.unique(flatten_array(this_body_sci,'rail')),
+						has_obj={
+							'found_rails':[],
+							'atm':false,//atmosphere
+							'lqd':false//liquid
+						},
+						body_type='asteroid';//assume asteroid won't hurt
+					this_body_rails=del_non_whitelisted_shift_to_whitelist_vals(this_body_rails,kspUniObj.body_rails,'ident');
+
+					if(this_body_rails.length==3 && $.inArray('surface',this_body_rails)!==-1 && $.inArray('low_orbit',this_body_rails)!==-1 && $.inArray('high_orbit',this_body_rails)!==-1){//if only 3 rails found surface, low_orbit, high_orbit
+						body_type='rocky';}
+					body_type='atm_rocky_liquid';//if atmosphere and splash
+					body_type='gas';body_type='atm_rocky';//if atmosphere and surface
+					body_type='star';//if only 2 rails found low_orbit, high_orbit
+					
+					kspUniObj.add_body((body_type=='star'?false:'Sun'), captured_body_ids[bi], body_type, [], {'name':captured_body_ids[bi]});//assume everything orbits the sun ^_^
 				}
 				for(var bo=0;bo<captured_biome_ids.length;bo++){//biome_ids
 					kspUniObj.add_biome(captured_biome_ids[bo].planet,captured_biome_ids[bo].biome);
@@ -233,7 +259,8 @@ console.log('captured_sci_ids',captured_sci_ids,
 	function on_chunk_found(dataSetIn){
 		var sci_inc=0;
 
-		FPSObj.change_fps(20);//lets speed it up!
+		//FPSObj.change_fps(20);//lets speed it up!
+		FPSObj.change_fps(40);//lets speed it up!
 		//FPSObj.change_fps(1);//lets speed it up!
 		update_status_msg('reviewing_science');
 		var chunk_tick=function(){
@@ -308,6 +335,6 @@ console.log('captured_sci_ids',captured_sci_ids,
 	$(drag_target).on('drop',dodrop);
 </script>
 <!-- quick science grid test -->
-<!--  <script src="js/quick.test.js"></script> -->
+<!-- <script src="js/quick.test.js"></script> -->
 </body>
 </html>

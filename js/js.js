@@ -179,3 +179,32 @@ function inObject(valIn,objectIn){
 	}
 	return -1;
 }
+function array_object_search(arrIn,keyIn,valIn){
+	if(typeof(arrIn)!='object' || !arrIn instanceof Array){return [];}
+	var output=[],
+		key_index=(typeof(keyIn)=='object'?array_keys(keyIn):[]);
+	for(var ai=0;ai<arrIn.length;ai++){
+		if(typeof(keyIn)!='object'){
+			if(bdcheck_key(arrIn[ai],keyIn)){
+				if(arrIn[ai][keyIn]===valIn){output.push(arrIn[ai]);}
+			}
+		}else{
+			for(var ki=0;ki<key_index.length;ki++){
+				var is_reduced=(typeof(keyIn[key_index[ki]])=='object'?false:true),//keyIn[key_index[ki]]
+					tmp=array_object_search([ (is_reduced?arrIn[ai]:arrIn[ai][ (key_index[ki]) ]) ],(is_reduced?key_index[ki]:keyIn[key_index[ki]]),valIn);
+				if(tmp.length>0){output.push(arrIn[ai]);}
+			}
+		}
+	}
+	return output;
+}
+function del_non_whitelisted_shift_to_whitelist_vals(arrIn,whiteListIn,keyIn){//delete values not found. Convert values to the key that is found
+	var del_key=[],
+		arr_out=[];//break pass by reference
+	for(var br=0;br<arrIn.length;br++){
+		var seek=inObject(arrIn[br],flatten_array(whiteListIn,keyIn));//can we convert?
+		if(seek!==-1){//its a group rail or unknown rail
+			arr_out.push(seek);}//convert it!
+	}
+	return arr_out;
+}
