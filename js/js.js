@@ -161,3 +161,69 @@ function flatten_array(arrIn,keySeek){
 	}
 	return output;
 }
+function flatten_object(arrIn,keySeek){
+	if(typeof(keySeek)!='number' && typeof(keySeek)!='boolean' && typeof(keySeek)!='string'){return {};}
+	var output={};
+	for(var ai in arrIn){
+		if(bdcheck_key(arrIn[ai],keySeek)){//valid key check
+			output[ai]=arrIn[ai][keySeek];
+		}
+	}
+	return output;
+}
+function inObject(valIn,objectIn){
+	for(var oKey in objectIn){
+		if(bdcheck_key(objectIn,oKey)){
+			if(objectIn[oKey]===valIn){return oKey;}
+		}
+	}
+	return -1;
+}
+function array_object_search(arrIn,keyIn,valIn){//if keyIn is an object it'll try reduce itself until it matches the key structure found
+	if(typeof(arrIn)!='object' || !arrIn instanceof Array){return [];}
+	var output=[],
+		key_index=(typeof(keyIn)=='object'?array_keys(keyIn):[]);
+	for(var ai=0;ai<arrIn.length;ai++){
+		if(typeof(keyIn)!='object'){//not an object! Not a problem! Just do!
+			if(bdcheck_key(arrIn[ai],keyIn)){
+				if(arrIn[ai][keyIn]===valIn){output.push(arrIn[ai]);}
+			}
+		}else{//sifting down through the provided key
+			for(var ki=0;ki<key_index.length;ki++){
+				var is_reduced=(typeof(keyIn[key_index[ki]])=='object'?false:true),//did we get reduced to a scalar value?  Basically anything but an object.  We might want a function!
+					tmp=array_object_search([ (is_reduced?arrIn[ai]:arrIn[ai][ (key_index[ki]) ]) ],(is_reduced?key_index[ki]:keyIn[key_index[ki]]),valIn);
+				if(tmp.length>0){output.push(arrIn[ai]);}
+			}
+		}
+	}
+	return output;
+}
+
+function object_group_val(objIn){
+	var found_vals=[];
+	for(var ov in objIn){
+		if(bdcheck_key(objIn,ov)){
+			if($.inArray(objIn[ov],found_vals)===-1){
+				found_vals.push(objIn[ov]);}}
+	}
+	return found_vals;
+}
+//this is a weird function. Will destroy the array index!
+//helpful for converting aliases to standard ids
+// - arrIn Array being evaluted.  Should contain an array like [{'foo': ..., 'bar': ....},{'foo': ..., 'bar': ....}]
+// - aliasListIn Object with keys {'foo': ..., 'bar': ....}
+// - commonKeyIn String of the key we're specifically looking for
+// - if the iteration-value of 'arrIn' is found within the 'aliasListIn' index-key of 'commonKeyIn' we want to return just that whitelist value
+function reduce_array_to_common_alias_values(arrIn,aliasListIn,commonKeyIn){//delete values not found. Convert values to the key that is found
+	var arr_out=[],
+		flat_white=flatten_object(aliasListIn,commonKeyIn);
+
+//console.log('b4 '+commonKeyIn+' '+'inObject('+arrIn[0]+',',aliasListIn,')',"\n",'After',inObject(arrIn[0],flat_white),flat_white);
+	for(var br=0;br<arrIn.length;br++){
+		var seek=inObject(arrIn[br],flat_white);//can we convert?
+//console.log('-',arrIn[br],flat_white,seek);
+		if(seek!==-1){//its a group rail or unknown rail
+			arr_out.push(seek);}//convert it!
+	}
+	return arr_out;
+}

@@ -1,3 +1,14 @@
+(function(){
+/*	console.log(
+kspSciObj.parse_sci_id('recovery@KerbinFlew'),
+kspSciObj.parse_sci_id('crewReport@KerbinSrfLandedLaunchPad'),
+kspSciObj.parse_sci_id('crewReport@KerbinFlyingLowShores'),
+kspSciObj.parse_sci_id('crewReport@KerbinSrfSplashedWater'),
+kspSciObj.parse_sci_id('evaReport@KerbinInSpaceLowHighlands')
+);
+return;
+*/
+
 /*
 //quick copy-paste unit test
 var str='',allkeys='';
@@ -25,6 +36,7 @@ console.log('do_test',do_test);
 	kspSciObj.get_rail_rules('gravityScan','asteroid');
 	kspSciObj.get_rail_rules('seismicScan','asteroid');
 	kspSciObj.get_rail_rules('atmosphereAnalysis','asteroid');
+	kspSciObj.get_rail_rules('recovery','asteroid');
 }
 //////////atm_rocky
 if(do_test=='atm_rocky'){
@@ -40,6 +52,7 @@ console.log('do_test',do_test);
 	kspSciObj.get_rail_rules('gravityScan','atm_rocky');
 	kspSciObj.get_rail_rules('seismicScan','atm_rocky');
 	kspSciObj.get_rail_rules('atmosphereAnalysis','atm_rocky');
+	kspSciObj.get_rail_rules('recovery','atm_rocky');
 }
 //////////atm_rocky_liquid
 if(do_test=='atm_rocky_liquid'){
@@ -55,6 +68,7 @@ console.log('do_test',do_test);
 	kspSciObj.get_rail_rules('gravityScan','atm_rocky_liquid');
 	kspSciObj.get_rail_rules('seismicScan','atm_rocky_liquid');
 	kspSciObj.get_rail_rules('atmosphereAnalysis','atm_rocky_liquid');
+	kspSciObj.get_rail_rules('recovery','atm_rocky_liquid');
 }
 //////////rocky
 if(do_test=='rocky'){
@@ -70,6 +84,7 @@ console.log('do_test',do_test);
 	kspSciObj.get_rail_rules('gravityScan','rocky');
 	kspSciObj.get_rail_rules('seismicScan','rocky');
 	kspSciObj.get_rail_rules('atmosphereAnalysis','rocky');
+	kspSciObj.get_rail_rules('recovery','rocky');
 }
 //////////gas
 if(do_test=='gas'){
@@ -85,6 +100,7 @@ console.log('do_test',do_test);
 	kspSciObj.get_rail_rules('gravityScan','gas');
 	kspSciObj.get_rail_rules('seismicScan','gas');
 	kspSciObj.get_rail_rules('atmosphereAnalysis','gas');
+	kspSciObj.get_rail_rules('recovery','gas');
 }
 //////////star
 if(do_test=='star'){
@@ -100,4 +116,6 @@ console.log('do_test',do_test);
 	kspSciObj.get_rail_rules('gravityScan','star');
 	kspSciObj.get_rail_rules('seismicScan','star');
 	kspSciObj.get_rail_rules('atmosphereAnalysis','star');
+	kspSciObj.get_rail_rules('recovery','star');
 }
+})();
