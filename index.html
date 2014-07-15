@@ -118,9 +118,9 @@ kspUniObj.plugin.is_celestial_body=function(packObj){
 						'meta':(typeof(parsed_attr.meta)=='object'?parsed_attr.meta:false)
 					};
 
-var testing_arr=['crewReport@KerbinSrfLandedLaunchPad','crewReport@KerbinFlyingLowShores','crewReport@KerbinSrfSplashedWater','evaReport@KerbinInSpaceLowHighlands'	];
+/*var testing_arr=['crewReport@KerbinSrfLandedLaunchPad','crewReport@KerbinFlyingLowShores','crewReport@KerbinSrfSplashedWater','evaReport@KerbinInSpaceLowHighlands'	];
 var testing_arr=['evaReport@MunInSpaceLowHighlands'];
-/*if($.inArray(page_data.parsed_science[s].raw_id,testing_arr)!==-1){
+if($.inArray(page_data.parsed_science[s].raw_id,testing_arr)!==-1){
 //console.log('page_data.parsed_science[s]', $.extend(true,{},page_data.parsed_science[s]));
 console.log('parsed_attr', $.extend(true,{},parsed_attr));
 }
@@ -182,7 +182,7 @@ console.log('-------YES',$.inArray(page_data.parsed_science[s].biome_ident,flatt
 				for(var bi=0;bi<captured_body_ids.length;bi++){//body_ids
 					var body_new=captured_body_ids[bi];
 						body_type=kspSciObj.guess_body_type_from_sci(array_object_search(page_data.parsed_science,'planet_ident',body_new));
-console.log('body_new',body_new,'body_type',body_type);
+//console.log('body_new',body_new,'body_type',body_type);
 
 					if(kspUniObj.add_body((body_type=='star'?false:'Sun'), body_new, body_type, [], {'name':body_new})){//assume everything orbits the sun ^_^
 						added_ident.body.push(body_new);}
@@ -195,97 +195,12 @@ console.log('body_new',body_new,'body_type',body_type);
 				if(captured_body_ids.length==0){//add new science last!
 					var did_add=false;
 					for(var si=0;si<captured_sci_ids.length;si++){//sci_ids
-						//kspSciObj.guess_science();
 						var new_sci=captured_sci_ids[si];
-console.log('new_sci',new_sci);
-						var rail_context=$.extend(true,{},kspUniObj.body_rails_schema),
-							biome_context=$.extend(true,{},kspUniObj.body_rails_schema),
-							new_meta=$.extend(true,{},kspSciObj.sciences_schema.meta),//break pass by reference
-							atm_bodies=[],
-							atm_bodies_obj={
-								'rocky':array_object_search(kspUniObj.celestial_bodies,'body_type','atm_rocky'),
-								'lqd':array_object_search(kspUniObj.celestial_bodies,'body_type','atm_rocky_liquid'),
-								'gas':array_object_search(kspUniObj.celestial_bodies,'body_type','gas')
-							},
-//reduce_array_to_common_alias_values(this_body_rails,self.ksp_uni_obj.body_rails,'ident')
-							sci_bodies=array_object_search(page_data.parsed_science,'science_ident',new_sci),//the list of bodies with this science
-							sci_fly_high_rails=array_object_search(sci_bodies,'rail',kspUniObj.body_rails.low_fly.ident),//the list of fly_high rails with this science
-							sci_low_high_rails=array_object_search(sci_bodies,'rail',kspUniObj.body_rails.high_fly.ident),//the list of fly_low rails with this science
-							sci_orbit_high_rails=array_object_search(sci_bodies,'rail',kspUniObj.body_rails.low_orbit.ident),//the list of orbit_high rails with this science
-							sci_low_high_rails=array_object_search(sci_bodies,'rail',kspUniObj.body_rails.high_orbit.ident),//the list of orbit_low rails with this science
-							sci_lqd_bodies=array_object_search(sci_bodies,'body_type','atm_rocky_liquid');//the list of bodies with liquid with this science
-						atm_bodies=atm_bodies.concat((typeof(atm_bodies_obj.rocky)=='object'?atm_bodies_obj.rocky:[]),(typeof(atm_bodies_obj.lqd)=='object'?atm_bodies_obj.lqd:[]),(typeof(atm_bodies_obj.gas)=='object'?atm_bodies_obj.gas:[]));
-						atm_bodies=$.unique(atm_bodies);
-						delete atm_bodies_obj;
+//console.log('new_sci',new_sci);
+						var new_sci_obj=kspSciObj.guess_science(new_sci,page_data.parsed_science);
 						
-console.log('sci_bodies',sci_bodies,'atm_bodies',atm_bodies,'sci_low_high_rails',sci_low_high_rails,'sci_fly_high_rails',sci_fly_high_rails,'sci_orbit_high_rails',sci_orbit_high_rails,'sci_low_high_rails',sci_low_high_rails);
-						var is_atm_only=false,
-							is_lqd_rail=false,
-							found_biomes=[],
-							found_rails=[],
-							raw_rail_count=0,
-							atm_body_count=0,
-							non_atm_body_count=0,
-							lqd_body_count=0,
-							atm_flat=flatten_array(atm_bodies,'ident'),//from the list of planets - AKA YES DEF!
-							sci_fly_high_flat=flatten_array(sci_fly_high_rails,'ident'),//from the list of science - AKA PROBABLY
-							sci_fly_low_flat=flatten_array(sci_low_high_rails,'ident'),//from the list of science
-							sci_orbit_high_flat=flatten_array(sci_orbit_high_rails,'ident'),//from the list of science
-							sci_orbit_low_flat=flatten_array(sci_low_high_rails,'ident'),//from the list of science
-							sci_lqd_flat=flatten_array(sci_lqd_bodies,'ident');//from the list of science
-							
-							
-						for(var sb=0;sb<sci_bodies.length;sb++){
-							if($.inArray(sci_bodies[sb].planet_ident,atm_flat)!==-1){//this planet ident is found, we know it has an atmosphere already!
-								atm_body_count++;}
-							else if($.inArray(sci_bodies[sb].planet_ident,sci_fly_high_flat)!==-1 || $.inArray(sci_bodies[sb].planet_ident,sci_fly_low_flat)!==-1){//this experiment was flown! Has atmosphere!
-								atm_body_count++;}
-							else if($.inArray(sci_bodies[sb].planet_ident,sci_orbit_high_flat)!==-1 || $.inArray(sci_bodies[sb].planet_ident,sci_orbit_low_flat)!==-1){//this experiment was in orbit! Atmosphere not needed
-								non_atm_body_count++;}
-							else if($.inArray(sci_bodies[sb].planet_ident,sci_lqd_flat)!==-1){//this experiment splashed! Has atmosphere! Has Liquid!
-								atm_body_count++;
-								lqd_body_count++;}
-							else{//this planet ident is not found, didn't fly and didn't splash not a planet with an atmosphere
-								non_atm_body_count++;}
-							
-							//ready the rails for further examination
-							if(basic_check(sci_bodies[sb].rail)){
-								raw_rail_count++;
-								found_rails.push(sci_bodies[sb].rail);
-								if(basic_check(sci_bodies[sb].biome_ident)){found_biomes.push(sci_bodies[sb].rail);}
-							}
-						}
-
-						found_biomes=$.unique(found_biomes);
-						found_rails=$.unique(found_rails);
-						found_biomes=reduce_array_to_common_alias_values(found_biomes,kspUniObj.body_rails,'ident');
-						found_rails=reduce_array_to_common_alias_values(found_rails,kspUniObj.body_rails,'ident');//the list of rail_idents found! (non-group ids)
-						
-						for(var fr=0;fr<found_rails.length;fr++){
-							if(bdcheck_key(rail_context,(found_rails[fr]))){
-								if(found_rails[fr]=='splash'){lqd_body_count++;}
-								rail_context[ (found_rails[fr]) ]=true;}
-						}
-						for(var fb=0;fb<found_biomes.length;fb++){
-							if($.inArray(found_biomes[fb],found_rails)!==-1){//its in the rails so we are good!
-								if(bdcheck_key(biome_context,(found_biomes[fb]))){
-									if(found_rails[fr]=='splash'){lqd_body_count++;}
-									biome_context[ (found_biomes[fb]) ]=true;}}
-						}
-
-						if(non_atm_body_count==0 && atm_body_count>0){is_atm_only=true;}//
-						if(lqd_body_count>0){is_lqd_rail=true;}
-						
-
-						//new_meta.ignore_planet_rail=true;//true if ???? attr not used
-						if(is_atm_only){//true if experiement only appears in bodies that have atmospheres
-							new_meta.require_atmosphere=true;}
-						
-						if(found_biomes.length==0 && found_rails.length==0 && raw_rail_count>0){//true if rails are not standard; aka group reference used such as recovery
-							new_meta.rails_as_groups=true;
-						}
-console.log(new_sci, 'biome_context',biome_context, 'rail_context',rail_context, $.extend(true,{},new_meta,{'name':new_sci}));
-						if(kspSciObj.add_science(new_sci, biome_context, rail_context, $.extend(true,{},new_meta,{'name':new_sci}))){
+//console.log(new_sci, 'biome_context',biome_context, 'rail_context',rail_context, $.extend(true,{},new_meta,{'name':new_sci}));
+						if(kspSciObj.add_science(new_sci_obj.sci_id, new_sci_obj.biome_context, new_sci_obj.rail_context, new_sci_obj.meta)){
 							did_add=true;
 							added_ident.sci.push(new_sci);}
 					}
@@ -302,9 +217,10 @@ console.log(new_sci, 'biome_context',biome_context, 'rail_context',rail_context,
 					FPSObj.add_once_callback(report_iter);
 				},2500);
 			}
+/*
 console.log('captured_sci_ids',captured_sci_ids,
 			'captured_body_ids',captured_body_ids,
-			'captured_biome_ids',captured_biome_ids);
+			'captured_biome_ids',captured_biome_ids);*/
 		};
 		FPSObj.add_once_callback(report_iter);
 

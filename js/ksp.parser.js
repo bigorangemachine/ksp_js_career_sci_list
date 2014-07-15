@@ -486,15 +486,15 @@ function kspSci(kspUniObj){
 	biomeMask = 7 -> first 3 added together
 */
 	this.default_sciences=[
-		/*{'ident':'recovery','name':'Recovery of a Vessel','biome_context':false,'rail_context':true,'meta':{'rails_as_groups':true}},*///rails as groups says to ignore the rails labels and use the group labels.  This is just a hack for recovery
-		/*{'ident':'asteroidSample','name':'Asteroid Surface Sample','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':true},*///,'meta':{'ignore_planet_rail':'asteroid'} <- was here but I realized you can't have astroids as places there are more like vessels
+		{'ident':'recovery','name':'Recovery of a Vessel','biome_context':false,'rail_context':true,'meta':{'rails_as_groups':true}},//rails as groups says to ignore the rails labels and use the group labels.  This is just a hack for recovery
+		{'ident':'asteroidSample','name':'Asteroid Surface Sample','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':true},//,'meta':{'ignore_planet_rail':'asteroid'} <- was here but I realized you can't have astroids as places there are more like vessels
 		{'ident':'surfaceSample','name':'Surface Sample','biome_context':{'surface':true,'splash':true},'rail_context':{'splash':true,'surface':true}},
 		{'ident':'evaReport','name':'EVA Report','biome_context':{'low_orbit':true,'low_fly':true,'surface':true,'splash':true},'rail_context':true},
 		{'ident':'crewReport','name':'Crew Report','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':true},
 		{'ident':'mysteryGoo','name':'Goo','biome_context':{'surface':true,'splash':true},'rail_context':true},
 		{'ident':'mobileMaterialsLab','name':'Materials Bay','biome_context':{'surface':true,'splash':true},'rail_context':true},
 		{'ident':'temperatureScan','name':'Temperature Scan','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':{'low_orbit':true,'high_fly':true,'low_fly':true,'splash':true,'surface':true}},
-		/*{'ident':'barometerScan','name':'Barometer Scan','biome_context':{'surface':true,'splash':true},'rail_context':{'high_fly':true,'low_fly':true,'splash':true,'surface':true},'meta':{'require_atmosphere':true}},*/
+		{'ident':'barometerScan','name':'Barometer Scan','biome_context':{'surface':true,'splash':true},'rail_context':{'high_fly':true,'low_fly':true,'splash':true,'surface':true},'meta':{'require_atmosphere':true}},
 		{'ident':'gravityScan','name':'Gravioli Particles','biome_context':{'high_orbit':true,'low_orbit':true,'surface':true,'splash':true},'rail_context':{'high_orbit':true,'low_orbit':true,'splash':true,'surface':true}},
 		{'ident':'seismicScan','name':'Seismic Scan','biome_context':{'surface':true},'rail_context':{'surface':true}},
 		{'ident':'atmosphereAnalysis','name':'Sensor Array Computing Nose Cone','biome_context':{'high_fly':true,'low_fly':true,'surface':true},'rail_context':{'high_fly':true,'low_fly':true,'surface':true},'meta':{'require_atmosphere':true}}
@@ -838,4 +838,79 @@ kspSci.prototype.guess_body_type_from_sci=function(sciArrIn){//needs a array of 
 		}
 	}
 	return body_type;
+};
+kspSci.prototype.guess_science=function(sciId,sciArrIn){
+	var self=this,
+		rail_context=$.extend(true,{},self.ksp_uni_obj.body_rails_schema),
+		biome_context=$.extend(true,{},self.ksp_uni_obj.body_rails_schema),
+		new_meta=$.extend(true,{},self.sciences_schema.meta),//break pass by reference
+		atm_bodies=[],
+		atm_bodies_obj={
+			'rocky':array_object_search(self.ksp_uni_obj.celestial_bodies,'body_type','atm_rocky'),
+			'lqd':array_object_search(self.ksp_uni_obj.celestial_bodies,'body_type','atm_rocky_liquid'),
+			'gas':array_object_search(self.ksp_uni_obj.celestial_bodies,'body_type','gas')
+		},
+		sci_bodies=array_object_search(page_data.parsed_science,'science_ident',sciId);//the list of bodies with this science
+	atm_bodies=atm_bodies.concat((typeof(atm_bodies_obj.rocky)=='object'?atm_bodies_obj.rocky:[]),(typeof(atm_bodies_obj.lqd)=='object'?atm_bodies_obj.lqd:[]),(typeof(atm_bodies_obj.gas)=='object'?atm_bodies_obj.gas:[]));
+	atm_bodies=$.unique(atm_bodies);
+	delete atm_bodies_obj;
+	
+//console.log('sci_bodies',sci_bodies);
+	var is_atm_only=false,
+		is_lqd_rail=false,
+		found_biomes=[],
+		found_rails=[],
+		raw_rail_count=0,
+		atm_body_count=0,
+		non_atm_body_count=0,
+		lqd_body_count=0,
+		atm_flat=flatten_array(atm_bodies,'ident');//from the list of planets - AKA YES DEF!;//from the list of science
+		
+		
+	for(var sb=0;sb<sci_bodies.length;sb++){
+		if(sci_bodies[sb].rail==self.ksp_uni_obj.body_rails.high_orbit.ident || sci_bodies[sb].rail==self.ksp_uni_obj.body_rails.low_orbit.ident){//this experiment orbiting! Not Atmosphere dependant!
+			non_atm_body_count++;}
+		else if(sci_bodies[sb].rail==self.ksp_uni_obj.body_rails.splash.ident){//this experiment splashed! Has atmosphere! Has Liquid!
+			atm_body_count++;
+			lqd_body_count++;}
+		else if($.inArray(sci_bodies[sb].planet_ident,atm_flat)!==-1){//this planet ident is found, we know it has an atmosphere already!
+			atm_body_count++;}
+		else if(sci_bodies[sb].rail==self.ksp_uni_obj.body_rails.high_fly.ident || sci_bodies[sb].rail==self.ksp_uni_obj.body_rails.low_fly.ident){//this experiment was flown! Atmosphere dependant!
+			atm_body_count++;}
+		else{//this planet ident is not found, didn't fly and didn't splash not a planet with an atmosphere
+			non_atm_body_count++;}
+		
+		//ready the rails for further examination
+		if(basic_check(sci_bodies[sb].rail)){
+			raw_rail_count++;
+			found_rails.push(sci_bodies[sb].rail);
+			if(basic_check(sci_bodies[sb].biome_ident)){found_biomes.push(sci_bodies[sb].rail);}
+		}
+	}
+
+	found_biomes=$.unique(found_biomes);
+	found_rails=$.unique(found_rails);
+	found_biomes=reduce_array_to_common_alias_values(found_biomes,self.ksp_uni_obj.body_rails,'ident');
+	found_rails=reduce_array_to_common_alias_values(found_rails,self.ksp_uni_obj.body_rails,'ident');//the list of rail_idents found! (non-group ids)
+	
+	for(var fr=0;fr<found_rails.length;fr++){
+		if(bdcheck_key(rail_context,(found_rails[fr]))){
+			if(found_rails[fr]=='splash'){lqd_body_count++;}
+			rail_context[ (found_rails[fr]) ]=true;}}
+	for(var fb=0;fb<found_biomes.length;fb++){
+		if($.inArray(found_biomes[fb],found_rails)!==-1){//its in the rails so we are good!
+			if(bdcheck_key(biome_context,(found_biomes[fb]))){
+				if(found_rails[fr]=='splash'){lqd_body_count++;}
+				biome_context[ (found_biomes[fb]) ]=true;}}}
+
+	if(non_atm_body_count==0 && atm_body_count>0){is_atm_only=true;}
+	if(lqd_body_count>0){is_lqd_rail=true;}
+
+	//new_meta.ignore_planet_rail=true;//true if ???? attr not used
+	if(is_atm_only){//true if experiement only appears in bodies that have atmospheres
+		new_meta.require_atmosphere=true;}
+	
+	if(found_biomes.length==0 && found_rails.length==0 && raw_rail_count>0){//true if rails are not standard; aka group reference used such as recovery
+		new_meta.rails_as_groups=true;}
+	return {'sci_id':sciId,'biome_context':biome_context,'rail_context':rail_context,'meta':$.extend(true,{},new_meta,{'name':sciId})};
 };
