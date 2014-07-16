@@ -97,8 +97,8 @@ img {
 
 header {
   width:270px;
-  float:left;
-  position:fixed;
+  float:left;/*
+  position:fixed;*/
 }
 
 header ul {
@@ -160,9 +160,12 @@ header ul a strong {
 }
 
 section {
-  width:500px;
+  width:400px;
   float:right;
   padding-bottom:50px;
+  padding-bottom:25px;
+}
+section.wrap {
 }
 
 small {
@@ -177,10 +180,10 @@ hr {
 }
 
 footer {
-  width:270px;
-  float:left;
-  position:fixed;
-  bottom:50px;
+  width:100%;
+  clear:both;
+  display:block;
+  overflow:hidden;
 }
 
 @media print, screen and (max-width: 960px) {
@@ -253,3 +256,7 @@ footer {
     color:#444;
   }
 }
+
+
+.warning-p{margin:0px auto;text-align:center;}
+.warn{color:#cc0000;}
