@@ -4,31 +4,8 @@
 <meta charset=utf-8>
 <title>Kerbal Upload</title>
 <link href='http://fonts.googleapis.com/css?family=Lato:400,700,700italic,400italic,900,900italic' rel='stylesheet' type='text/css'>
+<link href='css/css.css' rel='stylesheet' type='text/css'>
 <style type="text/css">
-html,body{font-family: 'Lato', sans-serif;}
-.wrap{width:400px;margin:0px auto;}
-#no-js-msg,
-#status {
-	padding: 15px 19px;
-	color: #fff;
-	background: #ccc;
-	font-size:16px;
-	line-height:1.6;
-	box-sizing:border-box;
-}
-#status .sml-txt{font-size:70%;line-height:1.3;}
-#no-js-msg{display:block;}
-body.hasJS #status {display:block;}
-body.hasJS #status.fail {background: #c00;}
-body.hasJS #status.success {background: #0c0;}
-body.hasJS #status.offline {background: #c00;}
-body.hasJS #status.online {background: #0c0;}
-
-#holder { border: 10px dashed #ccc; width: 300px; height: 300px; margin: 20px auto;display: table;}
-#holder p{color: #ccc;display: table-cell;font-size: 16px;letter-spacing: 3px;line-height: 1.4;padding: 0 15.4%;text-align: center;text-transform: uppercase;vertical-align: middle;}
-#holder p .dot-hide{opacity:0;}
-#holder.hover { border: 10px dashed #333; }
-#holder.hover p{color:#333;}
 </style>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="js/js.js"></script>
@@ -77,7 +54,7 @@ body.hasJS #status.online {background: #0c0;}
 		current_state_key='ready',
 		drag_target = $('#holder'),
 		msg_obj = $('#status');
-alert('detecting colspan and row span correctly.  Now account for indifferent!');
+
 /*
 tableObj.add_line(['adf',			'asdf',		'adfasdf',	'adfasdfasdf',				'aasdasdasdf','aasdasdaf'],{'row_type':'head'});//table should kurplunk
 tableObj.add_line(['gjfdj43523',	'gdj43523',	'j43523',	tableObj.reserve_merge(),	'j43523','j43523','gdj43523',tableObj.reserve_merge()],{'row_type':'head'});

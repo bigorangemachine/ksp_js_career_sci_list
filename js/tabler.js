@@ -1,18 +1,13 @@
 
-function bdTablerSpan(letterIn,contextObj){
-	this.letter=letterIn;
-	this.tabler_obj=contextObj;
-}
-bdTablerSpan.prototype.get=function(){
-	return this.tabler_obj.reserve_chars[this.letter];
-};
 
 function bdTabler(){
 	this.table_grid=[];
-	this.reserve_chars={
+	this.reserve_chars={/*
+		'tc':'{t(c)}',//temp merge column
+		'tr':'{t(r)}',//temp merge row*/
 		'm':'{m(a)}',//merge all
 		'mc':'{m(c)}',//merge column
-		'mr':'{m(r)}',//merge row
+		'mr':'{m(r)}'//merge row
 	};
 	this.row_count=0;
 	this.col_count=0;
@@ -36,6 +31,9 @@ function bdTabler(){
 		'add_line':false
 	};
 }
+bdTabler.prototype.str_to_tags=function(str){
+	return '<'+str+'></'+str+'>';
+};
 bdTabler.prototype.i_callback=function(hookIn,argsIn){//internal callback - pluginable hooks
 	var self=this,
 		has_callback=false;
@@ -236,11 +234,51 @@ tmp_join_arr=tmp_join_arr+tmp_s.b;
 		for(var rk=0;rk<rowsArrIn[ri].row.length;rk++){
 			if(rowsArrIn[ri].row[rk].constructor==bdTablerSpan){
 				rowsArrIn[ri].row[rk]=rowsArrIn[ri].row[rk].get.apply(rowsArrIn[ri].row[rk]);}}}*/
-
+	var set_col_data=function(doDebug){
+if(doDebug){
+console.log('----c',row+'x'+col,"\n",'is_col_spaning',is_col_spaning,'tmp_col_span',tmp_col_span);}
+			if(this_cell==m_func.r().get()){
+if(doDebug){
+console.log('----c',row+'x'+col,"\n",'is_col_spaning',is_col_spaning,'tmp_col_span',tmp_col_span);}
+				if(is_col_spaning===false){
+					is_col_spaning=col-1;
+					tmp_col_span++;
+					rowsArrIn[row].spans[is_col_spaning].col.first=true;}
+			}else{//do this at end of this for loop!
+				if(is_col_spaning!==false){//compile the row
+console.log('col',col,'tmp_col_span',tmp_col_span);
+					for(var cs=1;cs<tmp_col_span;cs++){
+console.log('-cs',cs,' of ',tmp_col_span,'tmp_col_span-cs',tmp_col_span-cs,'tmp_col_span+cs',tmp_col_span+cs,'col-cs-1',col-cs-1);
+						rowsArrIn[row].spans[col-cs-1].col.span=tmp_col_span-cs;
+					}
+					rowsArrIn[row].spans[is_col_spaning].col.span=tmp_col_span;
+				}
+				tmp_col_span=0;//resets!
+				is_col_spaning=false;
+			}
+			if(is_col_spaning!==false){tmp_col_span++;}
+		},
+		set_row_data=function(doDebug){
+			if(this_cell==m_func.c().get()){
+if(doDebug){
+console.log('----r',row+'x'+col,"\n",'is_row_spaning('+is_row_spaning.length+')',is_row_spaning,'tmp_col_span('+tmp_row_span.length+')',tmp_row_span);}
+				if(is_row_spaning[col]===false){
+					is_row_spaning[col]=row-1;
+					tmp_row_span[col]++;//count the first one.  You can't rowspan 1!
+					rowsArrIn[ (is_row_spaning[col]) ].spans[col].row.first=true;}
+			}else{
+				if(is_row_spaning[col]!==false){
+					rowsArrIn[ (is_row_spaning[col]) ].spans[col].row.span=tmp_row_span[col];}//compile the column
+				
+				tmp_row_span[col]=0;//resets!
+				is_row_spaning[col]=false;
+			}
+			if(is_row_spaning[col]!==false){tmp_row_span[col]++;}
+		};
 	var count=0,
 		count_max=10;
 	count_max=5;
-	do{
+	do{//keep doing until we resolve all the indifferent place holders
 		var span_added=false,
 			priority_merge='col',
 			tmp_row_span=[],
@@ -248,80 +286,71 @@ tmp_join_arr=tmp_join_arr+tmp_s.b;
 			is_row_spaning=[],
 			is_col_spaning=false,
 			all_rows=[];
-var mc=0;
+
 console.log('================================');
 		for(var row=0;row<rowsArrIn.length;row++){//populate all rows
 			var this_row=rowsArrIn[row].row.concat([]);//break live reference
 			rowsArrIn[row].spans=[];
 			for(var col=0;col<this_row.length;col++){
-				rowsArrIn[row].spans.push($.extend(true,{},spans_schema));
-				if(this_row[col].constructor==bdTablerSpan){
-					this_row[col]=this_row[col].get.apply(this_row[col]);}
+				rowsArrIn[row].spans.push($.extend(true,{},spans_schema));//break live reference
+				if(this_row[col].constructor==bdTablerSpan){//detect place holder character
+					this_row[col]=this_row[col].get.apply(this_row[col]);}//replace place holder
 				var this_cell=this_row[col];
 				if(this_row.length>is_row_spaning.length){is_row_spaning.push(false);}
 				if(this_row.length>tmp_row_span.length){tmp_row_span.push(0);}				
 
-//console.log('this_row.length',this_row.length,"\n",'is_row_spaning('+is_row_spaning.length+')',is_row_spaning,"\n",'tmp_col_span('+tmp_row_span.length+')',tmp_row_span);
-				if(row!=0){
-					if(this_cell==m_func.c().get()){
-//console.log('----r',row+'x'+col,"\n",'is_row_spaning('+is_row_spaning.length+')',is_row_spaning,'tmp_col_span('+tmp_row_span.length+')',tmp_row_span);
-						if(is_row_spaning[col]===false){
-							is_row_spaning[col]=row-1;
-							tmp_row_span[col]++;//count the first one.  You can't rowspan 1!
-							rowsArrIn[ (is_row_spaning[col]) ].spans[col].row.first=true;}
-					}else{
-						if(is_row_spaning[col]!==false){
-							rowsArrIn[ (is_row_spaning[col]) ].spans[col].row.span=tmp_row_span[col];}//compile the column
-						
-						tmp_row_span[col]=0;//resets!
-						is_row_spaning[col]=false;
-					}
-					if(is_row_spaning[col]!==false){tmp_row_span[col]++;}
-				}
-				if(col!=0){
-					if(this_cell==m_func.r().get()){
-//console.log('----c',row+'x'+col,"\n",'is_col_spaning',is_col_spaning,'tmp_col_span',tmp_col_span);
-						if(is_col_spaning===false){
-							is_col_spaning=col-1;
-							tmp_col_span++;
-							rowsArrIn[row].spans[is_col_spaning].col.first=true;}
-					}else{//do this at end of this for loop!
-						if(is_col_spaning!==false){
-console.log('tmp_col_span',tmp_col_span);
-							rowsArrIn[row].spans[is_col_spaning].col.span=tmp_col_span;}//compile the column
-						
-						tmp_col_span=0;//resets!
-						is_col_spaning=false;
-					}
-					if(is_col_spaning!==false){tmp_col_span++;}
-				}
-				//priority_merge
-				if(count!=0 && this_cell==m_func.b().get()){}
-				else if(this_cell==m_func.r().get()){}
-				else if(this_cell==m_func.b().get()){}
 				
+				
+				if(count!=0 && this_cell==m_func.b().get()){//after the first sweep we resolve the indifferent holders
+					//if the whole row is pretty much merged
+					if(priority_merge=='row'){
+						var sub_do=['row','col'];}
+					else{
+						var sub_do=['col','row'];}
+					for(var sd=0;sd<sub_do.length;sd++){
+						var rule=sub_do[sd];
+						if(count>1){//everything after 3rd sweep
+							if(rule=='col'){
+							}else{
+							}
+						}else{//2nd run only!
+							if(rule=='col'){
+								//if we're looking at columns - we want to see if the column above/below has a rule  If so we inherit that rule
+							}else{
+							}
+						}
+					}
+				}
+
+//console.log('this_row.length',this_row.length,"\n",'is_row_spaning('+is_row_spaning.length+')',is_row_spaning,"\n",'tmp_col_span('+tmp_row_span.length+')',tmp_row_span);
+				//priority_merge - what we do know -> m_func.c().get() & m_func.r().get() used here
+				if(row!=0){set_row_data();}
+				if(col!=0){set_col_data();}
 				all_rows.push(this_cell);
 			}
-			if(is_col_spaning!==false){
-console.log('tmp_col_span',tmp_col_span);
-				rowsArrIn[row].spans[is_col_spaning].col.span=tmp_col_span;}//compile the column
+			this_cell='';//unset for the function below
+			set_col_data(true);
 			is_col_spaning=false;//end of row... no more col span!
 		}
 
 		
 		if($.inArray(m_func.b().get(),all_rows)!==-1){span_added=true;}//gotta fix all unresolved spans. m_func.b is a place holder!
-if(count>=count_max){console.log('brkeaout===========================');break;}
+if(count>=count_max){console.log('breakout===========================');break;}
 		count++;
 span_added=false;
 	}while(span_added);
 	for(var ri=0;ri<rowsArrIn.length;ri++){
 		var this_obj=rowsArrIn[ri],
 			this_row=this_obj.row;
-console.log('this_obj',this_obj);
+console.log('this_obj['+ri+']',this_obj);
 		//for(var rk=0;this_row.length;rk++){
 		//}
 	}
 };
-bdTabler.prototype.str_to_tags=function(str){
-	return '<'+str+'></'+str+'>';
+function bdTablerSpan(letterIn,contextObj){
+	this.letter=letterIn;
+	this.tabler_obj=contextObj;
+}
+bdTablerSpan.prototype.get=function(){
+	return this.tabler_obj.reserve_chars[this.letter];
 };

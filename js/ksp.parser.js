@@ -1,4 +1,27 @@
-//https://github.com/bigorangemachine/ksp_js_career_sci_list
+/* Copyright bigorangemachine@github.com 2014 
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ /*
+	Author: bigorangemachine@github.com
+	Name: Kerbal Space Program Parser
+	Current Project Page: https://github.com/bigorangemachine/ksp_js_career_sci_list
+	Version: 0.0.1
+	Description:
+		A JavaScript Parser that primarially uses string manipulation to parse data from
+		Kerbal Space Program Save Games.  Generically written it should be able to parse more than save games
+		Light use of RegExp is encouraged as Chrome is not a RegExp friend browser and tends to lock up
+ */
 function kspParser(){
 	this.tnl='[\t\r\n]*';//regexp for tab and new lines
 	this.tnl_p='[\t\r\n]+';
