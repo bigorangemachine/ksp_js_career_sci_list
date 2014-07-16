@@ -3,44 +3,54 @@
 <head>
 <meta charset=utf-8>
 <title>Kerbal Upload</title>
-
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700,700italic,400italic,900,900italic' rel='stylesheet' type='text/css'>
 <style type="text/css">
+html,body{font-family: 'Lato', sans-serif;}
+.wrap{width:400px;margin:0px auto;}
 #no-js-msg,
 #status {
-	padding: 5px;
+	padding: 15px 19px;
 	color: #fff;
 	background: #ccc;
+	font-size:16px;
+	line-height:1.6;
+	box-sizing:border-box;
 }
+#status .sml-txt{font-size:70%;line-height:1.3;}
 #no-js-msg{display:block;}
 body.hasJS #status {display:block;}
 body.hasJS #status.fail {background: #c00;}
 body.hasJS #status.success {background: #0c0;}
 body.hasJS #status.offline {background: #c00;}
 body.hasJS #status.online {background: #0c0;}
-#holder { border: 10px dashed #ccc; width: 300px; height: 300px; margin: 20px auto;}
+
+#holder { border: 10px dashed #ccc; width: 300px; height: 300px; margin: 20px auto;display: table;}
+#holder p{color: #ccc;display: table-cell;font-size: 16px;letter-spacing: 3px;line-height: 1.4;padding: 0 15.4%;text-align: center;text-transform: uppercase;vertical-align: middle;}
+#holder p .dot-hide{opacity:0;}
 #holder.hover { border: 10px dashed #333; }
+#holder.hover p{color:#333;}
 </style>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="js/js.js"></script>
 <script src="js/fps.requestAnimate.js"></script>
 <script src="js/ksp.parser.js"></script>
+<script src="js/tabler.js"></script>
 <body>
+<section class="wrap">
+	<div id="holder"><p>Drag your KSP Save Game Here</p></div> 
+	<noscript type="text/html"><p id="no-js-msg">JavaScript is Required</p></noscript>
+	<p id="status">Please use the latest Chrome or Firefox Browser.</p>
 
-
-<div id="holder"></div> 
-<noscript type="text/html"><p id="no-js-msg">JavaScript is Required</p></noscript>
-<p id="status">Please use the latest Chrome or Firefox Browser.</p>
-<p>Drag your KSP Save Game</p>
-
+</section>
 <script type="text/javascript">
 //alert("left off: update_status_msg('data_anomaly',{'end':fun_str});.  Readying the Expansion of the indexes to include plugins/mods.  Draw table");
 	document.body.className=document.body.className+' hasJS';
 	var loading_stages={
 			'error':'Something seems to have gone wrong',
-			'ready':'Awaiting ID',
-			'have_file':'Oh, Hello Jeb!',
-			'searching_file':'It seems that we have lost your file.  How about you get yourself some snacks while we find it...',
-			'searching_science':'Don\'t mind the radioactive goo; it always does that when there is someone new.',
+			'ready':'Please drop your career file into the box provided and have your ID ready for verification.',
+			'have_file':'Oh, Hello Jeb!  Sorry about that last test flight; I always forget the parachutes.',
+			'searching_file':'Where are my glasses?! I\'d lose my head if it wasn\'t attached... How about you get yourself some snacks while I find it...',
+			'searching_science':'Here we are!<br>Don\'t mind the radioactive goo; it always does that when there is someone new.',
 			'reviewing_science':'Let\'s see if we can make sense of this K-EB-A2',
 			'count_off_science':' Scientific Mission',
 			'sorting_data':'Boss Kerman is going to fire someone. This data is a mess... ',
@@ -55,16 +65,34 @@ body.hasJS #status.online {background: #0c0;}
 			'sciences':{},
 			'sciences_attribs':{}
 		},
+		body_busy_class='is-busy',
 		page_data={},
+		tableObj=new bdTabler(),
 		kspUniObj=new kspUniverse(),
 		kspSciObj=new kspSci(kspUniObj),
 		kspObj=new kspParser(kspUniObj,kspSciObj),
-		FPSObj=new fpsHandler(5),
+		FPSObj=new fpsHandler(5),//for the processing of data and green area messages
+		FPSUIObj=new fpsHandler(5),//for the bordered area
+		base_delay=4000,
 		current_state_key='ready',
 		drag_target = $('#holder'),
 		msg_obj = $('#status');
-
-		page_data=$.extend(true,{},page_data_schema);//break pass by reference
+alert('detecting colspan and row span correctly.  Now account for indifferent!');
+/*
+tableObj.add_line(['adf',			'asdf',		'adfasdf',	'adfasdfasdf',				'aasdasdasdf','aasdasdaf'],{'row_type':'head'});//table should kurplunk
+tableObj.add_line(['gjfdj43523',	'gdj43523',	'j43523',	tableObj.reserve_merge(),	'j43523','j43523','gdj43523',tableObj.reserve_merge()],{'row_type':'head'});
+tableObj.add_line(['gjfdj43523',	'gdj43523',	'j43523',	tableObj.reserve_merge(),	'j43523','j43523','gdj43523','j43523'],{'row_type':'head'});
+tableObj.add_line(['gjfdj43523',	'gdj43523',	'j43523',	'gdj43523',					'j43523','j43523','gdj43523','j43523'],{'row_type':'head'});
+tableObj.add_line(['gjfdj43523',	'gdj43523',	'j43523',	'gdj43523',					'j43523','j43523','gdj43523','j43523'],{'row_type':'head'});*/
+tableObj.add_line(['adf',			'asdf',		'adfasdf',	'adfasdfasdf',				'aasdasdasdf','aasdasdaf'],{'row_type':'head'});//table should kurplunk
+tableObj.add_line(['gjfdj43523',	'gdj43523',	'j43523',	tableObj.reserve_merge_col(),	'j43523','j43523','gdj43523',tableObj.reserve_merge_col()],{'row_type':'head'});
+tableObj.add_line(['gjfdj43523',	'gdj43523',	'j43523',	tableObj.reserve_merge_col(),	'j43523','j43523','gdj43523','j43523'],{'row_type':'head'});
+tableObj.add_line(['gjfdj43523',	'gdj43523',	'j43523',	'gdj43523',					'j43523','j43523','gdj43523','j43523'],{'row_type':'head'});
+tableObj.add_line(['gjfdj43523',	'gdj43523',	'j43523',	'gdj43523',					'j43523','j43523','gdj43523','j43523'],{'row_type':'head'});
+tableObj.add_line(['gjfdj43523',	'gdj43523',	'j43523',	'gdj43523',					'j43523','j43523','gdj43523','j43523'],{'row_type':'head'});
+tableObj.add_line(['gjfdj43523',	tableObj.reserve_merge_row(),	tableObj.reserve_merge_row(),	tableObj.reserve_merge_row(),	'j43523','j43523','gdj43523','j43523'],{'row_type':'head'});
+tableObj.draw_table($('body')[0]);
+		page_data=$.extend(true,{},page_data_schema);//break pass by reference - populate defaults
 /*
 kspUniObj.plugin.is_celestial_body=function(packObj){
 	//append biome_meta = {'biome':{'name':'Biome Name'}};
@@ -81,17 +109,62 @@ kspUniObj.plugin.is_celestial_body=function(packObj){
 			current_state_key=keyIn;
 		}
 	}
-
+	var ui_msg='',ui_lastcallback=function(){return false;},default_ui_msg=$('p',drag_target).html(),ui_no_anim_array=[default_ui_msg];
+	function _update_ui_msg(msg){
+		ui_msg=msg;
+		return function(){
+			if(basic_check(msg)){
+				var dot_num=1,
+					do_max=7,
+					dot_num_hide=do_max-dot_num,
+					rchr='.',
+					ctxt=$('p .dot-show',drag_target).text(),
+					rep_count=str_rep_count(ctxt,rchr);
+				
+				if(rep_count<do_max){dot_num=rep_count+1;dot_num_hide=do_max-dot_num;}
+				if(msg==default_ui_msg){dot_num=0;}
+				$('p',drag_target).html(msg+(dot_num>0?'<br>'+'<span class="dot-show">'+str_rep(rchr,dot_num)+'</span>'+'<span class="dot-hide">'+str_rep(rchr,dot_num_hide)+'</span>':''));
+			}
+		}
+	}
+	function update_ui_msg(msg){
+		FPSUIObj.remove_callback(ui_lastcallback);
+		if($.inArray(msg,ui_no_anim_array)!==-1){(_update_ui_msg(msg)).apply(this,[]);}//call the function?
+		else if(basic_check(msg)){
+			ui_lastcallback=_update_ui_msg(msg);
+			FPSUIObj.add_callback(ui_lastcallback);}
+	}
+	function declare_finished(){
+		$('body').removeClass(body_busy_class);
+	}
 	function draw_science(){
+		update_ui_msg('Generating Ouput');
 		console.log('-draw table!-');
 	}
 
 	function on_captured_science(dataSetIn){
 		var added_ident={
-			'biome':[],
-			'sci':[],
-			'body':[]
-		};
+				'biome':[],
+				'sci':[],
+				'body':[]
+			},
+			update_found_counts=function(sciLen,bodyLen,biomeLen){
+				var fun_str='',
+					pre_fun_str_un=' Unknown ',
+					pre_fun_str='';
+
+				if(sciLen>0){
+					fun_str='Rules of Science';
+					pre_fun_str=pre_fun_str+sciLen.toString()+pre_fun_str_un+'Science Mission'+(sciLen!=1?'s':'')+"<BR>\n";}
+				if(biomeLen>0){
+					fun_str='Planetary Geography';
+					pre_fun_str=pre_fun_str+biomeLen.toString()+pre_fun_str_un+'Planetary '+(biomeLen!=1?'Geographies':'Geography')+"<BR>\n";}
+				if(bodyLen>0){
+					fun_str='Universe';
+					pre_fun_str=pre_fun_str+bodyLen.toString()+pre_fun_str_un+'Astronomical Object'+(bodyLen!=1?'s':'')+"<BR>\n";}
+				if(sciLen>0 || biomeLen>0 || bodyLen>0){
+					update_status_msg('data_anomaly',{'pre':'<span class="sml-txt">'+pre_fun_str+'</span>','end':fun_str});}
+			};
 		var report_iter=function(){
 			update_status_msg('sorting_data');
 			var all_stop=false,
@@ -153,31 +226,19 @@ console.log('-------YES',$.inArray(page_data.parsed_science[s].biome_ident,flatt
 					}
 					//page_data.parsed_science[s].meta.asteroid_ident;
 				}
+				update_found_counts(captured_sci_ids.length,captured_body_ids.length,captured_biome_ids.length);
 			}
 			
 			if(all_stop){return;}//if no rail we should just stop
-			if(captured_sci_ids.length==0 && captured_body_ids.length==0 && captured_biome_ids.length==0){
-				//FPSObj.remove_callback(report_iter);//if I was using 'FPSObj.add_once_callback()'
+			if(captured_sci_ids.length==0 && captured_biome_ids.length==0 && captured_biome_ids.length==0){
+				//FPSObj.remove_callback(report_iter);//if I wasn't using 'FPSObj.add_once_callback()'
 				update_status_msg('sorting_table');
 				setTimeout(function(){
 					draw_science();
-				},2500);
+				},base_delay*0.75);//short message
 			}else{
-				//FPSObj.remove_callback(report_iter);//if I was using 'FPSObj.add_once_callback()'
-				var fun_str='',
-					pre_fun_str_un=' Unknown ',
-					pre_fun_str='';
-
-				if(captured_sci_ids.length>0){
-					fun_str='Rules of Science';
-					pre_fun_str=pre_fun_str+captured_sci_ids.length.toString()+pre_fun_str_un+'Science Mission'+(captured_sci_ids.length!=1?'s':'')+"<BR>\n";}
-				if(captured_biome_ids.length>0){
-					fun_str='Planetary Geography';
-					pre_fun_str=pre_fun_str+captured_biome_ids.length.toString()+pre_fun_str_un+'Planetary '+(captured_biome_ids.length!=1?'Geographies':'Geography')+"<BR>\n";}
-				if(captured_body_ids.length>0){
-					fun_str='Universe';
-					pre_fun_str=pre_fun_str+captured_body_ids.length.toString()+pre_fun_str_un+'Astronomical Object'+(captured_body_ids.length!=1?'s':'')+"<BR>\n";}
-				update_status_msg('data_anomaly',{'pre':pre_fun_str,'end':fun_str});
+				//FPSObj.remove_callback(report_iter);//if I wasn't using 'FPSObj.add_once_callback()'
+				update_found_counts(captured_sci_ids.length,captured_body_ids.length,captured_biome_ids.length);
 
 				for(var bi=0;bi<captured_body_ids.length;bi++){//body_ids
 					var body_new=captured_body_ids[bi];
@@ -208,6 +269,7 @@ console.log('-------YES',$.inArray(page_data.parsed_science[s].biome_ident,flatt
 						for(var bi=0;bi<added_ident.body.length;bi++){//body_ids
 							var planet_ident=added_ident.body[bi],
 								body_key=$.inArray(planet_ident, flatten_array(kspUniObj.celestial_bodies,'ident'));
+							if($.inArray(kspUniObj.celestial_bodies[body_key].ident,flatten_array(kspUniObj.default_bodies,'ident'))!==-1){continue;}//don't correct defaults!
 							kspUniObj.celestial_bodies[body_key].body_type=kspSciObj.guess_body_type_from_sci(array_object_search(page_data.parsed_science,'planet_ident',planet_ident));
 
 						}
@@ -215,7 +277,7 @@ console.log('-------YES',$.inArray(page_data.parsed_science[s].biome_ident,flatt
 				}
 				setTimeout(function(){
 					FPSObj.add_once_callback(report_iter);
-				},2500);
+				},base_delay);
 			}
 /*
 console.log('captured_sci_ids',captured_sci_ids,
@@ -223,7 +285,7 @@ console.log('captured_sci_ids',captured_sci_ids,
 			'captured_biome_ids',captured_biome_ids);*/
 		};
 		FPSObj.add_once_callback(report_iter);
-
+		update_ui_msg('Sorting Relevant Data');
 	}
 	function read_scenario_chunks(strIn){
 		var scenario_inc=0,
@@ -270,7 +332,7 @@ console.log('captured_sci_ids',captured_sci_ids,
 			};
 			setTimeout(function(){
 				FPSObj.add_callback(scenario_iter);
-			},2500);
+			},base_delay);
 		});
 	}
 	function on_chunk_found(dataSetIn){
@@ -280,6 +342,7 @@ console.log('captured_sci_ids',captured_sci_ids,
 		FPSObj.change_fps(40);//lets speed it up!
 		//FPSObj.change_fps(1);//lets speed it up!
 		update_status_msg('reviewing_science');
+		update_ui_msg('Parsing Relevant Data');
 		var chunk_tick=function(){
 			FPSObj.remove_callback(chunk_tick);//stop from stacking
 //console.log('chunk -=- tick',sci_inc+' of '+page_data.sciences.length);
@@ -289,7 +352,7 @@ console.log('captured_sci_ids',captured_sci_ids,
 			page_data.science_max_total=page_data.science_max_total+parseFloat(t_obj.sci);
 			page_data.parsed_science.push({'raw_id':t_obj.id,'title':t_obj.title,'sci':parseFloat(t_obj.sci),'cap':parseFloat(t_obj.cap)});
 
-			update_status_msg('count_off_science',{'pre':addCommas(sci_inc+1),'end':(sci_inc+1!=1?'s':'')+' for '+addCommas(page_data.science_max_total.toFixed(2))+' science'});
+			update_status_msg('count_off_science',{'pre':addCommas(sci_inc+1),'end':(sci_inc+1!=1?'s':'')+' for '+addCommas(page_data.science_max_total.toFixed(2))+' Science'});
 
 			if(sci_inc>=(page_data.sciences.length-1)){
 				FPSObj.remove_callback(chunk_tick);
@@ -297,7 +360,7 @@ console.log('captured_sci_ids',captured_sci_ids,
 					setTimeout(function(){
 						FPSObj.change_fps(5);//revert
 						on_captured_science(page_data.parsed_science);
-					},2500);
+					},base_delay*0.35);//1/3 of base delay the user has already seen this message
 				});
 				return;
 			}
@@ -313,7 +376,7 @@ console.log('captured_sci_ids',captured_sci_ids,
 		
 		setTimeout(function(){
 			FPSObj.add_callback(chunk_tick);
-		},2500);
+		},base_delay);
 	}
 
 	if(typeof window.FileReader === 'undefined'){
@@ -322,6 +385,8 @@ console.log('captured_sci_ids',captured_sci_ids,
 		update_status_msg('ready');
 		$(msg_obj).addClass('success');}
 	function dodrop(e){
+		$(this).removeClass('hover');
+		if($('body').hasClass(body_busy_class)){return;}
 		this.className = '';
 		e.preventDefault();
 
@@ -329,8 +394,10 @@ console.log('captured_sci_ids',captured_sci_ids,
 		else{var file = e.dataTransfer.files[0];}
 		var reader = new FileReader();
 		reader.onload = function (event){
-			page_data=$.extend(true,{},page_data_schema);//break pass by reference
+			$('body').addClass(body_busy_class);
+			page_data=$.extend(true,{},page_data_schema);//break pass by reference - populate defaults
 			update_status_msg('have_file');
+			update_ui_msg('File Uploaded Successfully');
 
 			setTimeout(function(){
 				$(drag_target).trigger('dragend');
@@ -338,15 +405,20 @@ console.log('captured_sci_ids',captured_sci_ids,
 				FPSObj.add_once_callback(function(){
 					update_status_msg('searching_file');
 					setTimeout(function(){
+						update_ui_msg('Reading File Contents');
 						read_scenario_chunks(inputstr);
-					},2500);
+					},base_delay);
 				});
-			},2500);
+			},base_delay);
 		};
 		reader.readAsText(file);
 		return false;
 	}
-	$('body').on('dragover',function () {update_status_msg('ready');});
+	$('body').on('dragover',function () {
+		if(!$('body').hasClass(body_busy_class)){
+			update_status_msg('ready');update_ui_msg(default_ui_msg);
+		}
+	});
 	$(drag_target).on('dragover',function () { $(this).addClass('hover'); return false; });
 	$(drag_target).on('dragend',function () { $(this).removeClass('hover'); return false; });
 	$(drag_target).on('drop',dodrop);

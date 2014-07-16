@@ -29,6 +29,16 @@
             clearTimeout(id);
         };
 }());
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function randomString(length, chars) {
+	if(typeof(chars)!='string' || chars.length==0){chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';}
+    var result = '';
+    for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
+    return result;
+}
 function basic_check(stringIn){
 	if(typeof(stringIn)=='string'){
 		tmp=stringIn.trim();
