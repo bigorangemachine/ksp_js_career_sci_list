@@ -254,15 +254,15 @@ function kspUniverse(){
 		'high_fly':{'title':'Fly High','ident':'FlyingHigh','group_ident':'Flew'},
 		'low_fly':{'title':'Fly Low','ident':'FlyingLow','group_ident':'Flew'},
 		'surface':{'title':'Surface','ident':'SrfLanded','group_ident':'Surfaced'},
-		'splash':{'title':'Surface','ident':'SrfSplashed','group_ident':'Surfaced'}//aka ocean
+		'splash':{'title':'Splash','ident':'SrfSplashed','group_ident':'Surfaced'}//aka ocean
 	};
 	this.body_rails_schema={//where can experiments happen - splashes and surfaces are kinda of a rail
-		'high_orbit':false,
-		'low_orbit':false,
-		'high_fly':false,
-		'low_fly':false,
 		'surface':false,
-		'splash':false//aka ocean
+		'splash':false,//aka ocean
+		'low_fly':false,
+		'high_fly':false,
+		'low_orbit':false,
+		'high_orbit':false
 	};
 	//used for both setting default values as a schema and providing an index to check against
 	this.body_types_schema={

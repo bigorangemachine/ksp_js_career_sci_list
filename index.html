@@ -27,10 +27,10 @@
 	var loading_stages={
 			'error':'Something seems to have gone wrong',
 			'ready':'Please drop your career file into the box provided and have your ID ready for verification.',
-			'have_file':'Oh, Hello Jeb!  Sorry about that last test flight; I always forget the parachutes.  You\'ve seemed to have recovered well.',
-			'searching_file':'Where are my glasses?! How about you get yourself some snacks while I find them...',
-			'searching_science':'Here we are!<br>Don\'t mind the radioactive goo; it always does that when there is someone new.',
-			'reviewing_science':'Let\'s see if we can make sense of this K-EB-A2',
+			'have_file':'Don\'t mind the radioactive goo; it always does that when there is someone new.',
+			'searching_file':'Here we are!<br>Oh, Hello Jeb!  Sorry about that last test flight...',
+			'searching_science':'I always forget the parachutes; Fuel lines and structs are one thing... but parachutes!?<BR> Erm.....',
+			'reviewing_science':'You\'ve seemed to have recovered well though!<br>Let\'s see if we can make sense of this K-EB-A2',
 			'count_off_science':' Scientific Mission',
 			'sorting_data':'Boss Kerman is going to fire someone. This data is a mess... ',
 			'data_anomaly':'Oh there is some weird data... We\'ll rearrange the ',
@@ -215,7 +215,7 @@ if(planetName=='Kerbin'){console.log('=====================================',bio
 			for(var r=0;r<railArr.length;r++){
 				var this_line=[];
 				if(build_count==0 && add_body_name===false){this_line.push(planetName);add_body_name=true;}
-				else{this_line.push(tableObj.reserve_merge_col());}
+				else{this_line.push(tableObj.reserve_merge_col());}//reserve empty going forward
 
 				if(biomeArr.length>0){
 					for(var b=0;b<biomeArr.length;b++){
@@ -224,25 +224,26 @@ if(planetName=='Kerbin'){console.log('=====================================',bio
 							this_line.push(biomeArr[b]);}
 						else{
 							this_line=[tableObj.reserve_merge_col(),tableObj.reserve_merge_col(),biomeArr[b]];}//planet name,rail,biome
+
 						var sci_arr=build_td_sci_vals();
 						this_line=this_line.concat(sci_arr);
-
-console.log('this_line',this_line.concat([]));
 						output.push({'row':this_line,'meta':meta_out});
 						build_count++;
 					}
 				}else{
 					this_line.push(kspUniObj.body_rails[ (railArr[r]) ].title);//output rail
+					this_line.push('');//biome
 					
 					var sci_arr=build_td_sci_vals();
 					this_line=this_line.concat(sci_arr);
-console.log('this_line('+this_line.length+')',this_line.concat([]));
 					output.push({'row':this_line,'meta':meta_out});
 					build_count++;
 				}
 			}
 			return output;
 		};
+		var flat_rail_groups=flatten_array(kspUniObj.body_rails,'group_ident'),
+			flat_rail_idents=flatten_array(kspUniObj.body_rails,'ident');
 		for(var b=0;b<found_c_body.length;b++){
 			var planet_data={};
 			kspUniObj.is_celestial_body(found_c_body[b],planet_data);
@@ -253,7 +254,16 @@ console.log('this_line('+this_line.length+')',this_line.concat([]));
 					if(rail_rules.rails[r]===true){
 						t_rail.push(r);}}}
 			
-			var new_arr=build_td_vals(planet_data.name,t_rail,planet_data.biomes,science_arr);
+			var user_sci=array_object_search(page_data.parsed_science,'planet_ident',planet_data.ident),extra_rail=[];
+			for(var us=0;us<user_sci.length;us++){
+				if($.inArray(user_sci[us].rail,flat_rail_idents)===-1 && $.inArray(user_sci[us].rail,flat_rail_idents)===-1){
+					extra_rail.push(user_sci[us].rail);
+				}
+			}
+
+console.log(planet_data.ident,'user_sci',user_sci);
+break;
+			var new_arr=build_td_vals(planet_data.name,t_rail.concat(extra_rail),planet_data.biomes,science_arr);
 			if(new_arr.length>0){
 				for(var m=0;m<new_arr.length;m++){
 //console.log('new_arr[m].row',new_arr[m].row);
@@ -496,16 +506,14 @@ console.log('captured_sci_ids',captured_sci_ids,
 			sci_inc++;
 			FPSObj.add_callback(chunk_tick);//stop from stacking
 		};
-
-	
 	
 		page_data.sciences=kspObj.chunk_reader(dataSetIn.chunk,'Science');
 //console.log('page_data.sciences',page_data.sciences);
-		update_status_msg('count_off_science',{'pre':sci_inc,'end':(sci_inc!=1?'s':'')});
 		
 		setTimeout(function(){
+			update_status_msg('count_off_science',{'pre':sci_inc,'end':(sci_inc!=1?'s':'')});
 			FPSObj.add_callback(chunk_tick);
-		},base_delay);
+		},base_delay*1.2);
 	}
 
 	if(typeof window.FileReader === 'undefined'){

@@ -27,3 +27,34 @@ body.hasJS #status.online {background: #0c0;}
 
 .mod-plaent-row{background-color:#000;}
 .mod-plaent-row td{color:#fff;font-size:8px;letter-spacing:14px;text-align:center;font-weight:700;line-height:1.5;vertical-align:middle;}
+
+.sci-green{/*66%-100%*/
+/*http://www.cssmatic.com/gradient-generator#'\-moz\-linear\-gradient\%28left\%2C\%20rgba\%28104\%2C166\%2C65\%2C1\%29\%200\%25\%2C\%20rgba\%28115\%2C168\%2C57\%2C1\%29\%2046\%25\%2C\%20rgba\%2874\%2C132\%2C29\%2C1\%29\%2053\%25\%2C\%20rgba\%2849\%2C99\%2C14\%2C1\%29\%20100\%25\%29\%3B'*/
+	background: rgba(104,166,65,1);
+	background: -moz-linear-gradient(left, rgba(104,166,65,1) 0%, rgba(115,168,57,1) 46%, rgba(74,132,29,1) 53%, rgba(49,99,14,1) 100%);
+	background: -webkit-gradient(left top, right top, color-stop(0%, rgba(104,166,65,1)), color-stop(46%, rgba(115,168,57,1)), color-stop(53%, rgba(74,132,29,1)), color-stop(100%, rgba(49,99,14,1)));
+	background: -webkit-linear-gradient(left, rgba(104,166,65,1) 0%, rgba(115,168,57,1) 46%, rgba(74,132,29,1) 53%, rgba(49,99,14,1) 100%);
+	background: -o-linear-gradient(left, rgba(104,166,65,1) 0%, rgba(115,168,57,1) 46%, rgba(74,132,29,1) 53%, rgba(49,99,14,1) 100%);
+	background: -ms-linear-gradient(left, rgba(104,166,65,1) 0%, rgba(115,168,57,1) 46%, rgba(74,132,29,1) 53%, rgba(49,99,14,1) 100%);
+	background: linear-gradient(to right, rgba(104,166,65,1) 0%, rgba(115,168,57,1) 46%, rgba(74,132,29,1) 53%, rgba(49,99,14,1) 100%);
+}
+.sci-yellow{/*33%-66%*/
+/*http://www.cssmatic.com/gradient-generator#'\-moz\-linear\-gradient\%28left\%2C\%20rgba\%28162\%2C190\%2C1\%2C1\%29\%200\%25\%2C\%20rgba\%28159\%2C189\%2C9\%2C1\%29\%2046\%25\%2C\%20rgba\%28128\%2C153\%2C3\%2C1\%29\%2053\%25\%2C\%20rgba\%2892\%2C110\%2C2\%2C1\%29\%20100\%25\%29\%3B'*/
+	background: rgba(162,190,1,1);
+	background: -moz-linear-gradient(left, rgba(162,190,1,1) 0%, rgba(159,189,9,1) 46%, rgba(128,153,3,1) 53%, rgba(92,110,2,1) 100%);
+	background: -webkit-gradient(left top, right top, color-stop(0%, rgba(162,190,1,1)), color-stop(46%, rgba(159,189,9,1)), color-stop(53%, rgba(128,153,3,1)), color-stop(100%, rgba(92,110,2,1)));
+	background: -webkit-linear-gradient(left, rgba(162,190,1,1) 0%, rgba(159,189,9,1) 46%, rgba(128,153,3,1) 53%, rgba(92,110,2,1) 100%);
+	background: -o-linear-gradient(left, rgba(162,190,1,1) 0%, rgba(159,189,9,1) 46%, rgba(128,153,3,1) 53%, rgba(92,110,2,1) 100%);
+	background: -ms-linear-gradient(left, rgba(162,190,1,1) 0%, rgba(159,189,9,1) 46%, rgba(128,153,3,1) 53%, rgba(92,110,2,1) 100%);
+	background: linear-gradient(to right, rgba(162,190,1,1) 0%, rgba(159,189,9,1) 46%, rgba(128,153,3,1) 53%, rgba(92,110,2,1) 100%);
+}
+.sci-blue{/*1%-33%*/
+/*http://www.cssmatic.com/gradient-generator#'\-moz\-linear\-gradient\%28left\%2C\%20rgba\%2835\%2C168\%2C251\%2C1\%29\%200\%25\%2C\%20rgba\%2814\%2C137\%2C232\%2C1\%29\%2046\%25\%2C\%20rgba\%284\%2C134\%2C226\%2C1\%29\%2053\%25\%2C\%20rgba\%289\%2C90\%2C155\%2C1\%29\%20100\%25\%29\%3B'*/
+background: rgba(35,168,251,1);
+background: -moz-linear-gradient(left, rgba(35,168,251,1) 0%, rgba(14,137,232,1) 46%, rgba(4,134,226,1) 53%, rgba(9,90,155,1) 100%);
+background: -webkit-gradient(left top, right top, color-stop(0%, rgba(35,168,251,1)), color-stop(46%, rgba(14,137,232,1)), color-stop(53%, rgba(4,134,226,1)), color-stop(100%, rgba(9,90,155,1)));
+background: -webkit-linear-gradient(left, rgba(35,168,251,1) 0%, rgba(14,137,232,1) 46%, rgba(4,134,226,1) 53%, rgba(9,90,155,1) 100%);
+background: -o-linear-gradient(left, rgba(35,168,251,1) 0%, rgba(14,137,232,1) 46%, rgba(4,134,226,1) 53%, rgba(9,90,155,1) 100%);
+background: -ms-linear-gradient(left, rgba(35,168,251,1) 0%, rgba(14,137,232,1) 46%, rgba(4,134,226,1) 53%, rgba(9,90,155,1) 100%);
+background: linear-gradient(to right, rgba(35,168,251,1) 0%, rgba(14,137,232,1) 46%, rgba(4,134,226,1) 53%, rgba(9,90,155,1) 100%);
+}

@@ -4,7 +4,7 @@ Kerbal Space Program - Science Checklist Generator - Alpha
 
 If there are any issues please use the github ticket system (issues on the right).  When you do provide a ticket I will need you to attach your save game file in a non-compressed format (no zips/rars/tars).
 
-Works best in Firefox.  Tested in Firefox in and Chrome.
+Works best in Firefox.  Tested in Firefox and in Chrome.
 
 ###For JavaScript Developers
 

@@ -263,7 +263,6 @@ bdTabler.prototype.section_parse=function(rowsArrIn){//prioritize column merging
 	for(var ri=0;ri<rowsArrIn.length;ri++){
 		var tmp_join_arr=[];
 		for(var rk=0;rk<rowsArrIn[ri].row.length;rk++){
-console.log('rowsArrIn[ri].row[rk]',rowsArrIn[ri].row[rk]);
 			if(rowsArrIn[ri].row[rk].constructor!=bdTablerSpan){tmp_join_arr.push(rowsArrIn[ri].row[rk]);}}}
 
 	tmp_join_arr=tmp_join_arr.join('');
@@ -327,9 +326,9 @@ console.log('----c',row+'x'+col,"\n");}
 			if(is_col_spaning!==false){tmp_col_span++;}
 		},
 		set_row_data=function(doDebug){
-			if(this_cell==m_func.c().get()){
 if(doDebug){
 console.log('----r',row+'x'+col,"\n",'is_row_spaning('+is_row_spaning.length+')',is_row_spaning.concat([]),'tmp_col_span('+tmp_row_span.length+')',tmp_row_span.concat([]));}
+			if(this_cell==m_func.c().get()){
 				if(is_row_spaning[col]===false){
 					is_row_spaning[col]=row-1;
 					tmp_row_span[col]++;//count the first one.  You can't rowspan 1! - first runs this happens twice! 2nd time down below
@@ -420,15 +419,22 @@ console.log('----r',row+'x'+col,"\n",'is_row_spaning[col]',is_row_spaning[col],'
 				*/
 //console.log('this_row.length',this_row.length,"\n",'is_row_spaning('+is_row_spaning.length+')',is_row_spaning,"\n",'tmp_col_span('+tmp_row_span.length+')',tmp_row_span);
 				//self.priority_merge - what we do know -> m_func.c().get() & m_func.r().get() used here
-				set_row_data();
-				set_col_data();
+				if(row!=0 || col!=0){//first cell shouldn't be merge place holders
+					set_row_data();
+					set_col_data();
+				}else{
+					this_cell=(this_cell!=m_func.r().get() && this_cell!=m_func.c().get() && this_cell!=m_func.b().get() && basic_check(this_cell)?this_cell:'');
+					rowsArrIn[row].row[col]=this_cell;
+				}
 				/*
 				if(row!=0){set_row_data();}//sets rowspan - first col cell needs to be content
 				else{
+console.log('row 0 else',this_cell);
 					this_cell=(this_cell!=m_func.r().get() && this_cell!=m_func.c().get() && this_cell!=m_func.b().get() && basic_check(this_cell)?this_cell:'');
 					rowsArrIn[row].row[col]=this_cell;}
 				if(col!=0){set_col_data();}//sets colspan - first row cell needs to be content
 				else{
+console.log('col 0 else',this_cell);
 					this_cell=(this_cell!=m_func.r().get() && this_cell!=m_func.c().get() && this_cell!=m_func.b().get() && basic_check(this_cell)?this_cell:'');
 					rowsArrIn[row].row[col]=this_cell;}
 				*/
@@ -437,7 +443,10 @@ console.log('----r',row+'x'+col,"\n",'is_row_spaning[col]',is_row_spaning[col],'
 			set_col_data();
 			is_col_spaning=false;//end of row... no more col span!
 		}
-
+		for(var col=0;col<is_row_spaning.length;col++){
+			this_cell='';
+			set_row_data();
+		}
 		for(var row=0;row<rowsArrIn.length;row++){
 			rowsArrIn[row].spans=new_spans[row].spans;
 			for(var col=0;col<this_row.length;col++){
