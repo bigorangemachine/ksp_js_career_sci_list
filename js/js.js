@@ -237,3 +237,9 @@ function reduce_array_to_common_alias_values(arrIn,aliasListIn,commonKeyIn){//de
 	}
 	return arr_out;
 }
+
+function repeat_val_into_arr(valIn,num){
+	var output=[];
+	for(var n=0;n<num;n++){output.push(valIn);}
+	return output;
+}

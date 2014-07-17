@@ -17,10 +17,12 @@
 	Name: Kerbal Space Program Parser
 	Current Project Page: https://github.com/bigorangemachine/ksp_js_career_sci_list
 	Version: 0.0.1
+	Dependances: jQuery ($.extend,$.inArray,$.unique), functions in <git root>/js/js.js
 	Description:
 		A JavaScript Parser that primarially uses string manipulation to parse data from
 		Kerbal Space Program Save Games.  Generically written it should be able to parse more than save games
-		Light use of RegExp is encouraged as Chrome is not a RegExp friend browser and tends to lock up
+		Light use of RegExp is encouraged as Chrome is not a RegExp friend browser and tends to lock up.
+		This is pretty much a hack.  But it works
  */
 function kspParser(){
 	this.tnl='[\t\r\n]*';//regexp for tab and new lines
@@ -276,11 +278,15 @@ function kspUniverse(){
 		'ident':'',//string
 		'name':'',//string
 		'orbiting_body':false,//string - false if sun
+		'satellite_bodies':[],//array
 		'body_type':'',//string white list -> this.body_types_schema
 		'biomes':[]
 	};
 	this.default_bodies=[
 		{'ident':'Sun','name':'Kerbold','orbiting_body':false,'body_type':'star'},
+		{'ident':'Moho','name':'Moho','orbiting_body':'Sun','body_type':'rocky'},
+		{'ident':'Eve','name':'Eve','orbiting_body':'Sun','body_type':'atm_rocky'},
+			{'ident':'Gilly','name':'Gilly','orbiting_body':'Eve','body_type':'rocky'},
 		{
 			'ident':'Kerbin',
 			'name':'Kerbin',
@@ -303,9 +309,6 @@ function kspUniverse(){
 				'body_type':'rocky',
 				'biomes':['Highlands','Midlands','Lowlands','Slopes','LesserFlats','Flats','GreatFlats','GreaterFlats','Poles']
 			},/**/
-		{'ident':'Moho','name':'Moho','orbiting_body':'Sun','body_type':'rocky'},
-		{'ident':'Eve','name':'Eve','orbiting_body':'Sun','body_type':'atm_rocky'},
-			{'ident':'Gilly','name':'Gilly','orbiting_body':'Eve','body_type':'rocky'},
 		{'ident':'Duna','name':'Duna','orbiting_body':'Sun','body_type':'atm_rocky'},
 			{'ident':'Ike','name':'Ike','orbiting_body':'Duna','body_type':'rocky'},
 		{'ident':'Dres','name':'Dres','orbiting_body':'Sun','body_type':'atm_rocky'},
@@ -353,9 +356,10 @@ kspUniverse.prototype.i_callback=function(hookIn,argsIn){//internal callback - p
 };
 kspUniverse.prototype.add_body=function(orbitBodyId,ident,planetType,planetBios,metaObj){
 	var self=this,
+		orbit_body_data={},
 		add_line=$.extend(true,{},self.celestial_bodies_schema,{});//must break js 'pass by reference'
 	if($.inArray(planetType,array_keys(self.body_types_schema))===-1){return false;}
-	if(orbitBodyId!==false && !self.is_celestial_body(orbitBodyId)){return false;}//orbiting something check -> false is allowed for the sun... or something that just needs to be there somehow
+	if(orbitBodyId!==false && !self.is_celestial_body(orbitBodyId,orbit_body_data)){return false;}//orbiting something check -> false is allowed for the sun... or something that just needs to be there somehow
 	if(self.is_celestial_body(ident)){return false;}//existing check
 	add_line.ident=ident;
 	add_line.name=(bdcheck_key(metaObj,'name')?metaObj.name:ident);
@@ -374,6 +378,8 @@ kspUniverse.prototype.add_body=function(orbitBodyId,ident,planetType,planetBios,
 	
 	self.celestial_bodies.push($.extend(true,{},add_line,{'biomes':[]}));//extending so the biomes go through the method.  for future plugin hooks!
 	for(var b in add_line.biomes){self.add_biome(add_line.ident,add_line.biomes[b]);}
+	if(orbitBodyId!==false){//if declared as orbiting something; add to its parent orbit list
+		self.celestial_bodies[orbit_body_data.pos].satellite_bodies.push(add_line.ident);}
 
 	///////\\\\\\\\\\PLUGIN HOOK\\\\\\\\/////////
 	var _args={'add_line':add_line},
@@ -509,7 +515,6 @@ function kspSci(kspUniObj){
 	biomeMask = 7 -> first 3 added together
 */
 	this.default_sciences=[
-		{'ident':'recovery','name':'Recovery of a Vessel','biome_context':false,'rail_context':true,'meta':{'rails_as_groups':true}},//rails as groups says to ignore the rails labels and use the group labels.  This is just a hack for recovery
 		{'ident':'asteroidSample','name':'Asteroid Surface Sample','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':true},//,'meta':{'ignore_planet_rail':'asteroid'} <- was here but I realized you can't have astroids as places there are more like vessels
 		{'ident':'surfaceSample','name':'Surface Sample','biome_context':{'surface':true,'splash':true},'rail_context':{'splash':true,'surface':true}},
 		{'ident':'evaReport','name':'EVA Report','biome_context':{'low_orbit':true,'low_fly':true,'surface':true,'splash':true},'rail_context':true},
@@ -520,7 +525,8 @@ function kspSci(kspUniObj){
 		{'ident':'barometerScan','name':'Barometer Scan','biome_context':{'surface':true,'splash':true},'rail_context':{'high_fly':true,'low_fly':true,'splash':true,'surface':true},'meta':{'require_atmosphere':true}},
 		{'ident':'gravityScan','name':'Gravioli Particles','biome_context':{'high_orbit':true,'low_orbit':true,'surface':true,'splash':true},'rail_context':{'high_orbit':true,'low_orbit':true,'splash':true,'surface':true}},
 		{'ident':'seismicScan','name':'Seismic Scan','biome_context':{'surface':true},'rail_context':{'surface':true}},
-		{'ident':'atmosphereAnalysis','name':'Sensor Array Computing Nose Cone','biome_context':{'high_fly':true,'low_fly':true,'surface':true},'rail_context':{'high_fly':true,'low_fly':true,'surface':true},'meta':{'require_atmosphere':true}}
+		{'ident':'atmosphereAnalysis','name':'Sensor Array Computing Nose Cone','biome_context':{'high_fly':true,'low_fly':true,'surface':true},'rail_context':{'high_fly':true,'low_fly':true,'surface':true},'meta':{'require_atmosphere':true}},
+		{'ident':'recovery','name':'Recovery of a Vessel','biome_context':false,'rail_context':true,'meta':{'rails_as_groups':true}}//rails as groups says to ignore the rails labels and use the group labels.  This is just a hack for recovery
 	];
 	this.plugin={
 		'pre_add_science':false,

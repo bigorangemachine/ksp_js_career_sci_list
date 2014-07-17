@@ -23,3 +23,7 @@ body.hasJS #status.online {background: #0c0;}
 #holder p .dot-hide{opacity:0;}
 #holder.hover { border: 10px dashed #333; }
 #holder.hover p{color:#333;}
+
+
+.mod-plaent-row{background-color:#000;}
+.mod-plaent-row td{color:#fff;font-size:8px;letter-spacing:14px;text-align:center;font-weight:700;line-height:1.5;vertical-align:middle;}
