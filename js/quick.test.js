@@ -1,4 +1,21 @@
 (function(){
+/*
+
+/*
+tableObj.add_line(['adf',			'asdf',		'adfasdf',	'adfasdfasdf',				'aasdasdasdf','aasdasdaf'],{'row_type':'head'});//table should kurplunk
+tableObj.add_line(['gjfdj43523',	'gdj43523',	'j43523',	tableObj.reserve_merge(),	'j43523','j43523','gdj43523',tableObj.reserve_merge()],{'row_type':'head'});
+tableObj.add_line(['gjfdj43523',	'gdj43523',	'j43523',	tableObj.reserve_merge(),	'j43523','j43523','gdj43523','j43523'],{'row_type':'head'});
+tableObj.add_line(['gjfdj43523',	'gdj43523',	'j43523',	'gdj43523',					'j43523','j43523','gdj43523','j43523'],{'row_type':'head'});
+tableObj.add_line(['gjfdj43523',	'gdj43523',	'j43523',	'gdj43523',					'j43523','j43523','gdj43523','j43523'],{'row_type':'head'});*/
+/*
+tableObj.add_line(['adf',			'asdf',		'adfasdf',	'adfasdfasdf',				'aasdasdasdf','aasdasdaf'],{'row_type':'head'});//table should kurplunk
+tableObj.add_line(['gjfdj43523',	'gdj43523',	'j43523',	tableObj.reserve_merge_col(),	'j43523','j43523','gdj43523 a',tableObj.reserve_merge_col()],{'row_type':'head'});
+tableObj.add_line(['gjfdj43523',	'gdj43523',	'j43523',	tableObj.reserve_merge_col(),	'j43523','j43523','gdj43523 b','j43523'],{'row_type':'head'});
+tableObj.add_line(['gjfdj43523',	'gdj43523',	'j43523',	'gdj43523',					'j43523','j43523','gdj43523','j43523'],{'row_type':'head'});
+tableObj.add_line(['gjfdj43523',	'gdj43523',	'j43523',	'gdj43523',					'j43523','j43523','gdj43523','j43523'],{'row_type':'head'});
+tableObj.add_line(['gjfdj43523',	'gdj43523',	'j43523',	'gdj43523',					'j43523','j43523','gdj43523','j43523'],{'row_type':'head'});
+tableObj.add_line(['gjfdj43523',	tableObj.reserve_merge_row(),	tableObj.reserve_merge_row(),	tableObj.reserve_merge_row(),	'j43523','j43523','gdj43523','j43523'],{'row_type':'head'});
+tableObj.draw_table(table_target_obj);*/
 /*	console.log(
 kspSciObj.parse_sci_id('recovery@KerbinFlew'),
 kspSciObj.parse_sci_id('crewReport@KerbinSrfLandedLaunchPad'),
