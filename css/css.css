@@ -24,7 +24,16 @@ body.hasJS #status.online {background: #0c0;}
 #holder.hover { border: 10px dashed #333; }
 #holder.hover p{color:#333;}
 
-
+.cell-sci{text-align:center;font-weight:700;font-size:20px;line-height:0.65;color:#fefefe;font-family: 'Numans', sans-serif;}
+.cell-sci .sml-txt{font-size:50%;color:#eee;}
+.cell-sci.sci-zero{font-size:199%;color:#000000;line-height:1;}
+.cell-sci.sci-grey{background-color:#666;}
+.sci-header{/*
+transform: rotate(7.5deg)
+-moz-transform: rotate(7.5deg);
+-o-transform: rotate(7.5deg);
+-webkit-transform: rotate(7.5deg);*/
+}
 .mod-plaent-row{background-color:#000;}
 .mod-plaent-row td{color:#fff;font-size:8px;letter-spacing:14px;text-align:center;font-weight:700;line-height:1.5;vertical-align:middle;}
 

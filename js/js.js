@@ -243,3 +243,25 @@ function repeat_val_into_arr(valIn,num){
 	for(var n=0;n<num;n++){output.push(valIn);}
 	return output;
 }
+function merge_array_obj_val_str(){
+	if(arguments.length<=1){return arguments[0];}
+	else if(arguments.length>1){
+		var output={};
+		for(var ar=0;ar<arguments.length;ar++){//passed function (obj1{'x':...}, obj2{'x':...}, obj3{'x':...}, ..., obj10{'x':...}, obj11{'x':...})
+			for(var k in arguments[ar]){//obj
+				if(bdcheck_key(arguments[ar],k)){//obj[k]
+					if(!bdcheck_key(output,k)){output[k]=[];}
+					for(var i=0;i<arguments[ar][k].length;i++){
+						if(typeof(output[k][i])=='undefined'){output[k][i]=(typeof(arguments[ar][k][i])=='object'?{}:'');}
+						if(typeof(output[k][i])!='object'){
+							output[k][i]=output[k][i]+(output[k][i].length>0?' ':'')+arguments[ar][k][i];}//obj[k][i];
+						else{
+							output[k][i]=$.extend(true,{},output[k][i],arguments[ar][k][i]);}
+					}
+				}
+			}
+		}
+		return output;
+	}
+	return arguments;
+}
