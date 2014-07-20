@@ -37,6 +37,7 @@ fpsHandler.prototype.start_interval=function(){
 	var self=this;
 	self.interval_id=setInterval(function(){
 		try{
+			if(self.request_animation_id!==false){cancelAnimationFrame(this.request_animation_id);}
 			self.request_animation_id=requestAnimationFrame(function(){
 				self.request_animation_id=false;
 				if(self.once_queue.length>0){

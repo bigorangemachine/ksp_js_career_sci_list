@@ -243,3 +243,75 @@ function repeat_val_into_arr(valIn,num){
 	for(var n=0;n<num;n++){output.push(valIn);}
 	return output;
 }
+function merge_array_obj_val_str(){
+	if(arguments.length<=1){return arguments[0];}
+	else if(arguments.length>1){
+		var output={};
+		for(var ar=0;ar<arguments.length;ar++){//passed function (obj1{'x':...}, obj2{'x':...}, obj3{'x':...}, ..., obj10{'x':...}, obj11{'x':...})
+			for(var k in arguments[ar]){//obj
+				if(bdcheck_key(arguments[ar],k)){//obj[k]
+					if(!bdcheck_key(output,k)){output[k]=[];}
+					for(var i=0;i<arguments[ar][k].length;i++){
+						if(typeof(output[k][i])=='undefined'){output[k][i]=(typeof(arguments[ar][k][i])=='object'?{}:'');}
+						if(typeof(output[k][i])!='object'){
+							output[k][i]=output[k][i]+(output[k][i].length>0?' ':'')+arguments[ar][k][i];}//obj[k][i];
+						else{
+							output[k][i]=$.extend(true,{},output[k][i],arguments[ar][k][i]);}
+					}
+				}
+			}
+		}
+		return output;
+	}
+	return arguments;
+}
+function inArray_multi_seek(valsIn,arrsIn,doDebug){
+if(doDebug){console.log('valsIn',valsIn,'arrsIn',arrsIn);}
+	if(valsIn.length!=arrsIn.length){return -1;}
+	var lowest_key=false,
+		seek_offset=false,
+		all_fail_count=0,
+		output=-1;
+//var debug_c=0,debug_max=1000;
+	do{
+		var all_match=false,
+			match_count=0,
+			fail_count=0;
+
+if(doDebug){console.log('================================================');}
+		for(var v=0;v<valsIn.length;v++){
+			var seek_result=$.inArray(valsIn[v],arrsIn[v],(seek_offset>=0 && seek_offset!==false?seek_offset+1:0));
+if(doDebug){console.log('seek_result(x,x,'+(seek_offset>=0 && seek_offset!==false?seek_offset+1:0)+') ',seek_result,'lowest_key',lowest_key,'seek_offset',seek_offset,"\n",'fail_count',fail_count,'all_fail_count',all_fail_count,"\n",'match_count',match_count);}
+			if(seek_result===-1){fail_count++;}// || (seek_offset!==0 && seek_offset===seek_result)
+			else{
+				if(seek_result<lowest_key || (lowest_key===false)){//check lowest key or force unset of default value
+if(doDebug){console.log('-reset lowest key-');}
+					lowest_key=seek_result;
+					match_count=0;
+					fail_count=0;
+				}
+				if(seek_result===lowest_key){match_count++;}
+			}
+		}
+if(doDebug){console.log('===== ','match_count',match_count,'lowest_key',lowest_key,'seek_offset',seek_offset,"\n",'fail_count',fail_count,'all_fail_count',all_fail_count);}
+		if(match_count>=valsIn.length){all_match=true;output=lowest_key;}
+		else if(fail_count>=valsIn.length){output=-1;all_match=true;}//the loop failed.  increment to force a failure (maybe).  coun
+		//if(all_fail_count>=valsIn.length){output=-1;all_match=true;}
+
+		if(lowest_key>seek_offset || (seek_offset===false)){//still looking.  adjust offset but reset everything else
+if(doDebug){console.log('====',lowest_key,'>',seek_offset);}
+			seek_offset=lowest_key;
+			lowest_key=false;
+			fail_count=0;
+			match_count=0;
+		}else if(match_count>0){//if we didn't throw the break flag; we didn't change the lowest we need to advance the offset
+			seek_offset++;
+		}
+		
+		//if(match_count>0){console.log('seek_offset',seek_offset);seek_offset++;}
+		//else if(match_count==0 && fail_count==0){console.log('match_count0&&fail_count0',seek_offset);seek_offset++;}
+//debug_c++;if(debug_c>=debug_max){console.log('-========================break============-');break;}
+	}while(all_match===false);
+if(doDebug){console.log('=============inArray_multi_seek: '+output+'====================');}
+	return output;
+}

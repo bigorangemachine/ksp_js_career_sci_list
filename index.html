@@ -4,6 +4,7 @@
 <meta charset=utf-8>
 <title>Kerbal Upload</title>
 <link href='http://fonts.googleapis.com/css?family=Lato:400,700,700italic,400italic,900,900italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Numans' rel='stylesheet' type='text/css'>
 <link href='css/css.css' rel='stylesheet' type='text/css'>
 <style type="text/css">
 </style>
@@ -12,6 +13,9 @@
 <script src="js/fps.requestAnimate.js"></script>
 <script src="js/ksp.parser.js"></script>
 <script src="js/tabler.js"></script>
+<script src="js/jquery.stickytableheaders.js"></script>
+<!--<script src="js/jquery.stickytableheaders.min.js"></script>-->
+
 </head>
 <body>
 <section class="wrap">
@@ -22,7 +26,7 @@
 </section>
 <section class="table-output"></section>
 <script type="text/javascript">
-//alert("left off: update_status_msg('data_anomaly',{'end':fun_str});.  Readying the Expansion of the indexes to include plugins/mods.  Draw table");
+//alert("Line 350.  Get rowspans going!");
 	document.body.className=document.body.className+' hasJS';
 	var loading_stages={
 			'error':'Something seems to have gone wrong',
@@ -61,12 +65,25 @@
 		drag_target = $('#holder'),
 		msg_obj = $('#status');
 		
-		tableObj.plugin.table=function(packObj){$(packObj.table_dom_obj).attr('border',1);};
+		tableObj.plugin.table=function(packObj){/*$(packObj.table_dom_obj).attr('border',1);*/};
 		page_data=$.extend(true,{},page_data_schema);//break pass by reference - populate defaults
-/*
-kspUniObj.plugin.is_celestial_body=function(packObj){
-	//append biome_meta = {'biome':{'name':'Biome Name'}};
-};*/
+
+	function get_sticky_table_obj(){
+		if($('table',table_target_obj).first().length>0){
+//console.log('---',$('table',table_target_obj).first(),$('table',table_target_obj).first()[0]);
+			return $('table',table_target_obj).first()[0];}
+//console.log('---table_target_obj',table_target_obj);
+		return table_target_obj;
+	}
+	function do_sticky_table(){
+		$(get_sticky_table_obj()).stickyTableHeaders('destroy');
+		$(get_sticky_table_obj()).stickyTableHeaders();
+	}
+	$(window).on('resize',function(){
+		$(get_sticky_table_obj()).stickyTableHeaders('toggleHeaders');
+	});
+
+
 //console.log(kspObj.attr_reader("\r\n\t\t\tid = crewReport@KerbinSrfLandedLaunchPad\r\n\t\t\ttitle = Crew Report from LaunchPad\r\n\t\t\tdsc = 1\r\n\t\t\tscv = 0\r\n\t\t\tsbv = 0.3\r\n\t\t\tsci = 1.5\r\n\t\t\tcap = 1.5",true));
 		
 	function update_status_msg(keyIn,extraStr){
@@ -95,7 +112,9 @@ kspUniObj.plugin.is_celestial_body=function(packObj){
 
 				clock_str='<BR>'+' Seconds: '+(clock_diff/1000).toFixed(3);
 				if(rep_count<do_max){dot_num=rep_count+1;dot_num_hide=do_max-dot_num;}
+				
 				if(msg==default_ui_msg){dot_num=0;clock_str='';}
+				else if($.inArray(msg,ui_no_anim_array)!==-1){dot_num=0;}
 				$('p',drag_target).html(msg+(dot_num>0?'<br>'+'<span class="dot-show">'+str_rep(rchr,dot_num)+'</span>'+'<span class="dot-hide">'+str_rep(rchr,dot_num_hide)+'</span>':'')+clock_str);
 			}
 		}
@@ -108,14 +127,17 @@ kspUniObj.plugin.is_celestial_body=function(packObj){
 			FPSUIObj.add_callback(ui_lastcallback);}
 	}
 	function declare_finished(){
+		FPSObj.change_fps(5);//reset
+		tableObj.draw_table(table_target_obj);
+		do_sticky_table();
 		processor_clock.end=new Date();
 		update_status_msg('done');
 		update_ui_msg('Output Below');
 		$('body').removeClass(body_busy_class);
+		
 	}
 	function draw_science(){
 		update_ui_msg('Generating Ouput');
-		console.log('-draw table!-');
 		$(table_target_obj).html('');//clear the old
 
 		var head_filler=[
@@ -148,6 +170,13 @@ kspUniObj.plugin.is_celestial_body=function(packObj){
 				'cell-biome'
 			],
 			cell_css={
+				'sci_zero':'sci-zero',
+				'sci_grey':'sci-grey',
+				'sci_empty':'sci-empty',
+				'sci_rate_full':'sci-full',
+				'sci_rate_high':'sci-green',
+				'sci_rate_mid':'sci-yellow',
+				'sci_rate_low':'sci-blue',
 				'mod_row':'mod-plaent-row',
 				'sci':'row-sci',
 				'sci_head':'sci-header',
@@ -158,19 +187,20 @@ kspUniObj.plugin.is_celestial_body=function(packObj){
 		tableObj=new bdTabler();
 		tableObj.plugin=old_plugs;
 		delete old_plugs;
+		
 
 		for(var s=0;s<kspSciObj.default_sciences.length;s++){
 			if(alt_sci_table_func(kspSciObj.default_sciences[s],'sci')){
 				found_sci.push(kspSciObj.default_sciences[s].ident);
-				science_arr.push(kspSciObj.default_sciences[s].name);}}
+				science_arr.push(kspSciObj.default_sciences[s]);}}
 
 		for(var s=0;s<kspSciObj.sciences.length;s++){//put mods last
 			if(alt_sci_table_func(kspSciObj.sciences[s],'sci') && $.inArray(kspSciObj.sciences[s].ident,found_sci)===-1){
 				found_sci.push(kspSciObj.sciences[s].ident);
-				science_arr.push(kspSciObj.sciences[s].name);
+				science_arr.push(kspSciObj.sciences[s]);
 			}
 		}
-		tableObj.add_line(head_filler.concat(science_arr),{'add_class_row':'sci-head','add_class':head_filler_class.concat(repeat_val_into_arr('sci-header',science_arr.length))});//'row_type':'head',
+		tableObj.add_line(head_filler.concat(flatten_array(science_arr,'name')),{'add_class_row':'sci-head','add_class':head_filler_class.concat(repeat_val_into_arr('sci-header',science_arr.length)),'row_type':'head'});//'row_type':'head',
 
 		for(var s=0;s<kspUniObj.default_bodies.length;s++){
 			var body_data={};
@@ -196,89 +226,361 @@ kspUniObj.plugin.is_celestial_body=function(packObj){
 					mods_row=['Mod-Planets'];
 					var r_cnt=science_arr.length+head_filler.length-mods_row.length;//head_filler
 					mods_row=mods_row.concat(repeat_val_into_arr(tableObj.reserve_merge_row(),r_cnt));
-					delete r_cnt;
-					delete mods_row;
-					tableObj.add_line(mods_row,{'add_class_row':cell_css.mod_row});}
+					delete r_cnt;}
 				found_c_body.push(kspUniObj.celestial_bodies[s].ident);
 				celestial_body_arr.push(kspUniObj.celestial_bodies[s].name);
 			}
 		}
-		var build_td_sci_vals=function(){
-			return repeat_val_into_arr('',science_arr.length);
+		//PARSE OUT THE DATA
+		var build_td_sci_cell=function(pushUpObj,sciIdent,seekKey,userSci){
+			var sci_cell={};
+
+//console.log('userSci[seekKey]',userSci[seekKey],'seekKey',seekKey);
+			sci_cell.cap=userSci[seekKey].cap.toFixed(1);
+			sci_cell.sci=userSci[seekKey].sci.toFixed(1);
+			sci_cell.sci_num=parseFloat(userSci[seekKey].sci);
+			sci_cell.percent=userSci[seekKey].percent;
+			sci_cell.percent_num=parseFloat(userSci[seekKey].percent);
+			sci_cell.rail=userSci[seekKey].rail;
+			var t_sci='',
+				p_num=sci_cell.percent_num,
+				t_class=cell_css.sci_cell;
+
+			if(p_num>=100){t_sci='100%';}//100+
+			else if(p_num<1){t_sci='0%';}//<0.999
+			else{t_sci=sci_cell.percent+'%';}
+
+			if(p_num>=1 && p_num<=33){t_class=t_class+' '+cell_css.sci_rate_low;}/*1%-33%*/
+			else if(p_num>=33 && p_num<=66){t_class=t_class+' '+cell_css.sci_rate_mid;}/*33%-66%*/
+			else if(p_num>=66 && p_num<100){t_class=t_class+' '+cell_css.sci_rate_high;}/*66%-<100%*/
+			else if(p_num>=100){t_class=t_class+' '+cell_css.sci_rate_full;}/*>100%*/
+			
+			if(p_num>=1){
+				pushUpObj[ (sciIdent) ].add_class=t_class;
+				pushUpObj[ (sciIdent) ].html_out=t_sci+'<br>'+'<span class="sml-txt">'+sci_cell.sci+'/'+sci_cell.cap+'<span>';
+			}else{
+				pushUpObj[ (sciIdent) ].add_class=cell_css.sci_zero;
+				pushUpObj[ (sciIdent) ].html_out='0';
+			}
+
+			pushUpObj[ (sciIdent) ].text=userSci[seekKey].text;
 		};
-		var build_td_vals=function(planetName,railArr,biomeArr,sciArr){
-if(planetName=='Kerbin'){console.log('=====================================',biomeArr);}
+		var build_td_sci_vals=function(bCount,planetObj,rail,biome,sciArr,userSci){
+			var found_user_sci=userSci.concat([]),//break pass by reference
+				row_meta={'add_class':[],'title_txt':[],'valid_sci':[],'rails_as_groups':[]},
+				this_sci_row=[],
+				this_sci_index={},
+				planet_rails=kspUniObj.get_rail_rules(planetObj.body_type);
+//if(planetObj.ident=='Kerbin'){console.log('planetObj',planetObj,'userSci',userSci,"\n\n",'sciArr',sciArr,"\n\n",'planet_rails',planet_rails,"\n\n",'rail',rail,"\n\n",'biome('+rail.ident+')',biome);}
+			bCount;
+			for(var sa=0;sa<sciArr.length;sa++){
+//console.log('sciArr[sa].ident',sciArr[sa].ident, 'planetObj.body_type',planetObj.body_type);
+				var sci_rails=kspSciObj.get_rail_rules(sciArr[sa].ident, planetObj.body_type),//,(sciArr[sa].ident=='surfaceSample' && planetObj.ident=='Moho'?true:false)
+					sci_data_obj={},
+					is_sci=kspSciObj.is_science(sciArr[sa].ident,sci_data_obj),
+					seek_u_sci_key_ident=-1,
+					seek_u_sci_key_group=-1,
+					seek_u_sci_key=-1,
+					sci_cell={},
+					rails_as_groups=false,
+					valid_sci={'rail':false,'biome':false};//we have the rail biome!
+
+				this_sci_index[ (sciArr[sa].ident) ]={'html_out':'','add_class':'','text':'','valid_sci':{}};//default
+
+				if(rail.ident===false){//expansion rail?
+					if(sci_data_obj.meta.rails_as_groups){rails_as_groups=true;}//weird merge for as groups
+					var grouped_biome_context=object_group_val(sci_rails.biome_context);
+					if(inArray_multi_seek([sciArr[sa].ident,rail.rail], [flatten_array(page_data.parsed_science,'science_ident'),flatten_array(page_data.parsed_science,'rail')])!==-1){//if this experiment is found without a planet filter
+						valid_sci.rail=true;}
+					if(valid_sci.rail){
+						if((grouped_biome_context.length==1 && grouped_biome_context[0]===true) || (grouped_biome_context.length>1 && $.inArray(true,grouped_biome_context)!==-1)){//if the experiment allows all biomes or some biomes
+							valid_sci.biome=true;}}
+//if(planetObj.ident=='Mun' && sciArr[sa].ident=='temperatureScan' && (biome=='HighlandCraters' || biome=='NorthernBasin')){console.log('biome',biome,'rail',rail,'sci_rails',sci_rails,'grouped_biome_context',grouped_biome_context,'$.inArray(true,grouped_biome_context)',$.inArray(true,grouped_biome_context),"\n",'---valid_sci',valid_sci);}
+					delete grouped_biome_context;
+				}else{//not expansion rail?					
+					if(sci_data_obj.meta.rails_as_groups){rails_as_groups=true;}//weird merge for as groups
+					if(planet_rails.rails[rail.key]){
+						if(sci_rails.rail_context[rail.key]){valid_sci.rail=true;}
+						if(sci_rails.biome_context[rail.key]){
+//if(planetObj.ident=='Kerbin' && sciArr[sa].ident=='crewReport' && biome=='Grasslands' && rail.key=='surface'){console.log('rail.key BIOME!',sci_rails.biome_context[rail.key]);}
+							valid_sci.biome=true;}
+					}
+				}
+
+				//seek_u_sci_key_biome=inArray_multi_seek([sciArr[sa].ident,rail.ident,biome], [flatten_array(userSci,'science_ident'),flatten_array(userSci,'rail'),flatten_array(userSci,'biome_ident')]);//,(planetObj.ident=='Kerbin'?true:false)
+				if(rail.ident===false){
+					var force_mode=(bCount==0 && valid_sci.biome===false && biome.length>0?true:false);
+					if(biome===false || valid_sci.biome===false){
+						seek_u_sci_key_ident=inArray_multi_seek([
+								sciArr[sa].ident,
+								rail.rail
+							],
+							[
+								flatten_array(userSci,'science_ident'),
+								flatten_array(userSci,'rail')
+						]);//,(planetObj.ident=='Kerbin'?true:false)
+					}else{
+						seek_u_sci_key_ident=inArray_multi_seek([
+								sciArr[sa].ident,
+								rail.rail,
+								false
+							],
+							[
+								flatten_array(userSci,'science_ident'),
+								flatten_array(userSci,'rail'),
+								flatten_array(userSci,'biome_ident')
+						]);//,(planetObj.ident=='Kerbin'?true:false)
+					}
+					seek_u_sci_key_ident=inArray_multi_seek([
+							sciArr[sa].ident,
+							rail.rail,
+							(force_mode?false:biome)//if its the first row of the rail; there is no indication of it using biomes, and the parent process things we should be considering biomes (its a string !==false) then look for a false biome... otherwise always allow it to fail
+						],
+						[
+							flatten_array(userSci,'science_ident'),
+							flatten_array(userSci,'rail'),
+							flatten_array(userSci,'biome_ident')
+					]);//,(planetObj.ident=='Kerbin'?true:false)
+					//valid_sci.rail=(force_mode && seek_u_sci_key_ident===-1?false:valid_sci.rail);//forcing a cell merge!
+
+//if(planetObj.ident=='Mun' && sciArr[sa].ident=='temperatureScan' && (biome=='HighlandCraters' || biome=='NorthernBasin')){console.log('('+bCount+'==0 && valid_sci.biome===false && biome.length>0?false:biome)',(bCount==0 && valid_sci.biome===false && biome.length>0?false:biome));}
+				}else{
+					if(biome===false || valid_sci.biome===false){
+						seek_u_sci_key_ident=inArray_multi_seek([sciArr[sa].ident,rail.ident], [flatten_array(userSci,'science_ident'),flatten_array(userSci,'rail')]);//,(planetObj.ident=='Kerbin'?true:false)
+						seek_u_sci_key_group=inArray_multi_seek([sciArr[sa].ident,rail.group_ident], [flatten_array(userSci,'science_ident'),flatten_array(userSci,'rail')]);//,(planetObj.ident=='Kerbin'?true:false)
+					}else{
+						seek_u_sci_key_ident=inArray_multi_seek([sciArr[sa].ident,rail.ident,biome], [flatten_array(userSci,'science_ident'),flatten_array(userSci,'rail'),flatten_array(userSci,'biome_ident')]);//,(planetObj.ident=='Kerbin'?true:false)
+						seek_u_sci_key_group=inArray_multi_seek([sciArr[sa].ident,rail.group_ident,biome], [flatten_array(userSci,'science_ident'),flatten_array(userSci,'rail'),flatten_array(userSci,'biome_ident')]);//,(planetObj.ident=='Kerbin'?true:false)
+					}
+				}
+				seek_u_sci_key=(seek_u_sci_key_ident===-1?seek_u_sci_key_group:seek_u_sci_key_ident);
+//if(planetObj.ident=='Kerbin' && sciArr[sa].ident=='crewReport' && biome=='Grasslands' && rail.key=='surface'){console.log(sciArr[sa].ident,'sci_rails',$.extend(true,{},sci_rails),"\n",'is_sci',is_sci,"\n",'sci_data_obj',$.extend(true,{},sci_data_obj),"\n",'rail.ident',rail.ident,"\n",'seek_u_sci_key ',seek_u_sci_key,"\n",'userSci[seek_u_sci_key]',(seek_u_sci_key>=0?userSci[seek_u_sci_key]:false));}
+//if(planetObj.ident=='Mun' && sciArr[sa].ident=='temperatureScan' && (biome=='HighlandCraters' || biome=='NorthernBasin')){if(rail.ident===false){console.log(sciArr[sa].ident,'sci_rails',$.extend(true,{},sci_rails),"\n",'is_sci',is_sci,"\n",'sci_data_obj',$.extend(true,{},sci_data_obj),"\n",'rail.ident',rail.ident,'rail.rail',rail.rail,"\n",'seek_u_sci_key ',seek_u_sci_key,"\n",'userSci[seek_u_sci_key]',(seek_u_sci_key>=0?userSci[seek_u_sci_key]:false));}}
+				if(planetObj.ident=='Kerbin' && sci_data_obj.ident=='recovery'){//temp hack!
+					if(rail.key=='splash' || rail.key=='surface'){
+						valid_sci.rail=false;}}
+				else if(planetObj.ident=='Kerbin' && rail.key=='splash' && biome!==false && $.inArray(biome,['KSC','LaunchPad','Runway'])!==-1){//temp hack!					
+					valid_sci.biome=false;
+					valid_sci.rail=false;}
+				//if(bdcheck_key(planet_rails.rails,rail.key)){planet_rails.rails[rail.key];}
+
+//if(planetObj.ident=='Kerbin' && sciArr[sa].ident=='crewReport' && biome=='Grasslands' && rail.key=='surface'){console.log('=============valid_sci:',valid_sci);}
+//if(planetObj.ident=='Mun' && sciArr[sa].ident=='temperatureScan' && (biome=='HighlandCraters' || biome=='NorthernBasin')){if(rail.ident===false){console.log('=============valid_sci:',valid_sci);}}
+				if(valid_sci.rail===true){
+					if(valid_sci.rail===true && valid_sci.biome===false && biome.length>0 && seek_u_sci_key!==-1){//ignore biome but rail is there... this planet has rails! found experiment!
+//if(planetObj.ident=='Kerbin' && sciArr[sa].ident=='crewReport' && biome=='Grasslands' && rail.key=='surface'){console.log('==============================valid_sci.rail===true, valid_sci.biome===false TRUE!========================',"\n",bCount);}
+						if(bCount==0){
+							build_td_sci_cell(this_sci_index,sciArr[sa].ident,seek_u_sci_key,userSci);
+						}else{
+							this_sci_index[ (sciArr[sa].ident) ].html_out='';
+							this_sci_index[ (sciArr[sa].ident) ].add_class='';
+						}
+					}else if(seek_u_sci_key!==-1){//valid rail & biome
+//if(planetObj.ident=='Kerbin' && sciArr[sa].ident=='crewReport' && biome=='Grasslands' && rail.key=='surface'){console.log('==============================seek_u_sci_key!==-1 TRUE!========================',"\n",bCount,(seek_u_sci_key>=0?userSci[seek_u_sci_key]:false));}
+						build_td_sci_cell(this_sci_index,sciArr[sa].ident,seek_u_sci_key,userSci);
+					}else{//no user data!
+						this_sci_index[ (sciArr[sa].ident) ].add_class=cell_css.sci_zero;
+						this_sci_index[ (sciArr[sa].ident) ].html_out='0';
+					}
+//planet has biomes but not this experiment
+//planet has biomes normally
+				}else{
+					if(bCount!=0){
+					}else{//bcount is 0!
+						this_sci_index[ (sciArr[sa].ident) ].add_class=cell_css.sci_cell+' '+cell_css.sci_grey;
+						this_sci_index[ (sciArr[sa].ident) ].html_out='';
+					}
+				}
+				this_sci_index[ (sciArr[sa].ident) ].valid_sci=$.extend(true,{},valid_sci);//break pass by reference
+				this_sci_index[ (sciArr[sa].ident) ].rails_as_groups=rails_as_groups;
+				
+//console.log(sa,sciArr[sa].ident,'sci_rails',sci_rails,'seek_u_sci_key',seek_u_sci_key);
+				//this_sci_row.push();
+				sciArr[sa];
+			}
+			if(biome!==false){
+			}
+			/*
+			for(var us=0;us<userSci.length;us++){
+				userSci[us];
+			}*/
+			for(var sa=0;sa<sciArr.length;sa++){//prase out
+//console.log('this_sci_index[ (sciArr[sa].ident) ]',this_sci_index[ (sciArr[sa].ident) ],'this_sci_index[ (sciArr[sa].ident) ].html_out',this_sci_index[ (sciArr[sa].ident) ].html_out);
+				
+				this_sci_row.push((basic_check(this_sci_index[ (sciArr[sa].ident) ].html_out)?this_sci_index[ (sciArr[sa].ident) ].html_out:''));
+				row_meta.add_class.push((basic_check(this_sci_index[ (sciArr[sa].ident) ].add_class)?this_sci_index[ (sciArr[sa].ident) ].add_class:''));
+				row_meta.title_txt.push((basic_check(this_sci_index[ (sciArr[sa].ident) ].text)?this_sci_index[ (sciArr[sa].ident) ].text:''));
+				row_meta.valid_sci.push(this_sci_index[ (sciArr[sa].ident) ].valid_sci);
+				row_meta.rails_as_groups.push(this_sci_index[ (sciArr[sa].ident) ].rails_as_groups);
+			}
+
+			return {'row':this_sci_row,'meta':row_meta};
+		};
+		var build_td_vals=function(planetObj,railArr,biomeArr,sciArr,userSci){
+//if(planetObj.name=='Kerbin'){console.log('=====================================',biomeArr);}
+//console.log('railArr',railArr);
 			var output=[],
+				found_user_sci=userSci.concat([]),//break pass by reference
 				meta_out={'add_class':planet_class.concat(repeat_val_into_arr(cell_css.sci_cell,sciArr.length))},
 				add_body_name=false,
 				build_count=0;
 			for(var r=0;r<railArr.length;r++){
-				var this_line=[];
-				if(build_count==0 && add_body_name===false){this_line.push(planetName);add_body_name=true;}
+				var this_line=[],
+					new_ouput=[],
+					this_rail={
+						'rail':railArr[r],
+						'ident':false,
+						'group_ident':false,
+						'key':false,
+						'label':''
+					};
+				build_count=0;//row count per rail
+				if(add_body_name===false){this_line.push(planetObj.name);add_body_name=true;}
 				else{this_line.push(tableObj.reserve_merge_col());}//reserve empty going forward
+
+				if(bdcheck_key(kspUniObj.body_rails,this_rail.rail)){
+					this_rail.key=this_rail.rail;
+					this_rail.group_ident=kspUniObj.body_rails[this_rail.rail].group_ident;
+					this_rail.ident=kspUniObj.body_rails[this_rail.rail].ident;
+					this_rail.label=kspUniObj.body_rails[this_rail.rail].title;}
+				else{
+					this_rail.label=this_rail.rail;}
 
 				if(biomeArr.length>0){
 					for(var b=0;b<biomeArr.length;b++){
 						if(b==0){
-							this_line.push(kspUniObj.body_rails[ (railArr[r]) ].title);
-							this_line.push(biomeArr[b]);}
+							this_line.push(this_rail.label);//first rail label
+							this_line.push(biomeArr[b]);}//first biome rail
 						else{
 							this_line=[tableObj.reserve_merge_col(),tableObj.reserve_merge_col(),biomeArr[b]];}//planet name,rail,biome
 
-						var sci_arr=build_td_sci_vals();
-						this_line=this_line.concat(sci_arr);
-						output.push({'row':this_line,'meta':meta_out});
+						var arr_fill=repeat_val_into_arr('',this_line.length),
+							sci_arr=build_td_sci_vals(build_count,planetObj,this_rail,biomeArr[b],sciArr,found_user_sci);
+						sci_arr.meta.title_txt=arr_fill.concat(sci_arr.meta.title_txt);
+						sci_arr.meta.add_class=arr_fill.concat(sci_arr.meta.add_class);
+						sci_arr.meta.valid_sci=arr_fill.concat(sci_arr.meta.valid_sci);
+						sci_arr.meta.rails_as_groups=arr_fill.concat(sci_arr.meta.rails_as_groups);
+						this_line=this_line.concat(sci_arr.row);
+						new_ouput={'row':this_line,'meta':$.extend(true,{},merge_array_obj_val_str(meta_out,sci_arr.meta))};
+						new_ouput=new_line_colspan(build_count,planetObj,biomeArr[b],output,new_ouput);
+						output.push(new_ouput);
 						build_count++;
 					}
 				}else{
-					this_line.push(kspUniObj.body_rails[ (railArr[r]) ].title);//output rail
+					this_line.push(this_rail.label);//output rail
 					this_line.push('');//biome
 					
-					var sci_arr=build_td_sci_vals();
-					this_line=this_line.concat(sci_arr);
-					output.push({'row':this_line,'meta':meta_out});
+					var arr_fill=repeat_val_into_arr('',this_line.length),
+						sci_arr=build_td_sci_vals(build_count,planetObj,this_rail,false,sciArr,found_user_sci);
+					sci_arr.meta.title_txt=arr_fill.concat(sci_arr.meta.title_txt);
+					sci_arr.meta.add_class=arr_fill.concat(sci_arr.meta.add_class);
+					sci_arr.meta.valid_sci=arr_fill.concat(sci_arr.meta.valid_sci);
+					sci_arr.meta.rails_as_groups=arr_fill.concat(sci_arr.meta.rails_as_groups);
+					this_line=this_line.concat(sci_arr.row);
+					new_ouput={'row':this_line,'meta':$.extend(true,{},merge_array_obj_val_str(meta_out,sci_arr.meta))};
+					new_ouput=new_line_colspan(build_count,planetObj,false,output,new_ouput);
+					output.push(new_ouput);
 					build_count++;
 				}
+				//end of rail
+				if(r!=0){//console.log('output['+output.length+'-'+build_count+']',output[output.length-build_count]);
+					var last_row=output[output.length-build_count];
+					for(var lr=0;lr<last_row.row.length;lr++){
+						//if(lr>=3 && tableObj.reserve_merge_col()===last_row.row[lr]){
+						if(lr>=3 && last_row.row[lr].constructor==bdTablerSpan){
+//console.log(lr,'output[output.length-build_count].row',output[output.length-build_count].row);
+							output[output.length-build_count].row[lr]='';}}
+					delete last_row;
+				}
+			}
+
+//console.log('output',$.extend(true,{},output));
+			for(var o=0;o<output.length;o++){
+				delete output[o].meta.valid_sci;//its annoying to have this data in debug
+				delete output[o].meta.rails_as_groups;//its annoying to have this data in debug
 			}
 			return output;
 		};
-		var flat_rail_groups=flatten_array(kspUniObj.body_rails,'group_ident'),
-			flat_rail_idents=flatten_array(kspUniObj.body_rails,'ident');
-		for(var b=0;b<found_c_body.length;b++){
-			var planet_data={};
-			kspUniObj.is_celestial_body(found_c_body[b],planet_data);
-			var rail_rules=kspUniObj.get_rail_rules(planet_data.body_type),
-				t_rail=[];
-			for(var r in rail_rules.rails){
-				if(bdcheck_key(rail_rules.rails,r)){
-					if(rail_rules.rails[r]===true){
-						t_rail.push(r);}}}
-			
-			var user_sci=array_object_search(page_data.parsed_science,'planet_ident',planet_data.ident),extra_rail=[];
-			for(var us=0;us<user_sci.length;us++){
-				if($.inArray(user_sci[us].rail,flat_rail_idents)===-1 && $.inArray(user_sci[us].rail,flat_rail_idents)===-1){
-					extra_rail.push(user_sci[us].rail);
+		var new_line_colspan=function(bCount,planetObj,biome,allOutput,newRow){
+//console.log('new_line_colspan',newRow)
+			var spanned_row={};
+			for(var vi=0;vi<newRow.meta.valid_sci.length;vi++){
+				newRow.meta.valid_sci[vi];
+				var group_valid_sci=object_group_val(newRow.meta.valid_sci[vi]);
+				if(group_valid_sci.length==1 && group_valid_sci[0]===false && allOutput.length>=1){//all rails false!
+					var prev_key=allOutput.length-1,//this key because we haven't added newRow yet
+						prev_group_valid_sci=object_group_val(allOutput[prev_key].meta.valid_sci[vi]);
+					if(prev_group_valid_sci.length==1 && prev_group_valid_sci[0]===false){
+						allOutput[prev_key].meta.add_class[vi]=cell_css.sci_cell+' '+cell_css.sci_grey;
+						newRow.row[vi]=tableObj.reserve_merge_col();
+					}
+				}else if(newRow.meta.valid_sci[vi].rail===true && newRow.meta.valid_sci[vi].biome===false && biome.length>0 && allOutput.length>=1 && bCount>0){
+					//if(bCount==0){}//rail entry count
+					newRow.row[vi]=tableObj.reserve_merge_col();
 				}
 			}
+			/*
+				delete newRow.meta.valid_sci;//its annoying to have this data in debug
+				delete newRow.meta.rails_as_groups;//its annoying to have this data in debug
+			*/
+//console.log('new_line_colspan newRow',newRow)
+			return newRow;
+		};
+		var flat_rail_groups=flatten_object(kspUniObj.body_rails,'group_ident'),
+			flat_rail_idents=flatten_object(kspUniObj.body_rails,'ident');
+//console.log('flat_rail_idents',flat_rail_idents,'flat_rail_groups',flat_rail_groups);
+//var test_key=111;//if(b>test_key
+		var planet_inc=0;
+		var planet_table_line=function(){
 
-//console.log(planet_data.ident,'user_sci',user_sci);
-//break;
-			var new_arr=build_td_vals(planet_data.name,t_rail.concat(extra_rail),planet_data.biomes,science_arr);
-			if(new_arr.length>0){
-				for(var m=0;m<new_arr.length;m++){
+			//for(var planet_inc=0;planet_inc<found_c_body.length;planet_inc++){
+				var planet_data={};
+				kspUniObj.is_celestial_body(found_c_body[planet_inc],planet_data);
+				var rail_rules=kspUniObj.get_rail_rules(planet_data.body_type),
+					t_rail=[];
+				for(var r in rail_rules.rails){
+					if(bdcheck_key(rail_rules.rails,r)){
+						if(rail_rules.rails[r]===true){
+							t_rail.push(r);}}}
+				
+				var user_sci=array_object_search(page_data.parsed_science,'planet_ident',planet_data.ident),extra_rail=[];
+				for(var us=0;us<user_sci.length;us++){
+					if(inObject(user_sci[us].rail,flat_rail_groups)===-1 && inObject(user_sci[us].rail,flat_rail_idents)===-1){
+						extra_rail.push(user_sci[us].rail);
+					}
+				}
+//if(b!=0 && planet_inc<=test_key){continue;}
+//console.log('========================='+planet_data.name+'=========================');
+				if($.inArray(planet_data.ident,flatten_array(kspUniObj.default_bodies,'ident'))===-1 && mods_row.length>0){
+					tableObj.add_line(mods_row,{'add_class_row':cell_css.mod_row});
+					mods_row=[];//unset
+				}
+				var new_arr=build_td_vals(planet_data,t_rail.concat(extra_rail),planet_data.biomes,science_arr,user_sci);
+				if(new_arr.length>0){
+					for(var m=0;m<new_arr.length;m++){
 //console.log('new_arr[m].row',new_arr[m].row);
-					tableObj.add_line(new_arr[m].row, new_arr[m].meta);
+						tableObj.add_line(new_arr[m].row, new_arr[m].meta);
+					}
 				}
-			}else{
-			}
 
-			//tableObj.add_line(['','',''],{'add_class':planet_class.concat(repeat_val_into_arr(cell_css.sci_cell,science_arr.length))});
-		}
-		//tableObj.add_line(['','',''],{'add_class_row':cell_css.sci,'add_class':head_filler_class.concat(repeat_val_into_arr(cell_css.sci_head,celestial_body_arr.length))});//'row_type':'head',
+//if(planet_inc>test_key){break;}
+				//tableObj.add_line(['','',''],{'add_class':planet_class.concat(repeat_val_into_arr(cell_css.sci_cell,science_arr.length))});
+				planet_inc++;
+				if(planet_inc>=found_c_body.length){
+//console.log('page_data',page_data,'tableObj',tableObj);
+					declare_finished();
+				}else{
+					FPSObj.add_once_callback(planet_table_line);
+				}
+			//}//end for
+			//tableObj.add_line(['','',''],{'add_class_row':cell_css.sci,'add_class':head_filler_class.concat(repeat_val_into_arr(cell_css.sci_head,celestial_body_arr.length))});//'row_type':'head',
 
-console.log('page_data',page_data,'tableObj',tableObj);
-		tableObj.draw_table(table_target_obj);
-		declare_finished();
+		};
+		FPSObj.change_fps(40);//lets speed it up!
+		FPSObj.add_once_callback(planet_table_line);
+		/*
+	console.log('page_data',page_data,'tableObj',tableObj);
+			declare_finished();*/
 	}
 
 	function on_captured_science(dataSetIn){
@@ -562,7 +864,7 @@ console.log('captured_sci_ids',captured_sci_ids,
 		}
 	});
 	$(drag_target).on('dragover',function () { $(this).addClass('hover'); return false; });
-	$(drag_target).on('dragend',function () { $(this).removeClass('hover'); return false; });
+	$(drag_target).on('dragend dragleave',function () { $(this).removeClass('hover'); return false; });
 	$(drag_target).on('drop',dodrop);
 </script>
 <!-- quick science grid test -->
