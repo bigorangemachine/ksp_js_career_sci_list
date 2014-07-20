@@ -1,7 +1,7 @@
 @import url(https://fonts.googleapis.com/css?family=Lato:300italic,700italic,300,700);
 
 body {
-  padding:50px;
+  /*padding:50px;*/
   font:14px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
   color:#777;
   font-weight:300;
@@ -47,7 +47,7 @@ a small {
 
 .wrapper {
   width:860px;
-  margin:0 auto;
+  margin:50px auto 0px;
 }
 
 blockquote {
@@ -184,6 +184,9 @@ footer {
   clear:both;
   display:block;
   overflow:hidden;
+/*DEMO HACK*/
+width: 860px;
+margin: 0 auto;
 }
 
 @media print, screen and (max-width: 960px) {
@@ -260,3 +263,5 @@ footer {
 
 .warning-p{margin:0px auto;text-align:center;}
 .warn{color:#cc0000;}
+
+.table-output{float:none;clear:both;width:100%;overflow:hidden;}
