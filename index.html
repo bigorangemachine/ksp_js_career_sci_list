@@ -270,8 +270,7 @@ console.log('-draw table!-');
 				this_sci_row=[],
 				this_sci_index={},
 				planet_rails=kspUniObj.get_rail_rules(planetObj.body_type);
-if(planetObj.ident=='Kerbin'){
-console.log('planetObj',planetObj,'userSci',userSci,"\n\n",'sciArr',sciArr,"\n\n",'planet_rails',planet_rails,"\n\n",'rail',rail,"\n\n",'biome('+rail.ident+')',biome);}
+//if(planetObj.ident=='Kerbin'){console.log('planetObj',planetObj,'userSci',userSci,"\n\n",'sciArr',sciArr,"\n\n",'planet_rails',planet_rails,"\n\n",'rail',rail,"\n\n",'biome('+rail.ident+')',biome);}
 			bCount;
 			for(var sa=0;sa<sciArr.length;sa++){
 //console.log('sciArr[sa].ident',sciArr[sa].ident, 'planetObj.body_type',planetObj.body_type);
@@ -292,16 +291,14 @@ console.log('planetObj',planetObj,'userSci',userSci,"\n\n",'sciArr',sciArr,"\n\n
 					if(planet_rails.rails[rail.key]){
 						if(sci_rails.rail_context[rail.key]){valid_sci.rail=true;}
 						if(sci_rails.biome_context[rail.key]){
-if(planetObj.ident=='Kerbin' && sciArr[sa].ident=='crewReport'){
-console.log('rail.key BIOME!',sci_rails.biome_context[rail.key]);}
+//if(planetObj.ident=='Kerbin' && sciArr[sa].ident=='mysteryGoo'){console.log('rail.key BIOME!',sci_rails.biome_context[rail.key]);}
 							valid_sci.biome=true;}
 						//biome?
 					}
 				}
 
-
 				//seek_u_sci_key_biome=inArray_multi_seek([sciArr[sa].ident,rail.ident,biome], [flatten_array(userSci,'science_ident'),flatten_array(userSci,'rail'),flatten_array(userSci,'biome_ident')]);//,(planetObj.ident=='Kerbin'?true:false)
-				if(biome===false){
+				if(biome===false || valid_sci.biome===false){
 					seek_u_sci_key_ident=inArray_multi_seek([sciArr[sa].ident,rail.ident], [flatten_array(userSci,'science_ident'),flatten_array(userSci,'rail')]);//,(planetObj.ident=='Kerbin'?true:false)
 					seek_u_sci_key_group=inArray_multi_seek([sciArr[sa].ident,rail.group_ident], [flatten_array(userSci,'science_ident'),flatten_array(userSci,'rail')]);//,(planetObj.ident=='Kerbin'?true:false)
 				}else{
@@ -309,21 +306,28 @@ console.log('rail.key BIOME!',sci_rails.biome_context[rail.key]);}
 					seek_u_sci_key_group=inArray_multi_seek([sciArr[sa].ident,rail.group_ident,biome], [flatten_array(userSci,'science_ident'),flatten_array(userSci,'rail'),flatten_array(userSci,'biome_ident')]);//,(planetObj.ident=='Kerbin'?true:false)
 				}
 				seek_u_sci_key=(seek_u_sci_key_ident===-1?seek_u_sci_key_group:seek_u_sci_key_ident);
-if(planetObj.ident=='Kerbin' && sciArr[sa].ident=='crewReport'){
-//console.log('seek_u_sci_key ',seek_u_sci_key);
-console.log(sciArr[sa].ident,'sci_rails',$.extend(true,{},sci_rails),"\n",'is_sci',is_sci,"\n",'sci_data_obj',$.extend(true,{},sci_data_obj),"\n",'rail.ident',rail.ident,"\n",'seek_u_sci_key ',seek_u_sci_key);}
+//if(planetObj.ident=='Kerbin' && sciArr[sa].ident=='mysteryGoo'){console.log(sciArr[sa].ident,'sci_rails',$.extend(true,{},sci_rails),"\n",'is_sci',is_sci,"\n",'sci_data_obj',$.extend(true,{},sci_data_obj),"\n",'rail.ident',rail.ident,"\n",'seek_u_sci_key ',seek_u_sci_key);}
 				if(planetObj.ident=='Kerbin' && sci_data_obj.ident=='recovery'){//temp hack!
 					if(rail.key=='splash' || rail.key=='surface'){
 						valid_sci.rail=false;}}
 				//if(bdcheck_key(planet_rails.rails,rail.key)){planet_rails.rails[rail.key];}
 				if(valid_sci.rail===true){
-if(planetObj.ident=='Kerbin' && sciArr[sa].ident=='crewReport' && valid_sci.biome){console.log('==============================valid_sci.biome TRUE!========================');}
-					if(seek_u_sci_key!==-1){
+					if(valid_sci.rail===true && valid_sci.biome===false && biome.length>0 && seek_u_sci_key!==-1){//ignore biome but rail is there... this planet has rails! found experiment!
+//if(planetObj.ident=='Kerbin' && sciArr[sa].ident=='mysteryGoo' && rail.key=='high_orbit'){console.log('==============================valid_sci.biome TRUE!========================',"\n",bCount);}
+						if(bCount==0){
+							build_td_sci_cell(this_sci_index,sciArr[sa].ident,seek_u_sci_key,userSci);
+						}else{
+							this_sci_index[ (sciArr[sa].ident) ].html_out='';
+							this_sci_index[ (sciArr[sa].ident) ].add_class='';
+						}
+					}else if(seek_u_sci_key!==-1){//valid rail & biome
 						build_td_sci_cell(this_sci_index,sciArr[sa].ident,seek_u_sci_key,userSci);
 					}else{//no user data!
 						this_sci_index[ (sciArr[sa].ident) ].add_class=cell_css.sci_zero;
 						this_sci_index[ (sciArr[sa].ident) ].html_out='0';
 					}
+//planet has biomes but not this experiment
+//planet has biomes normally
 				}else{
 					if(bCount!=0){
 					}else{//bcount is 0!
@@ -357,8 +361,8 @@ if(planetObj.ident=='Kerbin' && sciArr[sa].ident=='crewReport' && valid_sci.biom
 			return {'row':this_sci_row,'meta':row_meta};
 		};
 		var build_td_vals=function(planetObj,railArr,biomeArr,sciArr,userSci){
-if(planetObj.name=='Kerbin'){console.log('=====================================',biomeArr);}
-console.log('railArr',railArr);
+//if(planetObj.name=='Kerbin'){console.log('=====================================',biomeArr);}
+//console.log('railArr',railArr);
 			var output=[],
 				found_user_sci=userSci.concat([]),//break pass by reference
 				meta_out={'add_class':planet_class.concat(repeat_val_into_arr(cell_css.sci_cell,sciArr.length))},
@@ -402,7 +406,7 @@ console.log('railArr',railArr);
 						sci_arr.meta.rails_as_groups=arr_fill.concat(sci_arr.meta.rails_as_groups);
 						this_line=this_line.concat(sci_arr.row);
 						new_ouput={'row':this_line,'meta':$.extend(true,{},merge_array_obj_val_str(meta_out,sci_arr.meta))};
-						new_ouput=new_line_colspan(output,new_ouput);
+						new_ouput=new_line_colspan(build_count,planetObj,biomeArr[b],output,new_ouput);
 						output.push(new_ouput);
 						build_count++;
 					}
@@ -418,7 +422,7 @@ console.log('railArr',railArr);
 					sci_arr.meta.rails_as_groups=arr_fill.concat(sci_arr.meta.rails_as_groups);
 					this_line=this_line.concat(sci_arr.row);
 					new_ouput={'row':this_line,'meta':$.extend(true,{},merge_array_obj_val_str(meta_out,sci_arr.meta))};
-					new_ouput=new_line_colspan(output,new_ouput);
+					new_ouput=new_line_colspan(build_count,planetObj,false,output,new_ouput);
 					output.push(new_ouput);
 					build_count++;
 				}
@@ -441,19 +445,22 @@ console.log('output',$.extend(true,{},output));
 			}
 			return output;
 		};
-		var new_line_colspan=function(allOutput,newRow){
-//console.log('new_line_colspan',newRow)
+		var new_line_colspan=function(bCount,planetObj,biome,allOutput,newRow){
+console.log('new_line_colspan',newRow)
 			var spanned_row={};
 			for(var vi=0;vi<newRow.meta.valid_sci.length;vi++){
 				newRow.meta.valid_sci[vi];
 				var group_valid_sci=object_group_val(newRow.meta.valid_sci[vi]);
-				if(group_valid_sci.length==1 && group_valid_sci[0]===false && allOutput.length>=1){
+				if(group_valid_sci.length==1 && group_valid_sci[0]===false && allOutput.length>=1){//all rails false!
 					var prev_key=allOutput.length-1,//this key because we haven't added newRow yet
 						prev_group_valid_sci=object_group_val(allOutput[prev_key].meta.valid_sci[vi]);
 					if(prev_group_valid_sci.length==1 && prev_group_valid_sci[0]===false){
 						allOutput[prev_key].meta.add_class[vi]=cell_css.sci_cell+' '+cell_css.sci_grey;
 						newRow.row[vi]=tableObj.reserve_merge_col();
 					}
+				}else if(newRow.meta.valid_sci[vi].rail===true && newRow.meta.valid_sci[vi].biome===false && biome.length>0 && allOutput.length>=1 && bCount>0){
+					//if(bCount==0){}//rail entry count
+					newRow.row[vi]=tableObj.reserve_merge_col();
 				}
 			}
 			/*
@@ -461,7 +468,7 @@ console.log('output',$.extend(true,{},output));
 				delete newRow.meta.rails_as_groups;//its annoying to have this data in debug
 			*/
 //console.log('new_line_colspan newRow',newRow)
-return newRow;
+			return newRow;
 		};
 		var flat_rail_groups=flatten_object(kspUniObj.body_rails,'group_ident'),
 			flat_rail_idents=flatten_object(kspUniObj.body_rails,'ident');
@@ -483,8 +490,8 @@ var test_key=3;
 					extra_rail.push(user_sci[us].rail);
 				}
 			}
-if(b!=0 && b<=test_key){continue;}
-console.log('========================='+planet_data.name+'('+b+'<='+test_key+')=========================');
+//if(b!=0 && b<=test_key){continue;}
+console.log('========================='+planet_data.name+'=========================');
 			var new_arr=build_td_vals(planet_data,t_rail.concat(extra_rail),planet_data.biomes,science_arr,user_sci);
 			if(new_arr.length>0){
 				for(var m=0;m<new_arr.length;m++){

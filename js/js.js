@@ -272,7 +272,7 @@ if(doDebug){console.log('valsIn',valsIn,'arrsIn',arrsIn);}
 		seek_offset=false,
 		all_fail_count=0,
 		output=-1;
-var debug_c=0,debug_max=100;
+//var debug_c=0,debug_max=1000;
 	do{
 		var all_match=false,
 			match_count=0,
@@ -310,8 +310,7 @@ if(doDebug){console.log('====',lowest_key,'>',seek_offset);}
 		
 		//if(match_count>0){console.log('seek_offset',seek_offset);seek_offset++;}
 		//else if(match_count==0 && fail_count==0){console.log('match_count0&&fail_count0',seek_offset);seek_offset++;}
-debug_c++;
-if(debug_c>=debug_max){console.log('-========================break============-');break;}
+//debug_c++;if(debug_c>=debug_max){console.log('-========================break============-');break;}
 	}while(all_match===false);
 if(doDebug){console.log('=============inArray_multi_seek: '+output+'====================');}
 	return output;
