@@ -458,7 +458,9 @@ console.log('col 0 else',this_cell);
 		}
 		
 		//if($.inArray(m_func.b().get(),all_rows)!==-1){span_added=true;}//gotta fix all unresolved spans. m_func.b is a place holder!
-if(count>=count_max){console.log('breakout===========================');break;}
+if(count>=count_max){
+//console.log('breakout===========================');
+	break;}
 		count++;
 
 	}while(span_added);

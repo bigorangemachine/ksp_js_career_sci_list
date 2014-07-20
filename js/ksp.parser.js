@@ -309,8 +309,8 @@ function kspUniverse(){
 				'body_type':'rocky',
 				'biomes':['Highlands','Midlands','Lowlands','Slopes','LesserFlats','Flats','GreatFlats','GreaterFlats','Poles']
 			},/**/
-		/*{'ident':'Duna','name':'Duna','orbiting_body':'Sun','body_type':'atm_rocky'},
-			{'ident':'Ike','name':'Ike','orbiting_body':'Duna','body_type':'rocky'},*/
+		{'ident':'Duna','name':'Duna','orbiting_body':'Sun','body_type':'atm_rocky'},
+			{'ident':'Ike','name':'Ike','orbiting_body':'Duna','body_type':'rocky'},
 		{'ident':'Dres','name':'Dres','orbiting_body':'Sun','body_type':'rocky'},
 		{'ident':'Jool','name':'Jool','orbiting_body':'Sun','body_type':'gas'},
 			{'ident':'Laythe','name':'Laythe','orbiting_body':'Jool','body_type':'atm_rocky_liquid'},
@@ -332,7 +332,7 @@ function kspUniverse(){
 	this.init();
 }
 kspUniverse.prototype.init=function(){
-	var self=this;//console.log('-kspUniverse init-',self.plugin);
+	var self=this;
 	for(var b=0;b<self.default_bodies.length;b++){
 		var new_line=$.extend(true,{},self.celestial_bodies_schema,self.default_bodies[b]);
 		self.add_body(new_line.orbiting_body, new_line.ident, new_line.body_type, new_line.biomes, {'name':new_line.name});
@@ -550,7 +550,7 @@ function kspSci(kspUniObj){
 }
 //kspSci.prototype = new kspUniverse();
 kspSci.prototype.init=function(){//kspSci.init fires then kspUniverse.init
-	var self=this;//console.log('-kspSci init-',this.plugin);
+	var self=this;
 	for(var b=0;b<self.default_sciences.length;b++){
 		var new_line=$.extend(true,{},self.sciences_schema,self.default_sciences[b]);
 		self.add_science(new_line.ident, new_line.biome_context, new_line.rail_context, $.extend(true,{},new_line.meta,{'name':new_line.name}));//adding name into the meta due to how I arrange the defaults
@@ -851,11 +851,20 @@ kspSci.prototype.guess_body_type_from_sci=function(sciArrIn){//needs a array of 
 	has_obj.found_rails=has_obj.found_rails.concat(this_body_rails);
 	delete this_body_rails;
 	
-	var flat_sci=flatten_array(this_body_sci,'science_ident');
-	for(var at=0;at<sci_atm.atm.length;at++){if($.inArray(sci_atm.atm[at].ident,flat_sci)!==-1){has_obj.atm=true;break;}}
-	for(var at=0;at<sci_atm.fly_low_rail.length;at++){if($.inArray(sci_atm.fly_low_rail[at].ident,flat_sci)!==-1){has_obj.atm=true;break;}}
-	for(var at=0;at<sci_atm.fly_high_rail.length;at++){if($.inArray(sci_atm.fly_high_rail[at].ident,flat_sci)!==-1){has_obj.atm=true;break;}}
-	for(var at=0;at<sci_lqd.length;at++){if($.inArray(sci_lqd[at].ident,flat_sci)!==-1){has_obj.lqd=true;break;}}
+	var flat_sci=flatten_array(this_body_sci,'science_ident'),
+		flat_rail_key=flatten_array(this_body_sci,'rail_ident');
+	for(var at=0;at<sci_atm.atm.length;at++){
+		if($.inArray(sci_atm.atm[at].ident,flat_sci)!==-1){
+			has_obj.atm=true;break;}}
+	for(var at=0;at<sci_atm.fly_low_rail.length;at++){
+		if(inArray_multi_seek([sci_atm.fly_low_rail[at].ident,'low_fly'],[flat_sci,flat_rail_key])!==-1){
+			has_obj.atm=true;break;}}
+	for(var at=0;at<sci_atm.fly_high_rail.length;at++){
+		if(inArray_multi_seek([sci_atm.fly_high_rail[at].ident,'high_fly'],[flat_sci,flat_rail_key])!==-1){
+			has_obj.atm=true;break;}}
+	for(var at=0;at<sci_lqd.length;at++){
+		if(inArray_multi_seek([sci_lqd[at].ident,'splash'],[flat_sci,flat_rail_key])!==-1){
+			has_obj.lqd=true;break;}}
 
 	if(has_obj.found_rails.length==3 && $.inArray('surface',has_obj.found_rails)!==-1 && $.inArray('low_orbit',has_obj.found_rails)!==-1 && $.inArray('high_orbit',has_obj.found_rails)!==-1){//if only 3 rails found surface, low_orbit, high_orbit
 		body_type='rocky';
@@ -870,11 +879,13 @@ kspSci.prototype.guess_body_type_from_sci=function(sciArrIn){//needs a array of 
 		body_type='star';
 	}else{//last chance asteroid or maybe a body
 		body_type='asteroid';//assume asteroid won't hurt
-		if(has_obj.found_rails.length>1){
+		if(has_obj.found_rails.length>0){//guessing mode
 			if($.inArray('surface',has_obj.found_rails)!==-1){//well its probably rocky
 				body_type='rocky';
 			}else if(($.inArray('low_orbit',has_obj.found_rails)!==-1 || $.inArray('high_orbit',has_obj.found_rails)!==-1) && has_obj.found_rails.length==1){//probably a star
 				body_type='star';
+			}else if(($.inArray('low_orbit',has_obj.found_rails)!==-1 || $.inArray('high_orbit',has_obj.found_rails)!==-1 || $.inArray('surface',has_obj.found_rails)!==-1) && has_obj.found_rails.length>0){//probably a rocky
+				body_type='rocky';
 			}
 		}
 	}
