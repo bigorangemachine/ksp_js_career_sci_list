@@ -145,7 +145,7 @@ bdTabler.prototype.draw_table=function(obj){//please merge this column
 		for(var h=0;h<do_arr.length;h++){
 			var new_str='',
 				cur_row=do_arr[h];
-console.log('cur_row',cur_row);
+//console.log('cur_row',cur_row);
 			$(new_thead).append(self.str_to_tags(t_html.hd_row_start));//add tr
 			var new_tr=$(t_html.hd_row_start,table_dom_obj);
 			new_tr=new_tr[new_tr.length-1];

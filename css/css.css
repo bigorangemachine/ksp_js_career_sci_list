@@ -45,8 +45,22 @@ transform: rotate(7.5deg)
 }
 .mod-plaent-row{background-color:#000;}
 .mod-plaent-row td{color:#fff;font-size:8px;letter-spacing:14px;text-align:center;font-weight:700;line-height:1.5;vertical-align:middle;}
-
-.sci-green{/*66%-100%*/
+.sci-full{/*>100%*/
+background-image:url('../img/check.png');
+background-repeat:no-repeat;
+background-position:center center;
+min-width:25px;
+min-height:25px;
+}
+.sci-full,.sci-full *{
+text-align:left;
+text-indent: -9999px;
+white-space: nowrap;
+}
+.sci-full *{/*tables aren't as ident hideable*/
+display:none;
+}
+.sci-green{/*66%-<100%*/
 /*http://www.cssmatic.com/gradient-generator#'\-moz\-linear\-gradient\%28left\%2C\%20rgba\%28104\%2C166\%2C65\%2C1\%29\%200\%25\%2C\%20rgba\%28115\%2C168\%2C57\%2C1\%29\%2046\%25\%2C\%20rgba\%2874\%2C132\%2C29\%2C1\%29\%2053\%25\%2C\%20rgba\%2849\%2C99\%2C14\%2C1\%29\%20100\%25\%29\%3B'*/
 	background: rgba(104,166,65,1);
 	background: -moz-linear-gradient(left, rgba(104,166,65,1) 0%, rgba(115,168,57,1) 46%, rgba(74,132,29,1) 53%, rgba(49,99,14,1) 100%);

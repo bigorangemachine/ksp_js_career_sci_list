@@ -1,5 +1,10 @@
 (function(){
 /*
+//comment out the planets you need to test.  Add these after if you don't want to auto detect planet type
+kspUniObj.add_body('Sun', 'Duna', 'atm_rocky', false);
+kspUniObj.add_body('Duna', 'Ike', 'rocky', false);
+*/
+
 
 /*
 tableObj.add_line(['adf',			'asdf',		'adfasdf',	'adfasdfasdf',				'aasdasdasdf','aasdasdaf'],{'row_type':'head'});//table should kurplunk

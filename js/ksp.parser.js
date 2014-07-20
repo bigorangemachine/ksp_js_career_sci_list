@@ -309,9 +309,9 @@ function kspUniverse(){
 				'body_type':'rocky',
 				'biomes':['Highlands','Midlands','Lowlands','Slopes','LesserFlats','Flats','GreatFlats','GreaterFlats','Poles']
 			},/**/
-		{'ident':'Duna','name':'Duna','orbiting_body':'Sun','body_type':'atm_rocky'},
-			{'ident':'Ike','name':'Ike','orbiting_body':'Duna','body_type':'rocky'},
-		{'ident':'Dres','name':'Dres','orbiting_body':'Sun','body_type':'atm_rocky'},
+		/*{'ident':'Duna','name':'Duna','orbiting_body':'Sun','body_type':'atm_rocky'},
+			{'ident':'Ike','name':'Ike','orbiting_body':'Duna','body_type':'rocky'},*/
+		{'ident':'Dres','name':'Dres','orbiting_body':'Sun','body_type':'rocky'},
 		{'ident':'Jool','name':'Jool','orbiting_body':'Sun','body_type':'gas'},
 			{'ident':'Laythe','name':'Laythe','orbiting_body':'Jool','body_type':'atm_rocky_liquid'},
 			{'ident':'Vall','name':'Vall','orbiting_body':'Jool','body_type':'rocky'},
