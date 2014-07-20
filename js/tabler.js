@@ -195,7 +195,7 @@ console.log('cur_row',cur_row);
 		for(var h=0;h<do_arr.length;h++){
 			var new_str='',
 				cur_row=do_arr[h];
-//console.log('cur_row',cur_row);
+console.log('cur_row',cur_row);
 			$(new_tbody).append(self.str_to_tags(t_html.bd_row_start));//add tr
 			var new_tr=$(t_html.bd_row_start,table_dom_obj);
 			new_tr=new_tr[new_tr.length-1];

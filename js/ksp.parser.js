@@ -671,12 +671,13 @@ kspSci.prototype.get_rail_rules=function(scienceIdent,planetType,doDebug){
 
 	//cross reference planetary abilities
 	var planet=self.ksp_uni_obj.get_rail_rules(planetType,doDebug);
+/*
 if(doDebug){console.log('planet',planet,"\n",
 	'science_data.rail_context',$.extend(true,{},science_data.rail_context),"\n",
-	'science_data.biome_context',$.extend(true,{},science_data.biome_context),"\n");}
+	'science_data.biome_context',$.extend(true,{},science_data.biome_context),"\n");}*/
 	for(var pr in planet.rails){
 		if(bdcheck_key(planet.rails,pr)){
-			var line_rule={'planet_rule':planet.rails[pr],'has_atmosphere':planet.has_atmosphere,'rail':rules.rail,'biome':rules.biome},
+			var line_rule={'planet_rule':planet.rails[pr],'has_atmosphere':planet.has_atmosphere,'rail':rules.rail[pr],'biome':rules.biome[pr]},
 				has_rail_exception=false,
 				has_atm_exception=false;
 
@@ -726,7 +727,8 @@ if(doDebug){console.log('planet',planet,"\n",
 	for(var kl=0;kl<key_list.length;kl++){_vr=key_list[kl];eval(_vr+' = _args.'+_vr+';');}delete key_list;delete _vr;//populate into this scope
 	///////\\\\\\\\\\END PLUGIN HOOK\\\\\\\\/////////
 if(doDebug){console.log(scienceIdent,'rules: rail ',science_data.rail_context,'biome',science_data.biome_context);}
-	return science_data;
+	return {'rail_context':rules.rail,'biome_context':rules.biome};
+	//return science_data;
 };
 kspSci.prototype.is_science=function(ident,foundObjRef){//foundObjRef is a 'push up' pass by reference ,doDeug
 	var self=this,

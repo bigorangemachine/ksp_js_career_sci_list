@@ -23,12 +23,21 @@ body.hasJS #status.online {background: #0c0;}
 #holder p .dot-hide{opacity:0;}
 #holder.hover { border: 10px dashed #333; }
 #holder.hover p{color:#333;}
+.table-output table{width:100%;border-collapse: collapse;}
+.table-output table .sci-head,
+.table-output table .sci-head{background-color:#ffffff;}
+.table-output table,
+.table-output table th,
+.table-output table td{border:1px solid #999999;padding:2px 6px 1px 6px;}
 
 .cell-sci{text-align:center;font-weight:700;font-size:20px;line-height:0.65;color:#fefefe;font-family: 'Numans', sans-serif;}
 .cell-sci .sml-txt{font-size:50%;color:#eee;}
 .cell-sci.sci-zero{font-size:199%;color:#000000;line-height:1;}
 .cell-sci.sci-grey{background-color:#666;}
-.sci-header{/*
+
+.sci-header{
+background-color:#ffffff;
+/*
 transform: rotate(7.5deg)
 -moz-transform: rotate(7.5deg);
 -o-transform: rotate(7.5deg);
