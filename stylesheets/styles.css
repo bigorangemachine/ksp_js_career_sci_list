@@ -264,4 +264,4 @@ margin: 0 auto;
 .warning-p{margin:0px auto;text-align:center;}
 .warn{color:#cc0000;}
 
-.table-output{float:none;clear:both;width:100%;overflow:hidden;}
+.table-output{float:none;clear:both;width:100%;}
