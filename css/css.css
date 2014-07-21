@@ -90,3 +90,17 @@ background: -o-linear-gradient(left, rgba(35,168,251,1) 0%, rgba(14,137,232,1) 4
 background: -ms-linear-gradient(left, rgba(35,168,251,1) 0%, rgba(14,137,232,1) 46%, rgba(4,134,226,1) 53%, rgba(9,90,155,1) 100%);
 background: linear-gradient(to right, rgba(35,168,251,1) 0%, rgba(14,137,232,1) 46%, rgba(4,134,226,1) 53%, rgba(9,90,155,1) 100%);
 }
+.file-browse{
+	display: block;
+	margin: 0px auto;
+	background-color: #555;
+	width: 60%;
+	padding: 12px 18px;
+	border-radius: 8px;
+	cursor: pointer;
+}
+.file-browse,
+.file-browse *{
+	font-size: 10px;
+	color: #fff;
+}
