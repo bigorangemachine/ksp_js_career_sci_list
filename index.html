@@ -51,6 +51,7 @@
       </section>
 <section class="wrap">
 	<div id="holder"><p>Drag your KSP Save Game Here</p></div> 
+	<label for="file-browse"class="file-browse"><input type="file" id="file-browse" name="filebrowse" /></label>
 	<noscript type="text/html"><p id="no-js-msg">JavaScript is Required</p></noscript>
 	<p id="status">Please use a modern browser such as the newest <a href="https://www.google.com/intl/en-CA/chrome/browser/" target="_blank">Chrome</a> or <a href="https://mozilla.org" target="_blank">Firefox</a> Browsers.</p>
 
@@ -171,7 +172,7 @@
 		update_status_msg('done');
 		update_ui_msg('Output Below');
 		$('body').removeClass(body_busy_class);
-		
+		$('.file-browse').css('display','');
 	}
 	function draw_science(){
 		update_ui_msg('Generating Ouput');
@@ -861,15 +862,19 @@ console.log('captured_sci_ids',captured_sci_ids,
 		update_status_msg('ready');
 		$(msg_obj).addClass('success');}
 	function dodrop(e){
+//console.log('e',e,e.target.files,$('#file-browse').get(0).files[0]);
 		$(this).removeClass('hover');
 		if($('body').hasClass(body_busy_class)){return;}
+		
 		processor_clock.start=new Date();
 		processor_clock.end=false;
 		$(table_target_obj).html('');
 		this.className = '';
 		e.preventDefault();
-
-		if(e.originalEvent){var file = e.originalEvent.dataTransfer.files[0];}//jQuery
+$('#file-browse').blur();
+$('.file-browse').css('display','none');
+		if(e.originalEvent && e.originalEvent.dataTransfer){var file = e.originalEvent.dataTransfer.files[0];}//jQuery
+		else if(e.target===$('#file-browse')[0]){var file = e.target.files[0];}
 		else{var file = e.dataTransfer.files[0];}
 		var reader = new FileReader();
 		reader.onload = function (event){
@@ -900,6 +905,7 @@ console.log('captured_sci_ids',captured_sci_ids,
 			update_status_msg('ready');update_ui_msg(default_ui_msg);
 		}
 	});
+	$('#file-browse').on('change',dodrop);
 	$(drag_target).on('dragover',function () { $(this).addClass('hover'); return false; });
 	$(drag_target).on('dragend dragleave',function () { $(this).removeClass('hover'); return false; });
 	$(drag_target).on('drop',dodrop);
