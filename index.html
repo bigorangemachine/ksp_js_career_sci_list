@@ -9,6 +9,7 @@
 <style type="text/css">
 </style>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="js/jquery.cookie.js"></script>
 <script src="js/js.js"></script>
 <script src="js/fps.requestAnimate.js"></script>
 <script src="js/ksp.parser.js"></script>
@@ -20,14 +21,19 @@
 <body>
 <section class="wrap">
 	<div id="holder"><p>Drag your KSP Save Game Here<br/>-or-<br/>Browse for the file Below</p></div> 
-	<label for="file-browse"class="file-browse"><input type="file" id="file-browse" name="filebrowse" /></label>
+	<label for="file-browse" class="file-browse"><input type="file" id="file-browse" name="filebrowse" /></label>
+	<fieldset>
+		<legend>Show All</legend>
+		<label for="show-sci"><input type="checkbox" name="showsci" id="show-sci" value="1" checked=checked /> Science</label><br/>
+		<label for="show-all-bodies"><input type="checkbox" name="showallbodies" id="show-all-bodies" value="1" checked=checked /> Planetary Bodies <span class="sml-txt">(Stars/Planets/Moons)</span></label><br/>
+		<label for="show-roids"><input type="checkbox" name="showroids" id="show-roids" value="1" checked=checked /> Asteroids</label>
+	</fieldset>
 	<noscript type="text/html"><p id="no-js-msg">JavaScript is Required</p></noscript>
 	<p id="status">Please use the latest Chrome or Firefox Browser.</p>
 
 </section>
 <section class="table-output"></section>
 <script type="text/javascript">
-//alert("Line 350.  Get rowspans going!");
 	document.body.className=document.body.className+' hasJS';
 	var loading_stages={
 			'error':'Something seems to have gone wrong',
@@ -55,6 +61,7 @@
 		page_data={},
 		table_target_obj=$('.table-output')[0],
 		tableObj=new bdTabler(),
+		altTableObj=new bdTabler(),
 		kspUniObj=new kspUniverse(),
 		kspSciObj=new kspSci(kspUniObj),
 		kspObj=new kspParser(kspUniObj,kspSciObj),
@@ -62,11 +69,14 @@
 		FPSUIObj=new fpsHandler(5),//for the bordered area
 		run_count=0,
 		base_delay=4000,
+		show_all_sci=true,
+		show_all_bodies=true,
+		show_roids=true,
 		current_state_key='ready',
 		drag_target = $('#holder'),
 		msg_obj = $('#status');
 		
-		tableObj.plugin.table=function(packObj){/*$(packObj.table_dom_obj).attr('border',1);*/};
+		//tableObj.plugin.table=function(packObj){/*$(packObj.table_dom_obj).attr('border',1);*/};
 		page_data=$.extend(true,{},page_data_schema);//break pass by reference - populate defaults
 
 	function get_sticky_table_obj(){
@@ -130,12 +140,16 @@
 	function declare_finished(){
 		FPSObj.change_fps(5);//reset
 		tableObj.draw_table(table_target_obj);
+		try{
+			if(altTableObj.row_count>0 && altTableObj.col_count>0){
+				altTableObj.draw_table(table_target_obj);}
+		}catch(err){}
 		do_sticky_table();
 		processor_clock.end=new Date();
 		update_status_msg('done');
 		update_ui_msg('Output Below');
 		$('body').removeClass(body_busy_class);
-		$('.file-browse').css('display','');
+		$('.file-browse,fieldset').css('display','');
 	}
 	function draw_science(){
 		update_ui_msg('Generating Ouput');
@@ -165,6 +179,7 @@
 			found_c_body=[],
 			celestial_body_arr=[],
 			science_arr=[],
+			alt_science_arr=[],
 			planet_class=[
 				'cell-body',
 				'cell-rail',
@@ -185,15 +200,31 @@
 			};
 		
 		var old_plugs=tableObj.plugin;
-		tableObj=new bdTabler();
-		tableObj.plugin=old_plugs;
+			tableObj=new bdTabler();
+			tableObj.plugin=old_plugs;
+		delete old_plugs;
+		var old_plugs=altTableObj.plugin;
+			altTableObj=new bdTabler();
+			altTableObj.plugin=old_plugs;
 		delete old_plugs;
 		
+		var do_push_sci=function(valIn){
+			if(!show_all_sci){
+				if($.inArray(valIn,flatten_array(page_data.parsed_science,'science_ident'))!==-1){return true;}
+				return false;
+			}
+			return true;
+		};
 
 		for(var s=0;s<kspSciObj.default_sciences.length;s++){
 			if(alt_sci_table_func(kspSciObj.default_sciences[s],'sci')){
 				found_sci.push(kspSciObj.default_sciences[s].ident);
-				science_arr.push(kspSciObj.default_sciences[s]);}}
+				if(do_push_sci(kspSciObj.default_sciences[s].ident)){science_arr.push(kspSciObj.default_sciences[s]);}
+			}else{
+				found_sci.push(kspSciObj.default_sciences[s].ident);
+				if(do_push_sci(kspSciObj.default_sciences[s].ident)){alt_science_arr.push(kspSciObj.default_sciences[s]);}
+			}
+		}
 
 		for(var s=0;s<kspSciObj.sciences.length;s++){//put mods last
 			if(alt_sci_table_func(kspSciObj.sciences[s],'sci') && $.inArray(kspSciObj.sciences[s].ident,found_sci)===-1){
@@ -201,6 +232,7 @@
 				science_arr.push(kspSciObj.sciences[s]);
 			}
 		}
+		delete found_sci;
 		tableObj.add_line(head_filler.concat(flatten_array(science_arr,'name')),{'add_class_row':'sci-head','add_class':head_filler_class.concat(repeat_val_into_arr('sci-header',science_arr.length)),'row_type':'head'});//'row_type':'head',
 
 		for(var s=0;s<kspUniObj.default_bodies.length;s++){
@@ -569,7 +601,11 @@
 				planet_inc++;
 				if(planet_inc>=found_c_body.length){
 //console.log('page_data',page_data,'tableObj',tableObj);
-					declare_finished();
+declare_finished();return;
+					if(alt_science_arr.length==0){
+						declare_finished();}
+					else{
+						FPSObj.add_once_callback(asteroid_table_line);}
 				}else{
 					FPSObj.add_once_callback(planet_table_line);
 				}
@@ -829,13 +865,19 @@ console.log('captured_sci_ids',captured_sci_ids,
 		$(this).removeClass('hover');
 		if($('body').hasClass(body_busy_class)){return;}
 		
+		show_all_sci=$('#show-sci').prop('checked');
+		show_all_bodies=$('#show-all-bodies').prop('checked');
+		show_roids=$('#show-roids').prop('checked');
+		$.cookie('displayprefs', JSON.stringify({'show_all_sci':show_all_sci,'show_all_bodies':show_all_bodies,'show_roids':show_roids}));
+
 		processor_clock.start=new Date();
 		processor_clock.end=false;
 		$(table_target_obj).html('');
 		this.className = '';
 		e.preventDefault();
 $('#file-browse').blur();
-$('.file-browse').css('display','none');
+$('fieldset input').blur();
+$('.file-browse,fieldset').css('display','none');
 		if(e.originalEvent && e.originalEvent.dataTransfer){var file = e.originalEvent.dataTransfer.files[0];}//jQuery
 		else if(e.target===$('#file-browse')[0]){var file = e.target.files[0];}
 		else{var file = e.dataTransfer.files[0];}
@@ -872,6 +914,15 @@ $('.file-browse').css('display','none');
 	$(drag_target).on('dragover',function () { $(this).addClass('hover'); return false; });
 	$(drag_target).on('dragend dragleave',function () { $(this).removeClass('hover'); return false; });
 	$(drag_target).on('drop',dodrop);
+	if($.cookie('displayprefs')){
+		var displayprefs=JSON.parse($.cookie('displayprefs'));
+		show_all_sci=displayprefs.show_all_sci;
+		show_all_bodies=displayprefs.show_all_bodies;
+		show_roids=displayprefs.show_roids;
+		$('#show-sci').prop('checked',show_all_sci);
+		$('#show-all-bodies').prop('checked',show_all_bodies);
+		$('#show-roids').prop('checked',show_roids);
+	}
 </script>
 <!-- quick science grid test -->
 <!-- <script src="js/quick.test.js"></script> -->

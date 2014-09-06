@@ -14,3 +14,16 @@ Checkout js/ksp.parser.js.
 
 The parser should be generic enough that someone else could develop a Delta V calculator for a specific ship within the save file.  I haven't looked into it too much but maybe someone else would be interested in that.  If anyone uses this for anything please let me know!
 
+
+
+###Change Log
+
+0.0.1
+==================
+- Output Controls (checkboxes)
+- Cookies for output controls
+- Asteroid Table
+
+0.0.0
+==================
+- Inital Public Alpha Release
