@@ -716,7 +716,7 @@ console.log('planet_data',planet_data,"\n\n",'sci_rails',$.extend(true,{},sci_ra
 			//for(var alt_science_inc=0;alt_science_inc<alt_science_arr.length;alt_science_inc++){//for reference.  This is whats happening inside the FPS loop
 				var alt_sci_list=array_object_search(page_data.parsed_science,'science_ident',alt_science_arr[alt_science_inc].ident),
 					roid_ids=[];
-console.log('alt_science_arr['+alt_science_inc+']',alt_science_arr[alt_science_inc],"\n\n",'alt_sci_list: ',alt_sci_list,"\n\n",'alt_science_arr['+alt_science_inc+']: ',alt_science_arr[alt_science_inc],'== asteroid_sample_ident: ',asteroid_sample_ident);
+//console.log('alt_science_arr['+alt_science_inc+']',alt_science_arr[alt_science_inc],"\n\n",'alt_sci_list: ',alt_sci_list,"\n\n",'alt_science_arr['+alt_science_inc+']: ',alt_science_arr[alt_science_inc],'== asteroid_sample_ident: ',asteroid_sample_ident);
 				if(alt_science_arr[alt_science_inc].ident==asteroid_sample_ident){
 					for(var rt=0;rt<alt_sci_list.length;rt++){
 						if(alt_sci_list[rt].meta.asteroid_ident!==false && $.inArray(alt_sci_list[rt].meta.asteroid_ident,roid_ids)===-1){
@@ -725,82 +725,49 @@ console.log('alt_science_arr['+alt_science_inc+']',alt_science_arr[alt_science_i
 						}
 					}
 				}
+
+				for(var al=0;al<alt_table_data.roid_list.length;al++){
+					var current_roid=alt_table_data.roid_list[al],
+						_tmp=[current_roid],
+						out_data=[{'row':current_roid,'meta':altTableObj.cell_schema}];//{'row':current_roid,'meta':altTableObj.cell_schema}
+					for(var i=0;i<alt_table_data.cols_info.length;i++){
+						var planet_data={};
+						kspUniObj.is_celestial_body(alt_table_data.cols_info[i].body_ident,planet_data);
+						var sci_data_obj={},
+							is_sci=kspSciObj.is_science(alt_science_arr[alt_science_inc].ident,sci_data_obj),
+							extra_rail=[],
+							t_rail=[];
+	//console.log('===============FIX USER SCI ARRAY - INCLUDE FLEXIBILITY TO EXPAND OTHER EXPERIMENTS IN THE FUTURE===============');
+						if(alt_science_arr[alt_science_inc].ident==asteroid_sample_ident){
+							var user_sci=array_object_search(array_object_search(alt_sci_list,{'meta':{'asteroid_ident':current_roid}},current_roid),'planet_ident',planet_data.ident);
+						}else{
+							var user_sci=alt_sci_list;}
+
+						//var new_arr=build_td_vals(planet_data,t_rail.concat(extra_rail),planet_data.biomes,science_arr,user_sci);
+						var new_arr=build_td_vals(planet_data, [alt_table_data.cols_info[i].rail], (alt_table_data.cols_info[i].biome!==false?[alt_table_data.cols_info[i].biome]:[]), alt_science_arr, user_sci);
+						if(new_arr.length>0){
+							for(var m=0;m<new_arr.length;m++){
+								var new_row=new_arr[m].row.slice(3),
+									new_meta=new_arr[m].meta,
+									display_roid_name=current_roid;
+								for(var nm in new_meta){if(bdcheck_key(new_meta,nm) && new_meta[nm] instanceof Array){new_meta[nm]=new_meta[nm].slice(3);}}
+								out_data.push({'row':new_row[0],'meta':new_meta});
+							}
+						}else{
+							out_data.push({'row':0, 'meta':altTableObj.cell_schema});}
+					}
+					var out_line=[],
+						out_meta={};
+					for(var o=0;o<out_data.length;o++){
+						out_line.push(out_data[o].row);
+						for(var cs in altTableObj.cell_schema){
+							if(bdcheck_key(altTableObj.cell_schema,cs)){
+								if(typeof(out_meta[cs])=='undefined'){out_meta[cs]=[];}
+								out_meta[cs].push((bdcheck_key(out_data[o].meta,cs)?out_data[o].meta[cs][0]:''));}}
+					}
+					altTableObj.add_line(out_line,out_meta);
+				}
 /*
-for(var al=0;al<alt_table_data.roid_list.length;al++){
-	var current_roid=alt_table_data.roid_list[al],
-		tbl_row=[];
-}
-*/
-var current_roid=alt_table_data.roid_list[0];
-
-	
-				var _tmp=[current_roid],
-					out_data=[];//{'row':current_roid,'meta':altTableObj.cell_schema}
-console.log('--------------------',"\n\n",'alt_table_data: ',alt_table_data);
-				for(var i=0;i<alt_table_data.cols_info.length;i++){
-console.log('alt_table_data.cols_info['+i+']: ',alt_table_data.cols_info[i],' current_roid: ',current_roid,' alt_table_data.cols_info[i].body_ident: ',alt_table_data.cols_info[i].body_ident);
-					var planet_data={};
-					kspUniObj.is_celestial_body(alt_table_data.cols_info[i].body_ident,planet_data);
-					var sci_data_obj={},
-						is_sci=kspSciObj.is_science(alt_science_arr[alt_science_inc].ident,sci_data_obj),
-						extra_rail=[],
-						t_rail=[];
-//console.log('===============FIX USER SCI ARRAY - INCLUDE FLEXIBILITY TO EXPAND OTHER EXPERIMENTS IN THE FUTURE===============');
-					if(alt_science_arr[alt_science_inc].ident==asteroid_sample_ident){
-						var user_sci=array_object_search(array_object_search(alt_sci_list,{'meta':{'asteroid_ident':current_roid}},current_roid),'planet_ident',planet_data.ident);
-					}else{
-						var user_sci=alt_sci_list;}
-
-					//var new_arr=build_td_vals(planet_data,t_rail.concat(extra_rail),planet_data.biomes,science_arr,user_sci);
-					var new_arr=build_td_vals(planet_data, [alt_table_data.cols_info[i].rail], (alt_table_data.cols_info[i].biome!==false?[alt_table_data.cols_info[i].biome]:[]), alt_science_arr, user_sci);
-					if(new_arr.length>0){
-console.log('new_arr('+planet_data.ident+','+alt_table_data.cols_info[i].rail+'): ',new_arr,'user_sci['+planet_data.ident+']',user_sci);
-						for(var m=0;m<new_arr.length;m++){
-							var new_row=new_arr[m].row.slice(3),
-								new_meta=new_arr[m].meta,
-								display_roid_name=current_roid;
-//new_row=[].concat([display_roid_name],new_row);
-							for(var nm in new_meta){if(bdcheck_key(new_meta,nm) && new_meta[nm] instanceof Array){
-								new_meta[nm]=new_meta[nm].slice(3);
-//new_meta[nm]=[].concat(display_roid_name,new_meta[nm]);
-							}}
-							out_data.push({'row':new_row[0],'meta':new_meta});
-console.log('-----new_row: ',new_row,'new_meta',new_meta);
-							altTableObj.add_line(new_row, new_meta);
-						}
-					}else{
-						out_data.push({'row':0, 'meta':altTableObj.cell_schema});}
-console.log('out_data: ',out_data);
-					_tmp.push(
-						'PLANET: '+(alt_table_data.cols_info[i].body_ident!==false?alt_table_data.cols_info[i].body_ident:'false')+'<BR>'+
-						'RAIL: '+(alt_table_data.cols_info[i].rail!==false?alt_table_data.cols_info[i].rail:'false')+'<BR>'+
-						'BIOME: '+(alt_table_data.cols_info[i].biome!==false?alt_table_data.cols_info[i].biome:'false')+'<BR><BR>'+
-						'<div>'+out_data[i].row+'</div>'
-					);
-				}
-				altTableObj.add_line(_tmp);
-				var out_line=[],
-					out_meta={};
-				for(var o=0;o<out_data.length;o++){
-					out_line.push(out_data[o].row);
-console.log('out_data['+o+'].meta: ',out_data[o].meta);
-					for(var cs in altTableObj.cell_schema){
-						if(bdcheck_key(altTableObj.cell_schema,cs)){
-							if(typeof(out_meta[cs])=='undefined'){out_meta[cs]=[];}
-							out_meta[cs].push((bdcheck_key(out_data[o].meta,cs)?out_data[o].meta[cs]:''));}}
-				}
-console.log('out_line: ',out_line,' out_meta: ',out_meta);
-				//altTableObj.add_line(out_line,out_meta);
-
-
-				var _tmp='';
-				for(var k in alt_science_arr[alt_science_inc]){
-					if(bdcheck_key(alt_science_arr[alt_science_inc],k)){_tmp=_tmp+k+': '+alt_science_arr[alt_science_inc][k]+"<BR>";}
-				}
-				altTableObj.add_line([_tmp,repeat_val_into_arr('--',alt_table_data.cols_info.length-1)]);
-
-
-
 				if(1==2){//old reference output
 					var planet_data={};
 					kspUniObj.is_celestial_body(celestial_body_arr[alt_science_inc],planet_data);
@@ -828,7 +795,7 @@ console.log('out_line: ',out_line,' out_meta: ',out_meta);
 						}
 					}
 				}
-
+*/
 				alt_science_inc++;
 				if(alt_science_inc>=alt_science_arr.length){
 					declare_finished();}
