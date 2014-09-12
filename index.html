@@ -49,6 +49,7 @@
 </head>
 <body>
 <section class="wrap">
+<<<<<<< HEAD
 	<div id="holder"><p>Drag your KSP Save Game Here<br/>-or-<br/>Browse for the file Below</p></div> 
 =======
 <script src="js/jquery.stickytableheaders.min.js"></script>
@@ -83,6 +84,9 @@
 <section class="wrap">
 	<div id="holder"><p>Drag your KSP Save Game here<br/>-or-<br/>Browse for the file below</p></div>
 >>>>>>> gh-pages
+=======
+	<div id="holder"><p>Drag your KSP Save Game here<br/>-or-<br/>Browse for the file below</p></div>
+>>>>>>> asteroid_output
 	<label for="file-browse" class="file-browse"><input type="file" id="file-browse" name="filebrowse" /></label>
 	<fieldset>
 		<legend>Show All</legend>
@@ -143,11 +147,16 @@
 		kspSciObj=new kspSci(kspUniObj),
 		kspObj=new kspParser(kspUniObj,kspSciObj),
 <<<<<<< HEAD
+<<<<<<< HEAD
 		FPSObj=new fpsHandler(5),//for the processing of data and green area messages
 =======
 		base_fps=15,
 		FPSObj=new fpsHandler(base_fps),//for the processing of data and green area messages
 >>>>>>> gh-pages
+=======
+		base_fps=15,
+		FPSObj=new fpsHandler(base_fps),//for the processing of data and green area messages
+>>>>>>> asteroid_output
 		FPSUIObj=new fpsHandler(5),//for the bordered area
 		run_count=0,
 		base_delay=4000,
@@ -157,7 +166,12 @@
 		current_state_key='ready',
 		drag_target = $('#holder'),
 <<<<<<< HEAD
+<<<<<<< HEAD
 		msg_obj = $('#status');
+=======
+		msg_obj = $('#status'),
+		asteroid_sample_ident='asteroidSample';
+>>>>>>> asteroid_output
 		
 		//tableObj.plugin.table=function(packObj){/*$(packObj.table_dom_obj).attr('border',1);*/};
 =======
@@ -171,12 +185,16 @@
 	function get_sticky_table_obj(){
 		if($('table',table_target_obj).first().length>0){
 <<<<<<< HEAD
+<<<<<<< HEAD
 //console.log('---',$('table',table_target_obj).first(),$('table',table_target_obj).first()[0]);
 			return $('table',table_target_obj).first()[0];}
 //console.log('---table_target_obj',table_target_obj);
 =======
 			return $('table',table_target_obj).first()[0];}
 >>>>>>> gh-pages
+=======
+			return $('table',table_target_obj).first()[0];}
+>>>>>>> asteroid_output
 		return table_target_obj;
 	}
 	function do_sticky_table(){
@@ -232,11 +250,17 @@
 	}
 	function declare_finished(){
 <<<<<<< HEAD
+<<<<<<< HEAD
 		FPSObj.change_fps(5);//reset
+=======
+		FPSObj.change_fps(base_fps);//reset
+>>>>>>> asteroid_output
 		tableObj.draw_table(table_target_obj);
-		try{
+		//try{
+//console.log('altTableObj',altTableObj,'table_target_obj',table_target_obj);
 			if(altTableObj.row_count>0 && altTableObj.col_count>0){
 				altTableObj.draw_table(table_target_obj);}
+<<<<<<< HEAD
 		}catch(err){}
 =======
 		FPSObj.change_fps(base_fps);//reset
@@ -247,6 +271,9 @@
 				altTableObj.draw_table(table_target_obj);}
 		//}catch(err){}
 >>>>>>> gh-pages
+=======
+		//}catch(err){}
+>>>>>>> asteroid_output
 		do_sticky_table();
 		processor_clock.end=new Date();
 		update_status_msg('done');
@@ -257,9 +284,12 @@
 	function draw_science(){
 		update_ui_msg('Generating Ouput');
 <<<<<<< HEAD
+<<<<<<< HEAD
 		$(table_target_obj).html('');//clear the old
 
 =======
+=======
+>>>>>>> asteroid_output
 		//clear the old
 		$(table_target_obj).html('');
 		var old_plugs=tableObj.plugin;
@@ -273,7 +303,10 @@
 		// \\clear the old
 		
 		//variable declarations
+<<<<<<< HEAD
 >>>>>>> gh-pages
+=======
+>>>>>>> asteroid_output
 		var head_filler=[
 				'',//body
 				tableObj.reserve_merge_row(),//rail
@@ -286,6 +319,7 @@
 			],
 			alt_sci_table_func=function(objIn,contextIn){
 <<<<<<< HEAD
+<<<<<<< HEAD
 				if(contextIn='sci'){
 					if(objIn.ident=='asteroidSample'){
 						return false;
@@ -295,6 +329,9 @@
 =======
 				if(contextIn='sci'){if(objIn.ident==asteroid_sample_ident){return false;}}
 >>>>>>> gh-pages
+=======
+				if(contextIn='sci'){if(objIn.ident==asteroid_sample_ident){return false;}}
+>>>>>>> asteroid_output
 				return true;
 			},
 			mods_row=[]
@@ -320,6 +357,7 @@
 				'sci':'row-sci',
 				'sci_head':'sci-header',
 				'sci_cell':'cell-sci'
+<<<<<<< HEAD
 <<<<<<< HEAD
 			};
 		
@@ -365,10 +403,36 @@
 			};
 		//\\variable declarations
 >>>>>>> gh-pages
+=======
+			},
+			do_push_sci=function(valIn){
+				if(!show_all_sci){
+					if($.inArray(valIn,flatten_array(page_data.parsed_science,'science_ident'))!==-1){return true;}
+					return false;
+				}
+				return true;
+			},
+			do_push_body=function(valIn){
+				if(!show_all_bodies){
+					if($.inArray(valIn,flatten_array(page_data.parsed_science,'planet_ident'))!==-1){return true;}
+					return false;
+				}
+				return true;
+			},
+			do_push_alt_tbl=function(){//show roids if we have roids
+				if(show_roids){
+					if($.inArray(asteroid_sample_ident,flatten_array(page_data.parsed_science,'science_ident'))!==-1){return true;}
+					return false;
+				}
+				return false;
+			};
+		//\\variable declarations
+>>>>>>> asteroid_output
 		for(var s=0;s<kspSciObj.default_sciences.length;s++){
 			if(alt_sci_table_func(kspSciObj.default_sciences[s],'sci')){
 				found_sci.push(kspSciObj.default_sciences[s].ident);
 				if(do_push_sci(kspSciObj.default_sciences[s].ident)){science_arr.push(kspSciObj.default_sciences[s]);}
+<<<<<<< HEAD
 <<<<<<< HEAD
 			}else{
 				found_sci.push(kspSciObj.default_sciences[s].ident);
@@ -378,6 +442,11 @@
 				found_sci.push(kspSciObj.default_sciences[s].ident);
 				if(do_push_alt_tbl(kspSciObj.default_sciences[s].ident)){alt_science_arr.push(kspSciObj.default_sciences[s]);}
 >>>>>>> gh-pages
+=======
+			}else{//asteroid sample!
+				found_sci.push(kspSciObj.default_sciences[s].ident);
+				if(do_push_alt_tbl(kspSciObj.default_sciences[s].ident)){alt_science_arr.push(kspSciObj.default_sciences[s]);}
+>>>>>>> asteroid_output
 			}
 		}
 
@@ -395,11 +464,15 @@
 			if(kspUniObj.is_celestial_body(kspUniObj.default_bodies[s].ident,body_data) && $.inArray(kspUniObj.celestial_bodies[s].ident,found_c_body)===-1){
 				found_c_body.push(kspUniObj.default_bodies[s].ident);
 <<<<<<< HEAD
+<<<<<<< HEAD
 				celestial_body_arr.push(kspUniObj.default_bodies[s].name);
+=======
+				if(do_push_body(kspUniObj.default_bodies[s].ident)){celestial_body_arr.push(kspUniObj.default_bodies[s].ident);}
+>>>>>>> asteroid_output
 				if(body_data.satellite_bodies.length>0 && kspUniObj.default_bodies[s].ident!='Sun'){//body_data.orbiting_body!==false
 					for(var o=0;o<body_data.satellite_bodies.length;o++){
-						found_c_body.push(body_data.satellite_bodies[o]);
 						var moon_data={};
+<<<<<<< HEAD
 						kspUniObj.is_celestial_body(body_data.satellite_bodies[o].ident,moon_data);
 						celestial_body_arr.push(moon_data.name);
 =======
@@ -407,13 +480,18 @@
 				if(body_data.satellite_bodies.length>0 && kspUniObj.default_bodies[s].ident!='Sun'){//body_data.orbiting_body!==false
 					for(var o=0;o<body_data.satellite_bodies.length;o++){
 						var moon_data={};
+=======
+>>>>>>> asteroid_output
 						found_c_body.push(body_data.satellite_bodies[o]);
 						kspUniObj.is_celestial_body(body_data.satellite_bodies[o],moon_data);
 						if(do_push_body(moon_data.ident)){
 							if(!do_push_body(kspUniObj.default_bodies[s].ident)){celestial_body_arr.push(kspUniObj.default_bodies[s].ident);}//if planet is not preset then lets add it if it previously failed
 							celestial_body_arr.push(moon_data.ident);
 						}
+<<<<<<< HEAD
 >>>>>>> gh-pages
+=======
+>>>>>>> asteroid_output
 					}
 				}
 			}
@@ -424,15 +502,20 @@
 			if($.inArray(kspUniObj.celestial_bodies[s].ident,found_c_body)===-1){//we don't care about moons since we can't extract that from the save game
 				c_body_count++;
 <<<<<<< HEAD
+<<<<<<< HEAD
 				if(c_body_count==1){
 =======
 				if(c_body_count==1){//visual assistance.  Draw a hard line to show where the mod planets begin
 >>>>>>> gh-pages
+=======
+				if(c_body_count==1){//visual assistance.  Draw a hard line to show where the mod planets begin
+>>>>>>> asteroid_output
 					mods_row=['Mod-Planets'];
 					var r_cnt=science_arr.length+head_filler.length-mods_row.length;//head_filler
 					mods_row=mods_row.concat(repeat_val_into_arr(tableObj.reserve_merge_row(),r_cnt));
 					delete r_cnt;}
 				found_c_body.push(kspUniObj.celestial_bodies[s].ident);
+<<<<<<< HEAD
 <<<<<<< HEAD
 				celestial_body_arr.push(kspUniObj.celestial_bodies[s].name);
 			}
@@ -443,6 +526,12 @@
 		}
 		delete found_c_body;
 >>>>>>> gh-pages
+=======
+				if(do_push_body(kspUniObj.celestial_bodies[s].ident)){celestial_body_arr.push(kspUniObj.celestial_bodies[s].ident);}
+			}
+		}
+		delete found_c_body;
+>>>>>>> asteroid_output
 		//PARSE OUT THE DATA
 		var build_td_sci_cell=function(pushUpObj,sciIdent,seekKey,userSci){
 			var sci_cell={};
@@ -572,10 +661,14 @@
 					if(rail.key=='splash' || rail.key=='surface'){
 						valid_sci.rail=false;}}
 <<<<<<< HEAD
+<<<<<<< HEAD
 				else if(planetObj.ident=='Kerbin' && rail.key=='splash' && biome!==false && $.inArray(biome,['KSC','LaunchPad','Runway'])!==-1){//temp hack!					
 =======
 				else if(planetObj.ident=='Kerbin' && rail.key=='splash' && biome!==false && $.inArray(biome,['KSC','LaunchPad','Runway'])!==-1){//temp hack!
 >>>>>>> gh-pages
+=======
+				else if(planetObj.ident=='Kerbin' && rail.key=='splash' && biome!==false && $.inArray(biome,['KSC','LaunchPad','Runway'])!==-1){//temp hack!
+>>>>>>> asteroid_output
 					valid_sci.biome=false;
 					valid_sci.rail=false;}
 				//if(bdcheck_key(planet_rails.rails,rail.key)){planet_rails.rails[rail.key];}
@@ -750,6 +843,7 @@
 		var planet_table_line=function(){
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 			//for(var planet_inc=0;planet_inc<found_c_body.length;planet_inc++){
 				var planet_data={};
 				kspUniObj.is_celestial_body(found_c_body[planet_inc],planet_data);
@@ -758,6 +852,11 @@
 				var planet_data={};
 				kspUniObj.is_celestial_body(celestial_body_arr[planet_inc],planet_data);
 >>>>>>> gh-pages
+=======
+			//for(var planet_inc=0;planet_inc<celestial_body_arr.length;planet_inc++){
+				var planet_data={};
+				kspUniObj.is_celestial_body(celestial_body_arr[planet_inc],planet_data);
+>>>>>>> asteroid_output
 				var rail_rules=kspUniObj.get_rail_rules(planet_data.body_type),
 					t_rail=[];
 				for(var r in rail_rules.rails){
@@ -789,6 +888,7 @@
 				//tableObj.add_line(['','',''],{'add_class':planet_class.concat(repeat_val_into_arr(cell_css.sci_cell,science_arr.length))});
 				planet_inc++;
 <<<<<<< HEAD
+<<<<<<< HEAD
 				if(planet_inc>=found_c_body.length){
 //console.log('page_data',page_data,'tableObj',tableObj);
 declare_finished();return;
@@ -797,6 +897,11 @@ declare_finished();return;
 //console.log('page_data',page_data,'tableObj',tableObj);
 //declare_finished();return;
 >>>>>>> gh-pages
+=======
+				if(planet_inc>=celestial_body_arr.length){
+//console.log('page_data',page_data,'tableObj',tableObj);
+//declare_finished();return;
+>>>>>>> asteroid_output
 					if(alt_science_arr.length==0){
 						declare_finished();}
 					else{
@@ -809,7 +914,10 @@ declare_finished();return;
 
 		};
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> asteroid_output
 		var alt_science_inc=0,
 			alt_table_data={'cols_info':[],'roid_list':[]};
 		var asteroid_table_line=function(){
@@ -985,7 +1093,10 @@ console.log('planet_data',planet_data,"\n\n",'sci_rails',$.extend(true,{},sci_ra
 					FPSObj.add_once_callback(asteroid_table_line);}
 
 		};
+<<<<<<< HEAD
 >>>>>>> gh-pages
+=======
+>>>>>>> asteroid_output
 		FPSObj.change_fps(40);//lets speed it up!
 		FPSObj.add_once_callback(planet_table_line);
 		/*
@@ -1210,10 +1321,14 @@ console.log('captured_sci_ids',captured_sci_ids,
 				FPSObj.add_once_callback(function(){
 					setTimeout(function(){
 <<<<<<< HEAD
+<<<<<<< HEAD
 						FPSObj.change_fps(5);//revert
 =======
 						FPSObj.change_fps(base_fps);//revert
 >>>>>>> gh-pages
+=======
+						FPSObj.change_fps(base_fps);//revert
+>>>>>>> asteroid_output
 						on_captured_science(page_data.parsed_science);
 					},base_delay*0.35);//1/3 of base delay the user has already seen this message
 				});

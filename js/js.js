@@ -189,7 +189,7 @@ function inObject(valIn,objectIn){
 	}
 	return -1;
 }
-function array_object_search(arrIn,keyIn,valIn){//if keyIn is an object it'll try reduce itself until it matches the key structure found
+function array_object_search(arrIn,keyIn,valIn,doDebug){//if keyIn is an object it'll try reduce itself until it matches the key structure found
 	if(typeof(arrIn)!='object' || !arrIn instanceof Array){return [];}
 	var output=[],
 		key_index=(typeof(keyIn)=='object'?array_keys(keyIn):[]);
@@ -201,7 +201,7 @@ function array_object_search(arrIn,keyIn,valIn){//if keyIn is an object it'll tr
 		}else{//sifting down through the provided key
 			for(var ki=0;ki<key_index.length;ki++){
 				var is_reduced=(typeof(keyIn[key_index[ki]])=='object'?false:true),//did we get reduced to a scalar value?  Basically anything but an object.  We might want a function!
-					tmp=array_object_search([ (is_reduced?arrIn[ai]:arrIn[ai][ (key_index[ki]) ]) ],(is_reduced?key_index[ki]:keyIn[key_index[ki]]),valIn);
+					tmp=array_object_search([ (is_reduced?arrIn[ai]:arrIn[ai][ (key_index[ki]) ]) ],(is_reduced?key_index[ki]:keyIn[key_index[ki]]),valIn,doDebug);
 				if(tmp.length>0){output.push(arrIn[ai]);}
 			}
 		}

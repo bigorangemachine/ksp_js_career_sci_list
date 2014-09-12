@@ -1,6 +1,6 @@
 Kerbal Space Program - Science Checklist Generator - Alpha
 ======================
-[Check out the demo](http://bigorangemachine.github.io/ksp_js_career_sci_list) at [bigorangemachine.github.io/ksp_js_career_sci_list](http://bigorangemachine.github.io/ksp_js_career_sci_list) to get your own generated Science Career Checklist.  There is 'some' support for Science Experiment Addons and Extra Planets.  Currently tested with 0.23.
+[Check out the demo](http://bigorangemachine.github.io/ksp_js_career_sci_list) at [bigorangemachine.github.io/ksp_js_career_sci_list](http://bigorangemachine.github.io/ksp_js_career_sci_list) to get your own generated Science Career Checklist.  There is 'some' support for Science Experiment Addons and Extra Planets.  Currently tested with 0.24.2.
 
 If there are any issues please use the github ticket system (issues on the right).  When you do provide a ticket I will need you to attach your save game file in a non-compressed format (no zips/rars/tars).
 
