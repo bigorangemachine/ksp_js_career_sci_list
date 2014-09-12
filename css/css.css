@@ -108,7 +108,7 @@ background: linear-gradient(to right, rgba(35,168,251,1) 0%, rgba(14,137,232,1) 
 	font-size: 10px;
 	color: #fff;
 }
-fieldset{margin-top:8%;}
+fieldset{margin-bottom:8%;}
 fieldset .sml-txt{font-size:70%;color:#333;}
 .biome-header{min-width:12px;line-height:1;}
 .biome-header div.rotator{
