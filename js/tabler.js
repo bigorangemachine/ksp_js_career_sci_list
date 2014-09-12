@@ -32,6 +32,14 @@ function bdTabler(){
 		'pre_add_line':false,
 		'add_line':false
 	};
+	this.cell_schema={
+		'add_class_row':'', //string
+		'add_class':[],     //array index with keys that sync with the row - string
+		'title_txt':[],     //array index with keys that sync with the row - string
+		'add_id':[]         //array index with keys that sync with the row - string
+	};
+
+
 }
 bdTabler.prototype.str_to_tags=function(str){
 	return '<'+str+'></'+str+'>';
