@@ -480,16 +480,8 @@ kspUniverse.prototype.is_biome=function(biomeIdent,planetIdent,foundObjRef){//fo
 kspUniverse.prototype.is_celestial_body=function(ident,foundObjRef,doDebug){//foundObjRef is a 'push up' pass by reference
 	var self=this,
 		result=$.inArray(ident,flatten_array(self.celestial_bodies,'ident'));
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 if(doDebug){console.log('============is_celestial_body(',ident,')','typeof(foundObjRef)',typeof(foundObjRef));}
 if(doDebug){console.log('result',result);}
->>>>>>> gh-pages
-=======
-if(doDebug){console.log('============is_celestial_body(',ident,')','typeof(foundObjRef)',typeof(foundObjRef));}
-if(doDebug){console.log('result',result);}
->>>>>>> asteroid_output
 	if(result!==-1 && typeof(foundObjRef)=='object'){
 		for(var cb in self.celestial_bodies[result]){
 			if(bdcheck_key(self.celestial_bodies[result],cb)){

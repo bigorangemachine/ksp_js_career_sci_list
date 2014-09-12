@@ -35,18 +35,9 @@ body.hasJS #status.online {background: #0c0;}
 .cell-sci.sci-zero{font-size:199%;color:#000000;line-height:1;}
 .cell-sci.sci-grey{background-color:#666;}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 .biome-header,
 .rail-header,
 .body-header,
->>>>>>> gh-pages
-=======
-.biome-header,
-.rail-header,
-.body-header,
->>>>>>> asteroid_output
 .sci-header{
 background-color:#ffffff;
 /*
@@ -110,35 +101,14 @@ background: linear-gradient(to right, rgba(35,168,251,1) 0%, rgba(14,137,232,1) 
 	padding: 12px 18px;
 	border-radius: 8px;
 	cursor: pointer;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 	margin-bottom:18px;
->>>>>>> gh-pages
-=======
-	margin-bottom:18px;
->>>>>>> asteroid_output
 }
 .file-browse,
 .file-browse *{
 	font-size: 10px;
 	color: #fff;
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-fieldset{margin-top:8%;}
-<<<<<<< HEAD
-<<<<<<< HEAD
-fieldset .sml-txt{font-size:70%;color:#333;}
-=======
-=======
->>>>>>> asteroid_output
-=======
 fieldset{margin-bottom:8%;}
->>>>>>> gh-pages
-=======
-fieldset{margin-bottom:8%;}
->>>>>>> asteroid_output
 fieldset .sml-txt{font-size:70%;color:#333;}
 .biome-header{min-width:12px;line-height:1;}
 .biome-header div.rotator{
@@ -147,9 +117,4 @@ fieldset .sml-txt{font-size:70%;color:#333;}
 	-moz-writing-mode: vertical-lr;
 	-ms-writing-mode: vertical-lr;
 	writing-mode: vertical-lr;
-<<<<<<< HEAD
 }
->>>>>>> gh-pages
-=======
-}
->>>>>>> asteroid_output
