@@ -292,7 +292,7 @@ function kspUniverse(){
 			'name':'Kerbin',
 			'orbiting_body':'Sun',
 			'body_type':'atm_rocky_liquid',
-			'biomes':['Grasslands','Highlands','Mountains','Deserts','Badlands','Tundra','IceCaps','Water','Shores','KSC','LaunchPad','Runway']
+			'biomes':['Grasslands','Highlands','Mountains','Deserts','Badlands','Tundra','IceCaps','Water','Shores','KSC','Administration','AstronautComplex','FlagPole','LaunchPad','Crawlerway','VAB','VABPodMemorial','VABMainBuilding','VABTanks','VABRoundTank','Runway','SPH','SPHMainBuilding','SPHWaterTower','SPHRoundTank','SPHTanks','TrackingStation','TrackingStationDishEast','TrackingStationDishSouth','TrackingStationDishNorth','TrackingStationHub','R&D','R&DCentralBuilding','R&DSmallLab','R&DMainBuilding','R&DObservatory','R&DCornerLab','R&DTanks','R&DWindTunnel','R&DSideLab','MissionControl']	//	Crawerlway	Administration	Astronaut Complex	Mission Control	Research and Development	Spaceplane Hanger	Tracking Station	Vehicle Assembly Building
 		},
 			{
 				'ident':'Mun',
