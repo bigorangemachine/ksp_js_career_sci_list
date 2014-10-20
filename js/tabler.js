@@ -220,6 +220,7 @@ bdTabler.prototype.draw_table=function(obj){//please merge this column
 					if(cur_row.spans[c].col.first){$(_new_td).attr('colspan',cur_row.spans[c].col.span);}
 					if(cur_row.spans[c].row.first){$(_new_td).attr('rowspan',cur_row.spans[c].row.span);}
 					if(bdcheck_key(cur_row.meta,'add_class') && typeof(cur_row.meta.add_class[c])!='undefined'){$(_new_td).addClass(cur_row.meta.add_class[c]);}
+//console.log('cur_row.meta',cur_row.meta);
 					if(bdcheck_key(cur_row.meta,'title_txt') && typeof(cur_row.meta.title_txt[c])!='undefined'){$(_new_td).attr('title',cur_row.meta.title_txt[c]);}
 					if(bdcheck_key(cur_row.meta,'add_id') && typeof(cur_row.meta.add_id[c])!='undefined'){$(_new_td).attr('id',cur_row.meta.add_id[c]);}
 					new_td.push(_new_td);
