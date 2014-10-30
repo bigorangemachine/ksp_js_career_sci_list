@@ -106,7 +106,11 @@ kspParser.prototype.attr_reader=function(strIn,dataOutObj,doDebug){
 			var key_regexp=new RegExp('[ \t]*$','gim');
 			t_key=t_key.replace(key_regexp,'');
 			var val_regexp=new RegExp('^( )?(=)+( )+','gi');
-			t_val=t_val.replace(val_regexp,'');
+//if(doDebug){console.log('val_regexp('+t_key+') ',t_val.match(val_regexp),val_regexp.test(t_val));}
+			if(t_val.match(val_regexp)!==null){
+				t_val=t_val.replace(val_regexp,'');}
+			else{//empty after = ?!
+				t_val='';}
 			found_str.push({'key':t_key,'val':t_val})
 		}
 	}
