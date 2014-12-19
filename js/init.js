@@ -686,7 +686,13 @@
 										//if(planet_data.ident=='Kerbin' && rail_arr_keys[r]=='splash' && $.inArray(planet_data.biomes[b],surface_only_biome['Kerbin'])!==-1){//temp hack!
 										if(planet_data.ident=='Kerbin' && rail_arr_keys[r]!='surface' && $.inArray(planet_data.biomes[b],surface_only_biome['Kerbin'])!==-1){//Do nothing if its not surface and a KSC Biome
 										}else{
-											biome_row.push('<div class="rotator">'+planet_data.biomes[b]+'</div>');
+											var biome_txt=planet_data.biomes[b];
+											//biome_names
+											if(bdcheck_key(biome_names,planet_data.ident)){
+												if(bdcheck_key(biome_names[planet_data.ident],biome_txt)){
+													biome_txt=biome_names[planet_data.ident][biome_txt];}}
+											//\\biome_names
+											biome_row.push('<div class="rotator">'+biome_txt+'</div>');
 											context_data.biome=planet_data.biomes[b];push_context_data();
 											new_biomes++;
 											rail_span++;
@@ -742,7 +748,7 @@
 							is_sci=kspSciObj.is_science(alt_science_arr[alt_science_inc].ident,sci_data_obj),
 							extra_rail=[],
 							t_rail=[];
-	//console.log('===============FIX USER SCI ARRAY - INCLUDE FLEXIBILITY TO EXPAND OTHER EXPERIMENTS IN THE FUTURE===============');
+//console.log('===============FIX USER SCI ARRAY - INCLUDE FLEXIBILITY TO EXPAND OTHER EXPERIMENTS IN THE FUTURE===============');
 						if(alt_science_arr[alt_science_inc].ident==asteroid_sample_ident){
 							var user_sci=array_object_search(array_object_search(alt_sci_list,{'meta':{'asteroid_ident':current_roid}},current_roid),'planet_ident',planet_data.ident);
 						}else{
@@ -994,10 +1000,14 @@ console.log('captured_sci_ids',captured_sci_ids,
 						if(use_data_set!==false){
 							on_chunk_found(use_data_set);
 						}else{
+							
 							try{console.log(page_data.scenarios_attribs, page_data.scenarios);}catch(e){}
 						}
 						page_data.scenarios=false;
 						page_data.scenarios_attribs=false;
+						if(use_data_set===false){
+							draw_science();//no found data set we are done <- clears old output
+						}
 						return;
 					});
 				}
