@@ -998,6 +998,9 @@ console.log('captured_sci_ids',captured_sci_ids,
 						}
 						page_data.scenarios=false;
 						page_data.scenarios_attribs=false;
+						if(use_data_set===false){
+							draw_science();//no found data set we are done <- clears old output
+						}
 						return;
 					});
 				}
