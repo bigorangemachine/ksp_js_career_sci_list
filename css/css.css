@@ -112,9 +112,11 @@ fieldset{margin-bottom:8%;}
 fieldset .sml-txt{font-size:70%;color:#333;}
 .biome-header{min-width:12px;line-height:1;}
 .biome-header div.rotator{
+	min-height:225px;
 	-ms-writing-mode: tb-lr;
 	-webkit-writing-mode: vertical-lr;
 	-moz-writing-mode: vertical-lr;
 	-ms-writing-mode: vertical-lr;
 	writing-mode: vertical-lr;
 }
+textarea{overflow:auto;width:100%;height:100%;}
