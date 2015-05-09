@@ -21,17 +21,19 @@
 			'sciences':{},
 			'sciences_attribs':{}
 		},
-		surface_only_biome={'Kerbin':['KSC','Administration','AstronautComplex','FlagPole','LaunchPad','Crawlerway','VAB','VABPodMemorial','VABMainBuilding','VABTanks','VABRoundTank','Runway','SPH','SPHMainBuilding','SPHWaterTower','SPHRoundTank','SPHTanks','TrackingStation','TrackingStationDishEast','TrackingStationDishSouth','TrackingStationDishNorth','TrackingStationHub','R&D','R&DCentralBuilding','R&DSmallLab','R&DMainBuilding','R&DObservatory','R&DCornerLab','R&DTanks','R&DWindTunnel','R&DSideLab','MissionControl']},
+		surface_only_biome={'Kerbin':[/*'SPHMainBuildingRoof','VABMainBuildingRoof',*/'KSC','Administration','AstronautComplex','FlagPole','LaunchPad','Crawlerway','VAB','VABPodMemorial','VABMainBuilding','VABTanks','VABRoundTank','Runway','SPH','SPHMainBuilding','SPHWaterTower','SPHRoundTank','SPHTanks','TrackingStation','TrackingStationDishEast','TrackingStationDishSouth','TrackingStationDishNorth','TrackingStationHub','R&D','R&DCentralBuilding','R&DSmallLab','R&DMainBuilding','R&DObservatory','R&DCornerLab','R&DTanks','R&DWindTunnel','R&DSideLab','MissionControl']},
 		biome_names={'Kerbin':{
 			'AstronautComplex':'Astronaut Complex',
 			'FlagPole':'Flag Pole',
 			'LaunchPad':'Launch Pad',
 			'VABPodMemorial':'VAB Pod Memorial',
 			'VABMainBuilding':'VAB Main Building',
+			//'VABMainBuildingRoof':'VAB Main Building Roof',
 			'VABTanks':'VAB Tanks',
 			'VABRoundTank':'VAB Round Tank',
 			'Runway':'Runway',
 			'SPHMainBuilding':'SPH Main Building',
+			//'SPHMainBuildingRoof':'SPH Main Building Roof',
 			'SPHWaterTower':'SPH Water Tower',
 			'SPHRoundTank':'SPH Round Tank',
 			'SPHTanks':'SPH Tanks',
@@ -50,6 +52,121 @@
 			'R&DWindTunnel':'R&D Wind Tunnel',
 			'R&DSideLab':'R&D Side Lab',
 			'MissionControl':'Mission Control'
+		},'Mun':{
+			'Poles':'Poles',
+			'PolarLowlands':'Polar Lowlands',
+			'PolarCrater':'Polar Crater',
+			'Highlands':'Highlands',
+			'HighlandCraters':'Highland Craters',
+			'Midlands':'Midlands',
+			'MidlandCraters':'Midland Craters',
+			'NorthernBasin':'Northern Basin',
+			'NorthwestCrater':'Northwest Crater',
+			'EastFarsideCrater':'East Farside Crater',
+			'Canyons':'Canyons',
+			'FarsideCrater':'Farside Crater',
+			'EastCrater':'East CraterEast Crater',
+			'TwinCraters':'Twin Craters',
+			'SouthwestCrater':'Southwest Crater'
+		},'Minmus':{
+			'Highlands':'Highlands',
+			'Midlands':'Midlands',
+			'Lowlands':'Lowlands',
+			'Slopes':'Slopes',
+			'LesserFlats':'LesserFlats',
+			'Flats':'Flats',
+			'GreaterFlats':'GreaterFlats',
+			'Poles':'Poles'
+		},'Moho':{
+			'CentralLowlands':'Central Lowlands',
+			'Midlands':'Midlands',
+			'MinorCraters':'Minor Craters',
+			'Highlands':'Highlands',
+			'WesternLowlands':'Western Lowlands',
+			'NorthPole':'North Pole',
+			'NorthernSinkholeRidge':'Northern Sinkhole Ridge',
+			'SouthEasternLowlands':'South Eastern Lowlands',
+			'SouthPole':'South Pole',
+			'Canyon':'Canyon',
+			'NorthernSinkhole':'Northern Sinkhole',
+			'SouthWesternLowlands':'South Western Lowlands'
+		},'Eve':{
+			'Poles':'Poles',
+			'ExplodiumSea':'Explodium Sea',
+			'Lowlands':'Lowlands',
+			'Midlands':'Midlands',
+			'Highlands':'Highlands',
+			'Peaks':'Peaks',
+			'ImpactEjecta':'Impact Ejecta'
+		},'Gilly':{
+			'Lowlands':'Lowlands',
+			'Midlands':'Midlands',
+			'Highlands':'Highlands'
+		},'Duna':{
+			'Poles':'Poles',
+			'Highlands':'Highlands',
+			'Midlands':'Midlands',
+			'Lowlands':'Lowlands',
+			'Craters':'Craters'
+		},'Ike':{
+			'PolarLowlands':'Polar Lowlands',
+			'Midlands':'Midlands',
+			'Lowlands':'Lowlands',
+			'EasternMountainRidge':'Eastern Mountain Ridge',
+			'WesternMountainRidge':'Western Mountain Ridge',
+			'CentralMountainRange':'Central Mountain Range',
+			'SouthEasternMountainRange':'South Eastern Mountain Range',
+			'SouthPole':'South Pole'
+		},'Dres':{
+			'Poles':'Poles',
+			'Highlands':'Highlands',
+			'Midlands':'Midlands',
+			'Lowlands':'Lowlands',
+			'Ridges':'Ridges',
+			'ImpactEjecta':'Impact Ejecta',
+			'ImpactCraters':'Impact Craters',
+			'Canyons':'Canyons'
+		}/*,'Jool':{
+			'xxxxxxxxxxxx':'xxxxxxxxxxxx'
+		}*/,'Laythe':{
+			'Poles':'Poles',
+			'Shores':'Shores',
+			'Dunes':'Dunes',
+			'CresentBay':'Cresent Bay',
+			'TheSagenSea':'The Sagen Sea'
+		},'Vall':{
+			'Poles':'Poles',
+			'Highlands':'Highlands',
+			'Midlands':'Midlands',
+			'Lowlands':'Lowlands'
+		},'Tylo':{
+			'Highlands':'Highlands',
+			'Midlands':'Midlands',
+			'Lowlands':'Lowlands',
+			'Mara':'Mara',
+			'MinorCraters':'Minor Craters',
+			'MajorCrater':'Major Crater',
+			'MajorCrater2':'Major Crater 2',
+			'MajorCrater3':'Major Crater 3'
+		},'Bop':{
+			'Poles':'Poles',
+			'Slopes':'Slopes',
+			'Peaks':'Peaks',
+			'Valley':'Valley',
+			'Ridges':'Ridges'
+		},'Pol':{
+			'Poles':'Poles',
+			'Highlands':'Highlands',
+			'Midlands':'Midlands',
+			'Lowlands':'Lowlands'
+		},'Eeloo':{
+			'Poles':'Poles',
+			'Glaciers':'Glaciers',
+			'Highlands':'Highlands',
+			'Midlands':'Midlands',
+			'Lowlands':'Lowlands',
+			'Craters':'Craters',
+			'IceCanyons':'Ice Canyons'
 		}},
 		processor_clock={'start':false,'end':false},
 		body_busy_class='is-busy',
@@ -642,10 +759,11 @@
 					alt_head_filler_class=[
 						'head-body',//asteroid
 					];
-				
-				for(var b=0;b<celestial_body_arr.length;b++){
+				var body_inc=0,
+					body_max=celestial_body_arr.length;
+				var asteroid_body_line=function(){
 					var planet_data={};
-					kspUniObj.is_celestial_body(celestial_body_arr[b],planet_data);
+					kspUniObj.is_celestial_body(celestial_body_arr[body_inc],planet_data);
 					var sci_rails=kspSciObj.get_rail_rules(asteroid_sample_ident, planet_data.body_type);
 					var rail_arr_keys=[],
 						context_data={
@@ -663,7 +781,7 @@
 					for(var k in kspUniObj.body_rails_schema){if(bdcheck_key(kspUniObj.body_rails_schema,k)){rail_arr_keys.push(k);}}//rail_arr_keys IN ORDER!
 					var rail_span=0,
 						biome_span=0;
-					context_data.body_ident=celestial_body_arr[b];//push_context_data();
+					context_data.body_ident=celestial_body_arr[body_inc];//push_context_data();
 //console.log('planet_data',planet_data,"\n\n",'sci_rails',$.extend(true,{},sci_rails),"\n\n",'rail_arr_keys: ',rail_arr_keys);
 
 					if((grouped_rail_context[0]===false && grouped_rail_context.length==1)){
@@ -682,12 +800,18 @@
 									context_data.biome=false;push_context_data();
 									new_biomes++;
 								}else{
-									for(var b=0;b<planet_data.biomes.length;b++){
-										//if(planet_data.ident=='Kerbin' && rail_arr_keys[r]=='splash' && $.inArray(planet_data.biomes[b],surface_only_biome['Kerbin'])!==-1){//temp hack!
-										if(planet_data.ident=='Kerbin' && rail_arr_keys[r]!='surface' && $.inArray(planet_data.biomes[b],surface_only_biome['Kerbin'])!==-1){//Do nothing if its not surface and a KSC Biome
+									for(var m=0;m<planet_data.biomes.length;m++){
+										//if(planet_data.ident=='Kerbin' && rail_arr_keys[r]=='splash' && $.inArray(planet_data.biomes[m],surface_only_biome['Kerbin'])!==-1){//temp hack!
+										if(planet_data.ident=='Kerbin' && rail_arr_keys[r]!='surface' && $.inArray(planet_data.biomes[m],surface_only_biome['Kerbin'])!==-1){//Do nothing if its not surface and a KSC Biome
 										}else{
-											biome_row.push('<div class="rotator">'+planet_data.biomes[b]+'</div>');
-											context_data.biome=planet_data.biomes[b];push_context_data();
+											var biome_txt=planet_data.biomes[m];
+											//biome_names
+											if(bdcheck_key(biome_names,planet_data.ident)){
+												if(bdcheck_key(biome_names[planet_data.ident],biome_txt)){
+													biome_txt=biome_names[planet_data.ident][biome_txt];}}
+											//\\biome_names
+											biome_row.push('<div class="rotator">'+biome_txt+'</div>');
+											context_data.biome=planet_data.biomes[m];push_context_data();
 											new_biomes++;
 											rail_span++;
 										}
@@ -706,7 +830,9 @@
 					body_row.push(planet_data.name);
 					if(new_rails>1 || new_biomes>1){
 						body_row=body_row.concat(repeat_val_into_arr(altTableObj.reserve_merge_row(),Math.max(new_rails,new_biomes)-1));}
-				}
+
+					body_inc++;
+					if(body_inc>=body_max){
 //console.log('body_row',body_row,"\n\n",'rail_row',rail_row,"\n\n",'biome_row',biome_row,"\n\n",{'add_class_row':'sci-head','add_class':alt_head_filler_class.concat(repeat_val_into_arr('sci-header',body_row.length)),'row_type':'head'});
 //console.log('body len: ',body_row.length,'rail_row len: ',rail_row.length,'biome_row len: ',biome_row.length);
 				altTableObj.add_line(body_row,{'add_class_row':'sci-head','add_class':alt_head_filler_class.concat(repeat_val_into_arr('body-header',body_row.length-1)),'row_type':'head'});
@@ -714,11 +840,7 @@
 				altTableObj.add_line(biome_row,{'add_class_row':'sci-head','add_class':alt_head_filler_class.concat(repeat_val_into_arr('biome-header',biome_row.length-1)),'row_type':'head'});
 				alt_table_data.row_count=body_row.length;
 				
-//altTableObj.add_line(['test'].concat(repeat_val_into_arr(altTableObj.reserve_merge_row(),Math.max(body_row.length,rail_row.length,biome_row.length)-1)),{'add_class_row':'sci-head','row_type':'head'});
-			}
-//return declare_finished();
 
-			//for(var alt_science_inc=0;alt_science_inc<alt_science_arr.length;alt_science_inc++){//for reference.  This is whats happening inside the FPS loop
 				var alt_sci_list=array_object_search(page_data.parsed_science,'science_ident',alt_science_arr[alt_science_inc].ident),
 					roid_ids=[];
 //console.log('alt_science_arr['+alt_science_inc+']',alt_science_arr[alt_science_inc],"\n\n",'alt_sci_list: ',alt_sci_list,"\n\n",'alt_science_arr['+alt_science_inc+']: ',alt_science_arr[alt_science_inc],'== asteroid_sample_ident: ',asteroid_sample_ident);
@@ -772,40 +894,18 @@
 					}
 					altTableObj.add_line(out_line,out_meta);
 				}
-/*
-				if(1==2){//old reference output
-					var planet_data={};
-					kspUniObj.is_celestial_body(celestial_body_arr[alt_science_inc],planet_data);
-					var rail_rules=kspUniObj.get_rail_rules(planet_data.body_type),
-						t_rail=[];
-					for(var r in rail_rules.rails){
-						if(bdcheck_key(rail_rules.rails,r)){
-							if(rail_rules.rails[r]===true){
-								t_rail.push(r);}}}
-					
-					var user_sci=array_object_search(page_data.parsed_science,'planet_ident',planet_data.ident),extra_rail=[];
-					for(var us=0;us<user_sci.length;us++){
-						if(inObject(user_sci[us].rail,flat_rail_groups)===-1 && inObject(user_sci[us].rail,flat_rail_idents)===-1){
-							extra_rail.push(user_sci[us].rail);
-						}
-					}
-					if($.inArray(planet_data.ident,flatten_array(kspUniObj.default_bodies,'ident'))===-1 && mods_row.length>0){
-						altTableObj.add_line(mods_row,{'add_class_row':cell_css.mod_row});
-						mods_row=[];//unset
-					}
-					var new_arr=build_td_vals(planet_data,t_rail.concat(extra_rail),planet_data.biomes,science_arr,user_sci);
-					if(new_arr.length>0){
-						for(var m=0;m<new_arr.length;m++){
-							altTableObj.add_line(new_arr[m].row, new_arr[m].meta);
-						}
-					}
-				}
-*/
+//console.log('alt_science_inc',alt_science_inc);
 				alt_science_inc++;
 				if(alt_science_inc>=alt_science_arr.length){
 					declare_finished();}
 				else{
 					FPSObj.add_once_callback(asteroid_table_line);}
+						FPSObj.remove_callback(asteroid_body_line);
+					}
+				};
+				FPSObj.add_callback(asteroid_body_line);
+			}
+//return declare_finished();
 
 		};
 		FPSObj.change_fps(40);//lets speed it up!
