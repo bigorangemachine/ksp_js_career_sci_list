@@ -16,24 +16,23 @@
 		page_data_schema={
 			'science_max_total':0,
 			'parsed_science':[],
+			'parsed_kac':[],
 			'scenarios':{},
 			'scenarios_attribs':{},
 			'sciences':{},
 			'sciences_attribs':{}
 		},
-		surface_only_biome={'Kerbin':[/*'SPHMainBuildingRoof','VABMainBuildingRoof',*/'KSC','Administration','AstronautComplex','FlagPole','LaunchPad','Crawlerway','VAB','VABPodMemorial','VABMainBuilding','VABTanks','VABRoundTank','Runway','SPH','SPHMainBuilding','SPHWaterTower','SPHRoundTank','SPHTanks','TrackingStation','TrackingStationDishEast','TrackingStationDishSouth','TrackingStationDishNorth','TrackingStationHub','R&D','R&DCentralBuilding','R&DSmallLab','R&DMainBuilding','R&DObservatory','R&DCornerLab','R&DTanks','R&DWindTunnel','R&DSideLab','MissionControl']},
+		surface_only_biome={'Kerbin':['KSC','Administration','AstronautComplex','FlagPole','LaunchPad','Crawlerway','VAB','VABPodMemorial','VABMainBuilding','VABTanks','VABRoundTank','Runway','SPH','SPHMainBuilding','SPHWaterTower','SPHRoundTank','SPHTanks','TrackingStation','TrackingStationDishEast','TrackingStationDishSouth','TrackingStationDishNorth','TrackingStationHub','R&D','R&DCentralBuilding','R&DSmallLab','R&DMainBuilding','R&DObservatory','R&DCornerLab','R&DTanks','R&DWindTunnel','R&DSideLab','MissionControl']},
 		biome_names={'Kerbin':{
 			'AstronautComplex':'Astronaut Complex',
 			'FlagPole':'Flag Pole',
 			'LaunchPad':'Launch Pad',
 			'VABPodMemorial':'VAB Pod Memorial',
 			'VABMainBuilding':'VAB Main Building',
-			//'VABMainBuildingRoof':'VAB Main Building Roof',
 			'VABTanks':'VAB Tanks',
 			'VABRoundTank':'VAB Round Tank',
 			'Runway':'Runway',
 			'SPHMainBuilding':'SPH Main Building',
-			//'SPHMainBuildingRoof':'SPH Main Building Roof',
 			'SPHWaterTower':'SPH Water Tower',
 			'SPHRoundTank':'SPH Round Tank',
 			'SPHTanks':'SPH Tanks',
@@ -52,121 +51,6 @@
 			'R&DWindTunnel':'R&D Wind Tunnel',
 			'R&DSideLab':'R&D Side Lab',
 			'MissionControl':'Mission Control'
-		},'Mun':{
-			'Poles':'Poles',
-			'PolarLowlands':'Polar Lowlands',
-			'PolarCrater':'Polar Crater',
-			'Highlands':'Highlands',
-			'HighlandCraters':'Highland Craters',
-			'Midlands':'Midlands',
-			'MidlandCraters':'Midland Craters',
-			'NorthernBasin':'Northern Basin',
-			'NorthwestCrater':'Northwest Crater',
-			'EastFarsideCrater':'East Farside Crater',
-			'Canyons':'Canyons',
-			'FarsideCrater':'Farside Crater',
-			'EastCrater':'East CraterEast Crater',
-			'TwinCraters':'Twin Craters',
-			'SouthwestCrater':'Southwest Crater'
-		},'Minmus':{
-			'Highlands':'Highlands',
-			'Midlands':'Midlands',
-			'Lowlands':'Lowlands',
-			'Slopes':'Slopes',
-			'LesserFlats':'LesserFlats',
-			'Flats':'Flats',
-			'GreaterFlats':'GreaterFlats',
-			'Poles':'Poles'
-		},'Moho':{
-			'CentralLowlands':'Central Lowlands',
-			'Midlands':'Midlands',
-			'MinorCraters':'Minor Craters',
-			'Highlands':'Highlands',
-			'WesternLowlands':'Western Lowlands',
-			'NorthPole':'North Pole',
-			'NorthernSinkholeRidge':'Northern Sinkhole Ridge',
-			'SouthEasternLowlands':'South Eastern Lowlands',
-			'SouthPole':'South Pole',
-			'Canyon':'Canyon',
-			'NorthernSinkhole':'Northern Sinkhole',
-			'SouthWesternLowlands':'South Western Lowlands'
-		},'Eve':{
-			'Poles':'Poles',
-			'ExplodiumSea':'Explodium Sea',
-			'Lowlands':'Lowlands',
-			'Midlands':'Midlands',
-			'Highlands':'Highlands',
-			'Peaks':'Peaks',
-			'ImpactEjecta':'Impact Ejecta'
-		},'Gilly':{
-			'Lowlands':'Lowlands',
-			'Midlands':'Midlands',
-			'Highlands':'Highlands'
-		},'Duna':{
-			'Poles':'Poles',
-			'Highlands':'Highlands',
-			'Midlands':'Midlands',
-			'Lowlands':'Lowlands',
-			'Craters':'Craters'
-		},'Ike':{
-			'PolarLowlands':'Polar Lowlands',
-			'Midlands':'Midlands',
-			'Lowlands':'Lowlands',
-			'EasternMountainRidge':'Eastern Mountain Ridge',
-			'WesternMountainRidge':'Western Mountain Ridge',
-			'CentralMountainRange':'Central Mountain Range',
-			'SouthEasternMountainRange':'South Eastern Mountain Range',
-			'SouthPole':'South Pole'
-		},'Dres':{
-			'Poles':'Poles',
-			'Highlands':'Highlands',
-			'Midlands':'Midlands',
-			'Lowlands':'Lowlands',
-			'Ridges':'Ridges',
-			'ImpactEjecta':'Impact Ejecta',
-			'ImpactCraters':'Impact Craters',
-			'Canyons':'Canyons'
-		}/*,'Jool':{
-			'xxxxxxxxxxxx':'xxxxxxxxxxxx'
-		}*/,'Laythe':{
-			'Poles':'Poles',
-			'Shores':'Shores',
-			'Dunes':'Dunes',
-			'CresentBay':'Cresent Bay',
-			'TheSagenSea':'The Sagen Sea'
-		},'Vall':{
-			'Poles':'Poles',
-			'Highlands':'Highlands',
-			'Midlands':'Midlands',
-			'Lowlands':'Lowlands'
-		},'Tylo':{
-			'Highlands':'Highlands',
-			'Midlands':'Midlands',
-			'Lowlands':'Lowlands',
-			'Mara':'Mara',
-			'MinorCraters':'Minor Craters',
-			'MajorCrater':'Major Crater',
-			'MajorCrater2':'Major Crater 2',
-			'MajorCrater3':'Major Crater 3'
-		},'Bop':{
-			'Poles':'Poles',
-			'Slopes':'Slopes',
-			'Peaks':'Peaks',
-			'Valley':'Valley',
-			'Ridges':'Ridges'
-		},'Pol':{
-			'Poles':'Poles',
-			'Highlands':'Highlands',
-			'Midlands':'Midlands',
-			'Lowlands':'Lowlands'
-		},'Eeloo':{
-			'Poles':'Poles',
-			'Glaciers':'Glaciers',
-			'Highlands':'Highlands',
-			'Midlands':'Midlands',
-			'Lowlands':'Lowlands',
-			'Craters':'Craters',
-			'IceCanyons':'Ice Canyons'
 		}},
 		processor_clock={'start':false,'end':false},
 		body_busy_class='is-busy',
@@ -192,11 +76,6 @@
 		
 		//tableObj.plugin.table=function(packObj){/*$(packObj.table_dom_obj).attr('border',1);*/};
 		page_data=$.extend(true,{},page_data_schema);//break pass by reference - populate defaults
-
-//for(var k1 in biome_names){
-//	if(bdcheck_key(biome_names,k1)){//planet
-//		var biomes=[];for(var k2 in biome_names[k1]){if(bdcheck_key(biome_names[k1],k2)){//biome
-//				biomes.push(k2);}}/*console.log(k1,"\n",'[\''+biomes.join("','")+'\']');*/}}
 
 	function get_sticky_table_obj(){
 		if($('table',table_target_obj).first().length>0){
@@ -746,7 +625,6 @@
 					if(alt_science_arr.length==0){
 						declare_finished();}
 					else{
-//alert('skip ast');declare_finished();
 						FPSObj.add_once_callback(asteroid_table_line);}
 				}else{
 					FPSObj.add_once_callback(planet_table_line);
@@ -765,8 +643,7 @@
 					alt_head_filler_class=[
 						'head-body',//asteroid
 					];
-				var asteroid_body_line=function(){
-				};
+				
 				for(var b=0;b<celestial_body_arr.length;b++){
 					var planet_data={};
 					kspUniObj.is_celestial_body(celestial_body_arr[b],planet_data);
@@ -902,7 +779,35 @@
 					}
 					altTableObj.add_line(out_line,out_meta);
 				}
-console.log('alt_science_inc',alt_science_inc);
+/*
+				if(1==2){//old reference output
+					var planet_data={};
+					kspUniObj.is_celestial_body(celestial_body_arr[alt_science_inc],planet_data);
+					var rail_rules=kspUniObj.get_rail_rules(planet_data.body_type),
+						t_rail=[];
+					for(var r in rail_rules.rails){
+						if(bdcheck_key(rail_rules.rails,r)){
+							if(rail_rules.rails[r]===true){
+								t_rail.push(r);}}}
+					
+					var user_sci=array_object_search(page_data.parsed_science,'planet_ident',planet_data.ident),extra_rail=[];
+					for(var us=0;us<user_sci.length;us++){
+						if(inObject(user_sci[us].rail,flat_rail_groups)===-1 && inObject(user_sci[us].rail,flat_rail_idents)===-1){
+							extra_rail.push(user_sci[us].rail);
+						}
+					}
+					if($.inArray(planet_data.ident,flatten_array(kspUniObj.default_bodies,'ident'))===-1 && mods_row.length>0){
+						altTableObj.add_line(mods_row,{'add_class_row':cell_css.mod_row});
+						mods_row=[];//unset
+					}
+					var new_arr=build_td_vals(planet_data,t_rail.concat(extra_rail),planet_data.biomes,science_arr,user_sci);
+					if(new_arr.length>0){
+						for(var m=0;m<new_arr.length;m++){
+							altTableObj.add_line(new_arr[m].row, new_arr[m].meta);
+						}
+					}
+				}
+*/
 				alt_science_inc++;
 				if(alt_science_inc>=alt_science_arr.length){
 					declare_finished();}
@@ -940,6 +845,78 @@ console.log('alt_science_inc',alt_science_inc);
 				if(sciLen>0 || biomeLen>0 || bodyLen>0){
 					update_status_msg('data_anomaly',{'pre':'<span class="sml-txt">'+pre_fun_str+'</span>','end':fun_str});}
 			};
+		var report_iter_kac=function(){
+			update_status_msg('sorting_data');
+			$('#file-output').val('');
+			var nl="\r\n",
+				el="<ENDLINE>",
+				sep='|',
+				quick_escape=function(str){return str.replace(/\|/gi,'-');},
+				fileoutput= 'AlarmsFileVersion|3|<ENDLINE>'+nl+
+							'VesselID|Name|Notes|AlarmTime.UT|AlarmMarginSecs|Type|Enabled|HaltWarp|PauseGame|ActionedAt|Manuever|Xfer|Target|Options|'+el+nl;
+			for(var s=0;s<page_data.parsed_kac.length;s++){
+				fileoutput= fileoutput+ 
+							quick_escape(page_data.parsed_kac[s].VesselID) +sep+
+							quick_escape(page_data.parsed_kac[s].Name) +sep+
+							quick_escape(page_data.parsed_kac[s].NotesStorage) +sep+
+							quick_escape(page_data.parsed_kac[s].AlarmTimeStorage) +sep+
+							quick_escape(page_data.parsed_kac[s].AlarmMarginSecs) +sep+
+							quick_escape(page_data.parsed_kac[s].TypeOfAlarm) +sep+
+							quick_escape(page_data.parsed_kac[s].Enabled) +sep+
+							(page_data.parsed_kac[s].AlarmAction=='KillWarp'?'True':'False') +sep+//HaltWarp
+							(page_data.parsed_kac[s].AlarmAction=='PauseGame'?'True':'False') +sep+//PauseGame
+							'0' +sep+//ActionedAt
+							page_data.parsed_kac[s].ManNodesStorage +sep+
+							'' +sep+
+							'' +sep+
+							'' +sep+
+							el+nl;
+
+/*
+Xfer
+Target
+Options
+
+9e655c97-829c-439f-8274-06f321c5e261	//VesselID
+New Science	//Name
+Time to pay attention to\r\n    New Science\r\nNearing Maneuver Node	//Notes
+59109530.0335189	//AlarmTime.UT
+1800	//AlarmMarginSecs
+Maneuver	//Type
+True	//Enabled
+True	//HaltWarp
+True	//PauseGame
+0	//ActionedAt
+59111330.0335189,0,0,-801.719634931616,0.005634537,0.936446,0.01899466,-0.3502519//Manuever
+	//Xfer
+	//Target
+	//Options
+
+
+
+parsed_kac[s].ID
+parsed_kac[s].AlarmAction
+parsed_kac[s].ManNodesStorage
+parsed_kac[s].XferOriginBodyName
+parsed_kac[s].XferTargetBodyName
+parsed_kac[s].RepeatAlarm
+parsed_kac[s].RepeatAlarmPeriodStorage
+parsed_kac[s].TargetObjectStorage
+parsed_kac[s].ContractGUIDStorage
+parsed_kac[s].ContractAlarmType
+parsed_kac[s].DeleteOnClose
+parsed_kac[s].Triggered
+parsed_kac[s].Actioned
+parsed_kac[s].AlarmWindowClosed
+*/
+			}
+
+			update_ui_msg('Generating Ouput');
+			$('#file-output').val(fileoutput);
+			$('#file-output').attr('rows','');
+			$('#file-output').attr('rows',page_data.parsed_kac.length+2);
+			declare_finished();
+		};
 		var report_iter=function(){
 			update_status_msg('sorting_data');
 			var all_stop=false,
@@ -947,9 +924,9 @@ console.log('alt_science_inc',alt_science_inc);
 				captured_body_ids=[],
 				captured_biome_ids=[];
 			for(var s=0;s<page_data.parsed_science.length;s++){
-				page_data.parsed_science[s].raw_id;
 				var parsed_attr=kspSciObj.parse_sci_id(page_data.parsed_science[s].raw_id),
 					new_props={};
+//console.log('parsed_attr',parsed_attr);
 				if(parsed_attr!==false){
 					page_data.parsed_science[s]={
 						'num':s,
@@ -1051,7 +1028,8 @@ console.log('-------YES',$.inArray(page_data.parsed_science[s].biome_ident,flatt
 					}
 				}
 				setTimeout(function(){
-					FPSObj.add_once_callback(report_iter);
+					//FPSObj.add_once_callback(report_iter);//KAC FIX
+					FPSObj.add_once_callback(report_iter_kac);
 				},base_delay);
 			}
 /*
@@ -1059,7 +1037,8 @@ console.log('captured_sci_ids',captured_sci_ids,
 			'captured_body_ids',captured_body_ids,
 			'captured_biome_ids',captured_biome_ids);*/
 		};
-		FPSObj.add_once_callback(report_iter);
+		//FPSObj.add_once_callback(report_iter);//KAC FIX
+		FPSObj.add_once_callback(report_iter_kac);
 		update_ui_msg('Sorting Relevant Data');
 	}
 	function read_scenario_chunks(strIn){
@@ -1076,7 +1055,8 @@ console.log('captured_sci_ids',captured_sci_ids,
 				if(use_data_set!==false){FPSObj.remove_callback(scenario_iter);return;}//probably not needed
 				FPSObj.remove_callback(scenario_iter);//stop from stacking
 				kspObj.plugin.attr_reader_line=function(packObj){
-					if(packObj.clean_key=='name' && packObj.clean_val=='ResearchAndDevelopment'){
+					//if(packObj.clean_key=='name' && packObj.clean_val=='ResearchAndDevelopment'){
+					if(packObj.clean_key=='name' && packObj.clean_val=='KerbalAlarmClockScenario'){
 						packObj.do_break=true;}
 				};
 				page_data.scenarios_attribs=kspObj.attr_reader(page_data.scenarios[scenario_inc].clean_chunk);
@@ -1085,7 +1065,8 @@ console.log('captured_sci_ids',captured_sci_ids,
 				if(page_data.scenarios_attribs.length>0){
 //console.log('-'+scenario_inc,'page_data.scenarios_attribs',$.extend(true,{},page_data.scenarios_attribs));
 					for(var a=0;a<page_data.scenarios_attribs.length;a++){
-						if(page_data.scenarios_attribs[a].key=='name' && page_data.scenarios_attribs[a].val=='ResearchAndDevelopment'){
+						//if(page_data.scenarios_attribs[a].key=='name' && page_data.scenarios_attribs[a].val=='ResearchAndDevelopment'){
+						if(page_data.scenarios_attribs[a].key=='name' && page_data.scenarios_attribs[a].val=='KerbalAlarmClockScenario'){
 							use_data_set=page_data.scenarios[scenario_inc];}
 					}
 				}
@@ -1100,9 +1081,6 @@ console.log('captured_sci_ids',captured_sci_ids,
 						}
 						page_data.scenarios=false;
 						page_data.scenarios_attribs=false;
-						if(use_data_set===false){
-							draw_science();//no found data set we are done <- clears old output
-						}
 						return;
 					});
 				}
@@ -1127,8 +1105,10 @@ console.log('captured_sci_ids',captured_sci_ids,
 			var t_obj={},
 				_attribs=kspObj.attr_reader(page_data.sciences[sci_inc].clean_chunk,t_obj);
 //console.log('-_attribs',_attribs,'t_obj',t_obj,'floatval('+typeof(t_obj.sci)+' '+t_obj.sci+')',parseFloat(t_obj.sci));
+
 			page_data.science_max_total=page_data.science_max_total+parseFloat(t_obj.sci);
 			page_data.parsed_science.push({'raw_id':t_obj.id,'title':t_obj.title,'sci':parseFloat(t_obj.sci),'cap':parseFloat(t_obj.cap)});
+			page_data.parsed_kac.push(t_obj);
 
 			update_status_msg('count_off_science',{'pre':addCommas(sci_inc+1),'end':(sci_inc+1!=1?'s':'')+' for '+addCommas(page_data.science_max_total.toFixed(2))+' Science'});
 
@@ -1146,7 +1126,8 @@ console.log('captured_sci_ids',captured_sci_ids,
 			FPSObj.add_callback(chunk_tick);//stop from stacking
 		};
 	
-		page_data.sciences=kspObj.chunk_reader(dataSetIn.chunk,'Science');
+		//page_data.sciences=kspObj.chunk_reader(dataSetIn.chunk,'Science');
+		page_data.sciences=kspObj.chunk_reader(dataSetIn.chunk,'Item');
 //console.log('page_data.sciences',page_data.sciences);
 		
 		setTimeout(function(){

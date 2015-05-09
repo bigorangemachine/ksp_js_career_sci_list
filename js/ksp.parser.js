@@ -83,7 +83,6 @@ kspParser.prototype.attr_reader=function(strIn,dataOutObj,doDebug){
 				t_key='',
 				t_val='',
 				a_inc=0;
-//console.log('t_exp',t_exp);
 			for(var t=0;t<t_exp.length;t++){
 //console.log('-'+t,t_exp[t]);
 				if(basic_check(t_exp[t])){
@@ -106,7 +105,11 @@ kspParser.prototype.attr_reader=function(strIn,dataOutObj,doDebug){
 			var key_regexp=new RegExp('[ \t]*$','gim');
 			t_key=t_key.replace(key_regexp,'');
 			var val_regexp=new RegExp('^( )?(=)+( )+','gi');
-			t_val=t_val.replace(val_regexp,'');
+//if(doDebug){console.log('val_regexp('+t_key+') ',t_val.match(val_regexp),val_regexp.test(t_val));}
+			if(t_val.match(val_regexp)!==null){
+				t_val=t_val.replace(val_regexp,'');}
+			else{//empty after = ?!
+				t_val='';}
 			found_str.push({'key':t_key,'val':t_val})
 		}
 	}
@@ -283,10 +286,10 @@ function kspUniverse(){
 		'biomes':[]
 	};
 	this.default_bodies=[
-		{'ident':'Sun','name':'Kerbold','orbiting_body':false,'body_type':'star'},
-		{'ident':'Moho','name':'Moho','orbiting_body':'Sun','body_type':'rocky'},
-		{'ident':'Eve','name':'Eve','orbiting_body':'Sun','body_type':'atm_rocky'},
-			{'ident':'Gilly','name':'Gilly','orbiting_body':'Eve','body_type':'rocky'},
+		{'ident':'Sun','name':'Kerbol','orbiting_body':false,'body_type':'star'},
+		{'ident':'Moho','name':'Moho','orbiting_body':'Sun','body_type':'rocky','biomes':['CentralLowlands','Midlands','MinorCraters','Highlands','WesternLowlands','NorthPole','NorthernSinkholeRidge','SouthEasternLowlands','SouthPole','Canyon','NorthernSinkhole','SouthWesternLowlands']},
+		{'ident':'Eve','name':'Eve','orbiting_body':'Sun','body_type':'atm_rocky','biomes':['Poles','ExplodiumSea','Lowlands','Midlands','Highlands','Peaks','ImpactEjecta']},
+			{'ident':'Gilly','name':'Gilly','orbiting_body':'Eve','body_type':'rocky','biomes':['Lowlands','Midlands','Highlands']},
 		{
 			'ident':'Kerbin',
 			'name':'Kerbin',
@@ -308,17 +311,17 @@ function kspUniverse(){
 				'orbiting_body':'Kerbin',
 				'body_type':'rocky',
 				'biomes':['Highlands','Midlands','Lowlands','Slopes','LesserFlats','Flats','GreatFlats','GreaterFlats','Poles']
-			},/**/
-		{'ident':'Duna','name':'Duna','orbiting_body':'Sun','body_type':'atm_rocky'},
-			{'ident':'Ike','name':'Ike','orbiting_body':'Duna','body_type':'rocky'},
-		{'ident':'Dres','name':'Dres','orbiting_body':'Sun','body_type':'rocky'},
+			},
+		{'ident':'Duna','name':'Duna','orbiting_body':'Sun','body_type':'atm_rocky','biomes':['Poles','Highlands','Midlands','Lowlands','Craters']},
+			{'ident':'Ike','name':'Ike','orbiting_body':'Duna','body_type':'rocky','biomes':['PolarLowlands','Midlands','Lowlands','EasternMountainRidge','WesternMountainRidge','CentralMountainRange','SouthEasternMountainRange','SouthPole']},
+		{'ident':'Dres','name':'Dres','orbiting_body':'Sun','body_type':'rocky','biomes':['Poles','Highlands','Midlands','Lowlands','Ridges','ImpactEjecta','ImpactCraters','Canyons']},
 		{'ident':'Jool','name':'Jool','orbiting_body':'Sun','body_type':'gas'},
-			{'ident':'Laythe','name':'Laythe','orbiting_body':'Jool','body_type':'atm_rocky_liquid'},
-			{'ident':'Vall','name':'Vall','orbiting_body':'Jool','body_type':'rocky'},
-			{'ident':'Tylo','name':'Tylo','orbiting_body':'Jool','body_type':'rocky'},
-			{'ident':'Bop','name':'Bop','orbiting_body':'Jool','body_type':'rocky'},
-			{'ident':'Pol','name':'Pol','orbiting_body':'Jool','body_type':'rocky'},
-		{'ident':'Eeloo','name':'Eeloo','orbiting_body':'Sun','body_type':'rocky'}
+			{'ident':'Laythe','name':'Laythe','orbiting_body':'Jool','body_type':'atm_rocky_liquid','biomes':['Poles','Shores','Dunes','CresentBay','TheSagenSea']},
+			{'ident':'Vall','name':'Vall','orbiting_body':'Jool','body_type':'rocky','biomes':['Poles','Highlands','Midlands','Lowlands']},
+			{'ident':'Tylo','name':'Tylo','orbiting_body':'Jool','body_type':'rocky','biomes':['Highlands','Midlands','Lowlands','Mara','MinorCraters','MajorCrater']},
+			{'ident':'Bop','name':'Bop','orbiting_body':'Jool','body_type':'rocky','biomes':['Poles','Slopes','Peaks','Valley','Ridges']},
+			{'ident':'Pol','name':'Pol','orbiting_body':'Jool','body_type':'rocky','biomes':['Poles','Highlands','Midlands','Lowlands']},
+		{'ident':'Eeloo','name':'Eeloo','orbiting_body':'Sun','body_type':'rocky','biomes':['Poles','Glaciers','Highlands','Midlands','Lowlands','Craters','IceCanyons']}
 	];
 
 
@@ -526,6 +529,8 @@ function kspSci(kspUniObj){
 	situationMask = 63 -> all added together
 	biomeMask = 7 -> first 3 added together
 */
+/*
+/////// 0.90 \\\\\\\\
 	this.default_sciences=[
 		{'ident':'asteroidSample','name':'Asteroid Surface Sample','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':true},//,'meta':{'ignore_planet_rail':'asteroid'} <- was here but I realized you can't have astroids as places there are more like vessels
 		{'ident':'surfaceSample','name':'Surface Sample','biome_context':{'surface':true,'splash':true},'rail_context':{'splash':true,'surface':true}},
@@ -540,6 +545,24 @@ function kspSci(kspUniObj){
 		{'ident':'atmosphereAnalysis','name':'S.A.C Nose Cone','biome_context':{'high_fly':true,'low_fly':true,'surface':true},'rail_context':{'high_fly':true,'low_fly':true,'surface':true},'meta':{'require_atmosphere':true}},
 		{'ident':'recovery','name':'Vessel Recovery','biome_context':false,'rail_context':true,'meta':{'rails_as_groups':true}}//rails as groups says to ignore the rails labels and use the group labels.  This is just a hack for recovery
 	];
+/////// \\ 0.90 \\\\\\\\
+*/
+/////// \\ 1.0.2 \\\\\\\\
+	this.default_sciences=[
+		{'ident':'asteroidSample','name':'Asteroid Surface Sample','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':true},//,'meta':{'ignore_planet_rail':'asteroid'} <- was here but I realized you can't have astroids as places there are more like vessels
+		{'ident':'surfaceSample','name':'Surface Sample','biome_context':{'surface':true,'splash':true},'rail_context':{'splash':true,'surface':true}},
+		{'ident':'evaReport','name':'EVA Report','biome_context':{'low_orbit':true,'low_fly':true,'surface':true,'splash':true},'rail_context':true},
+		{'ident':'crewReport','name':'Crew Report','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':true},
+		{'ident':'mysteryGoo','name':'Goo','biome_context':{'surface':true,'splash':true},'rail_context':true},
+		{'ident':'mobileMaterialsLab','name':'Materials Bay','biome_context':{'surface':true,'splash':true},'rail_context':true},
+		{'ident':'temperatureScan','name':'Temperature Scan','biome_context':{'low_fly':true,'surface':true,'splash':true},'rail_context':true},
+		{'ident':'barometerScan','name':'Atmospheric Pressure Scan','biome_context':{'surface':true,'splash':true},'rail_context':true},
+		{'ident':'gravityScan','name':'Gravioli Particles','biome_context':{'high_orbit':true,'low_orbit':true,'surface':true,'splash':true},'rail_context':{'high_orbit':true,'low_orbit':true,'splash':true,'surface':true}},
+		{'ident':'seismicScan','name':'Seismic Scan','biome_context':{'surface':true},'rail_context':{'surface':true}},
+		{'ident':'atmosphereAnalysis','name':'S.A.C Nose Cone','biome_context':{'high_fly':true,'low_fly':true,'surface':true},'rail_context':{'high_fly':true,'low_fly':true,'surface':true},'meta':{'require_atmosphere':true}},
+		{'ident':'recovery','name':'Vessel Recovery','biome_context':false,'rail_context':true,'meta':{'rails_as_groups':true}}//rails as groups says to ignore the rails labels and use the group labels.  This is just a hack for recovery
+	];
+/////// \\ 1.0.2 \\\\\\\\
 	this.plugin={
 		'pre_add_science':false,
 		'add_science':false,
