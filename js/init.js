@@ -765,11 +765,11 @@
 					alt_head_filler_class=[
 						'head-body',//asteroid
 					];
+				var body_inc=0,
+					body_max=celestial_body_arr.length;
 				var asteroid_body_line=function(){
-				};
-				for(var b=0;b<celestial_body_arr.length;b++){
 					var planet_data={};
-					kspUniObj.is_celestial_body(celestial_body_arr[b],planet_data);
+					kspUniObj.is_celestial_body(celestial_body_arr[body_inc],planet_data);
 					var sci_rails=kspSciObj.get_rail_rules(asteroid_sample_ident, planet_data.body_type);
 					var rail_arr_keys=[],
 						context_data={
@@ -787,7 +787,7 @@
 					for(var k in kspUniObj.body_rails_schema){if(bdcheck_key(kspUniObj.body_rails_schema,k)){rail_arr_keys.push(k);}}//rail_arr_keys IN ORDER!
 					var rail_span=0,
 						biome_span=0;
-					context_data.body_ident=celestial_body_arr[b];//push_context_data();
+					context_data.body_ident=celestial_body_arr[body_inc];//push_context_data();
 //console.log('planet_data',planet_data,"\n\n",'sci_rails',$.extend(true,{},sci_rails),"\n\n",'rail_arr_keys: ',rail_arr_keys);
 
 					if((grouped_rail_context[0]===false && grouped_rail_context.length==1)){
@@ -806,18 +806,18 @@
 									context_data.biome=false;push_context_data();
 									new_biomes++;
 								}else{
-									for(var b=0;b<planet_data.biomes.length;b++){
-										//if(planet_data.ident=='Kerbin' && rail_arr_keys[r]=='splash' && $.inArray(planet_data.biomes[b],surface_only_biome['Kerbin'])!==-1){//temp hack!
-										if(planet_data.ident=='Kerbin' && rail_arr_keys[r]!='surface' && $.inArray(planet_data.biomes[b],surface_only_biome['Kerbin'])!==-1){//Do nothing if its not surface and a KSC Biome
+									for(var m=0;m<planet_data.biomes.length;m++){
+										//if(planet_data.ident=='Kerbin' && rail_arr_keys[r]=='splash' && $.inArray(planet_data.biomes[m],surface_only_biome['Kerbin'])!==-1){//temp hack!
+										if(planet_data.ident=='Kerbin' && rail_arr_keys[r]!='surface' && $.inArray(planet_data.biomes[m],surface_only_biome['Kerbin'])!==-1){//Do nothing if its not surface and a KSC Biome
 										}else{
-											var biome_txt=planet_data.biomes[b];
+											var biome_txt=planet_data.biomes[m];
 											//biome_names
 											if(bdcheck_key(biome_names,planet_data.ident)){
 												if(bdcheck_key(biome_names[planet_data.ident],biome_txt)){
 													biome_txt=biome_names[planet_data.ident][biome_txt];}}
 											//\\biome_names
 											biome_row.push('<div class="rotator">'+biome_txt+'</div>');
-											context_data.biome=planet_data.biomes[b];push_context_data();
+											context_data.biome=planet_data.biomes[m];push_context_data();
 											new_biomes++;
 											rail_span++;
 										}
@@ -836,78 +836,82 @@
 					body_row.push(planet_data.name);
 					if(new_rails>1 || new_biomes>1){
 						body_row=body_row.concat(repeat_val_into_arr(altTableObj.reserve_merge_row(),Math.max(new_rails,new_biomes)-1));}
-				}
+
+					body_inc++;
+					if(body_inc>=body_max){
 //console.log('body_row',body_row,"\n\n",'rail_row',rail_row,"\n\n",'biome_row',biome_row,"\n\n",{'add_class_row':'sci-head','add_class':alt_head_filler_class.concat(repeat_val_into_arr('sci-header',body_row.length)),'row_type':'head'});
 //console.log('body len: ',body_row.length,'rail_row len: ',rail_row.length,'biome_row len: ',biome_row.length);
-				altTableObj.add_line(body_row,{'add_class_row':'sci-head','add_class':alt_head_filler_class.concat(repeat_val_into_arr('body-header',body_row.length-1)),'row_type':'head'});
-				altTableObj.add_line(rail_row,{'add_class_row':'sci-head','add_class':alt_head_filler_class.concat(repeat_val_into_arr('rail-header',rail_row.length-1)),'row_type':'head'});
-				altTableObj.add_line(biome_row,{'add_class_row':'sci-head','add_class':alt_head_filler_class.concat(repeat_val_into_arr('biome-header',biome_row.length-1)),'row_type':'head'});
-				alt_table_data.row_count=body_row.length;
-				
-//altTableObj.add_line(['test'].concat(repeat_val_into_arr(altTableObj.reserve_merge_row(),Math.max(body_row.length,rail_row.length,biome_row.length)-1)),{'add_class_row':'sci-head','row_type':'head'});
+						altTableObj.add_line(body_row,{'add_class_row':'sci-head','add_class':alt_head_filler_class.concat(repeat_val_into_arr('body-header',body_row.length-1)),'row_type':'head'});
+						altTableObj.add_line(rail_row,{'add_class_row':'sci-head','add_class':alt_head_filler_class.concat(repeat_val_into_arr('rail-header',rail_row.length-1)),'row_type':'head'});
+						altTableObj.add_line(biome_row,{'add_class_row':'sci-head','add_class':alt_head_filler_class.concat(repeat_val_into_arr('biome-header',biome_row.length-1)),'row_type':'head'});
+						alt_table_data.row_count=body_row.length;
+
+
+						var alt_sci_list=array_object_search(page_data.parsed_science,'science_ident',alt_science_arr[alt_science_inc].ident),
+							roid_ids=[];
+		//console.log('alt_science_arr['+alt_science_inc+']',alt_science_arr[alt_science_inc],"\n\n",'alt_sci_list: ',alt_sci_list,"\n\n",'alt_science_arr['+alt_science_inc+']: ',alt_science_arr[alt_science_inc],'== asteroid_sample_ident: ',asteroid_sample_ident);
+						if(alt_science_arr[alt_science_inc].ident==asteroid_sample_ident){
+							for(var rt=0;rt<alt_sci_list.length;rt++){
+								if(alt_sci_list[rt].meta.asteroid_ident!==false && $.inArray(alt_sci_list[rt].meta.asteroid_ident,roid_ids)===-1){
+									alt_table_data.roid_list.push(alt_sci_list[rt].meta.asteroid_ident);
+									roid_ids.push(alt_sci_list[rt].meta.asteroid_ident);
+								}
+							}
+						}
+
+						for(var al=0;al<alt_table_data.roid_list.length;al++){
+							var current_roid=alt_table_data.roid_list[al],
+								_tmp=[current_roid],
+								out_data=[{'row':current_roid,'meta':altTableObj.cell_schema}];//{'row':current_roid,'meta':altTableObj.cell_schema}
+							for(var i=0;i<alt_table_data.cols_info.length;i++){
+								var planet_data={};
+								kspUniObj.is_celestial_body(alt_table_data.cols_info[i].body_ident,planet_data);
+								var sci_data_obj={},
+									is_sci=kspSciObj.is_science(alt_science_arr[alt_science_inc].ident,sci_data_obj),
+									extra_rail=[],
+									t_rail=[];
+//console.log('===============FIX USER SCI ARRAY - INCLUDE FLEXIBILITY TO EXPAND OTHER EXPERIMENTS IN THE FUTURE===============');
+								if(alt_science_arr[alt_science_inc].ident==asteroid_sample_ident){
+									var user_sci=array_object_search(array_object_search(alt_sci_list,{'meta':{'asteroid_ident':current_roid}},current_roid),'planet_ident',planet_data.ident);
+								}else{
+									var user_sci=alt_sci_list;}
+
+								//var new_arr=build_td_vals(planet_data,t_rail.concat(extra_rail),planet_data.biomes,science_arr,user_sci);
+								var new_arr=build_td_vals(planet_data, [alt_table_data.cols_info[i].rail], (alt_table_data.cols_info[i].biome!==false?[alt_table_data.cols_info[i].biome]:[]), alt_science_arr, user_sci);
+								if(new_arr.length>0){
+									for(var m=0;m<new_arr.length;m++){
+										var new_row=new_arr[m].row.slice(3),
+											new_meta=new_arr[m].meta,
+											display_roid_name=current_roid;
+										for(var nm in new_meta){if(bdcheck_key(new_meta,nm) && new_meta[nm] instanceof Array){new_meta[nm]=new_meta[nm].slice(3);}}
+										out_data.push({'row':new_row[0],'meta':new_meta});
+									}
+								}else{
+									out_data.push({'row':0, 'meta':altTableObj.cell_schema});}
+							}
+							var out_line=[],
+								out_meta={};
+							for(var o=0;o<out_data.length;o++){
+								out_line.push(out_data[o].row);
+								for(var cs in altTableObj.cell_schema){
+									if(bdcheck_key(altTableObj.cell_schema,cs)){
+										if(typeof(out_meta[cs])=='undefined'){out_meta[cs]=[];}
+										out_meta[cs].push((bdcheck_key(out_data[o].meta,cs)?out_data[o].meta[cs][0]:''));}}
+							}
+							altTableObj.add_line(out_line,out_meta);
+						}
+//console.log('alt_science_inc',alt_science_inc);
+						alt_science_inc++;
+						if(alt_science_inc>=alt_science_arr.length){
+							declare_finished();}
+						else{
+							FPSObj.add_once_callback(asteroid_table_line);}
+						FPSObj.remove_callback(asteroid_body_line);
+					}
+				};
+				FPSObj.add_callback(asteroid_body_line);
 			}
 //return declare_finished();
-
-			//for(var alt_science_inc=0;alt_science_inc<alt_science_arr.length;alt_science_inc++){//for reference.  This is whats happening inside the FPS loop
-				var alt_sci_list=array_object_search(page_data.parsed_science,'science_ident',alt_science_arr[alt_science_inc].ident),
-					roid_ids=[];
-//console.log('alt_science_arr['+alt_science_inc+']',alt_science_arr[alt_science_inc],"\n\n",'alt_sci_list: ',alt_sci_list,"\n\n",'alt_science_arr['+alt_science_inc+']: ',alt_science_arr[alt_science_inc],'== asteroid_sample_ident: ',asteroid_sample_ident);
-				if(alt_science_arr[alt_science_inc].ident==asteroid_sample_ident){
-					for(var rt=0;rt<alt_sci_list.length;rt++){
-						if(alt_sci_list[rt].meta.asteroid_ident!==false && $.inArray(alt_sci_list[rt].meta.asteroid_ident,roid_ids)===-1){
-							alt_table_data.roid_list.push(alt_sci_list[rt].meta.asteroid_ident);
-							roid_ids.push(alt_sci_list[rt].meta.asteroid_ident);
-						}
-					}
-				}
-
-				for(var al=0;al<alt_table_data.roid_list.length;al++){
-					var current_roid=alt_table_data.roid_list[al],
-						_tmp=[current_roid],
-						out_data=[{'row':current_roid,'meta':altTableObj.cell_schema}];//{'row':current_roid,'meta':altTableObj.cell_schema}
-					for(var i=0;i<alt_table_data.cols_info.length;i++){
-						var planet_data={};
-						kspUniObj.is_celestial_body(alt_table_data.cols_info[i].body_ident,planet_data);
-						var sci_data_obj={},
-							is_sci=kspSciObj.is_science(alt_science_arr[alt_science_inc].ident,sci_data_obj),
-							extra_rail=[],
-							t_rail=[];
-//console.log('===============FIX USER SCI ARRAY - INCLUDE FLEXIBILITY TO EXPAND OTHER EXPERIMENTS IN THE FUTURE===============');
-						if(alt_science_arr[alt_science_inc].ident==asteroid_sample_ident){
-							var user_sci=array_object_search(array_object_search(alt_sci_list,{'meta':{'asteroid_ident':current_roid}},current_roid),'planet_ident',planet_data.ident);
-						}else{
-							var user_sci=alt_sci_list;}
-
-						//var new_arr=build_td_vals(planet_data,t_rail.concat(extra_rail),planet_data.biomes,science_arr,user_sci);
-						var new_arr=build_td_vals(planet_data, [alt_table_data.cols_info[i].rail], (alt_table_data.cols_info[i].biome!==false?[alt_table_data.cols_info[i].biome]:[]), alt_science_arr, user_sci);
-						if(new_arr.length>0){
-							for(var m=0;m<new_arr.length;m++){
-								var new_row=new_arr[m].row.slice(3),
-									new_meta=new_arr[m].meta,
-									display_roid_name=current_roid;
-								for(var nm in new_meta){if(bdcheck_key(new_meta,nm) && new_meta[nm] instanceof Array){new_meta[nm]=new_meta[nm].slice(3);}}
-								out_data.push({'row':new_row[0],'meta':new_meta});
-							}
-						}else{
-							out_data.push({'row':0, 'meta':altTableObj.cell_schema});}
-					}
-					var out_line=[],
-						out_meta={};
-					for(var o=0;o<out_data.length;o++){
-						out_line.push(out_data[o].row);
-						for(var cs in altTableObj.cell_schema){
-							if(bdcheck_key(altTableObj.cell_schema,cs)){
-								if(typeof(out_meta[cs])=='undefined'){out_meta[cs]=[];}
-								out_meta[cs].push((bdcheck_key(out_data[o].meta,cs)?out_data[o].meta[cs][0]:''));}}
-					}
-					altTableObj.add_line(out_line,out_meta);
-				}
-console.log('alt_science_inc',alt_science_inc);
-				alt_science_inc++;
-				if(alt_science_inc>=alt_science_arr.length){
-					declare_finished();}
-				else{
-					FPSObj.add_once_callback(asteroid_table_line);}
 
 		};
 		FPSObj.change_fps(40);//lets speed it up!
