@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+<title>Kerbal Alarm Clock Fix</title>
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700,700italic,400italic,900,900italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Numans' rel='stylesheet' type='text/css'>
+<link href='css/css.css' rel='stylesheet' type='text/css'>
+<style type="text/css">
+</style>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="js/jquery.cookie.js"></script>
+<script src="js/js.js"></script>
+<script src="js/fps.requestAnimate.js"></script>
+<script src="js/ksp.parser.js"></script>
+<script src="js/tabler.js"></script>
+<script src="js/jquery.stickytableheaders.js"></script>
+<!--<script src="js/jquery.stickytableheaders.min.js"></script>-->
+
+</head>
+<body>
+<section class="wrap">
+	<div id="holder"><p>Drag your KSP Save Game here<br/>-or-<br/>Browse for the file below</p></div>
+	<label for="file-browse" class="file-browse"><input type="file" id="file-browse" name="filebrowse" /></label>
+	<noscript type="text/html"><p id="no-js-msg">JavaScript is Required</p></noscript>
+	<p style="display:none;" id="status">Please use the latest Chrome or Firefox Browser.</p>
+	<p>Save to text file in <br><pre><em>&lt;KSP ROOT&gt;\GameData\TriggerTech\PluginData\KerbalAlarmClock\</em></pre><br>This filename should match your existing filename.  Use the KAC Old File Import Tool.</p>
+	<textarea id="file-output" readonly></textarea>
+</section>
+<section class="table-output"></section>
+<script type="text/javascript" src="js/init-KAC.js"></script>
+<!-- quick science grid test -->
+<!-- <script src="js/quick.test.js"></script> -->
+</body>
+</html>
