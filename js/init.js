@@ -65,7 +65,7 @@
 			'EastFarsideCrater':'East Farside Crater',
 			'Canyons':'Canyons',
 			'FarsideCrater':'Farside Crater',
-			'EastCrater':'East CraterEast Crater',
+			'EastCrater':'East Crater',
 			'TwinCraters':'Twin Craters',
 			'SouthwestCrater':'Southwest Crater'
 		},'Minmus':{
@@ -317,6 +317,9 @@
 				'sci_head':'sci-header',
 				'sci_cell':'cell-sci'
 			},
+			cell_html={
+				'sci_zero_prefix':'',
+			}
 			do_push_sci=function(valIn){
 				if(!show_all_sci){
 					if($.inArray(valIn,flatten_array(page_data.parsed_science,'science_ident'))!==-1){return true;}
@@ -420,7 +423,7 @@
 				pushUpObj[ (sciIdent) ].html_out=t_sci+'<br>'+'<span class="sml-txt">'+sci_cell.sci+'/'+sci_cell.cap+'<span>';
 			}else{
 				pushUpObj[ (sciIdent) ].add_class=cell_css.sci_zero;
-				pushUpObj[ (sciIdent) ].html_out='0';
+				pushUpObj[ (sciIdent) ].html_out=cell_html.sci_zero_prefix+'0';
 			}
 
 			pushUpObj[ (sciIdent) ].text=userSci[seekKey].text;
@@ -541,7 +544,7 @@
 						build_td_sci_cell(this_sci_index,sciArr[sa].ident,seek_u_sci_key,userSci);
 					}else{//no user data!
 						this_sci_index[ (sciArr[sa].ident) ].add_class=cell_css.sci_zero;
-						this_sci_index[ (sciArr[sa].ident) ].html_out='0';
+						this_sci_index[ (sciArr[sa].ident) ].html_out=cell_html.sci_zero_prefix+'0';
 					}
 //planet has biomes but not this experiment
 //planet has biomes normally
