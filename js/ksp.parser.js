@@ -560,7 +560,7 @@ function kspSci(kspUniObj){
 		{'ident':'barometerScan','name':'Atmospheric Pressure Scan','biome_context':{'surface':true,'splash':true},'rail_context':true},
 		{'ident':'gravityScan','name':'Gravioli Particles','biome_context':{'high_orbit':true,'low_orbit':true,'surface':true,'splash':true},'rail_context':{'high_orbit':true,'low_orbit':true,'splash':true,'surface':true}},
 		{'ident':'seismicScan','name':'Seismic Scan','biome_context':{'surface':true},'rail_context':{'surface':true}},
-		{'ident':'atmosphereAnalysis','name':'S.A.C Nose Cone','biome_context':{'high_fly':true,'low_fly':true,'surface':true},'rail_context':{'high_fly':true,'low_fly':true,'surface':true},'meta':{'require_atmosphere':true}},
+		{'ident':'atmosphereAnalysis','name':'Atmospheric Fluid Spectro-Variometer','biome_context':{'high_fly':true,'low_fly':true,'surface':true},'rail_context':{'high_fly':true,'low_fly':true,'surface':true},'meta':{'require_atmosphere':true}},
 		{'ident':'recovery','name':'Vessel Recovery','biome_context':false,'rail_context':true,'meta':{'rails_as_groups':true}}//rails as groups says to ignore the rails labels and use the group labels.  This is just a hack for recovery
 	];
 /////// \\ 1.0.2 \\\\\\\\
