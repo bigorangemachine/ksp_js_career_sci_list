@@ -32,8 +32,13 @@ body.hasJS #status.online {background: #0c0;}
 
 .cell-sci{text-align:center;font-weight:700;font-size:20px;line-height:0.65;color:#fefefe;font-family: 'Numans', sans-serif;}
 .cell-sci .sml-txt{font-size:50%;color:#eee;}
-.cell-sci.sci-zero{font-size:199%;color:#000000;line-height:1;}
+.cell-sci.sci-zero{font-size:199%;color:#ff8888;line-height:1;
+	background-image:url('../img/cross-box.svg');
+	background-size: contain;
+	text-shadow:0px 1px 10px rgba(255,255,255,0.7);
+}
 .cell-sci.sci-grey{background-color:#666;}
+.cell-sci.sci-grey a.show-hide{color:#fff;}
 
 .biome-header,
 .rail-header,
@@ -49,11 +54,12 @@ transform: rotate(7.5deg)
 .mod-plaent-row{background-color:#000;}
 .mod-plaent-row td{color:#fff;font-size:8px;letter-spacing:14px;text-align:center;font-weight:700;line-height:1.5;vertical-align:middle;}
 .sci-full{/*>100%*/
-background-image:url('../img/check.png');
-background-repeat:no-repeat;
-background-position:center center;
-min-width:25px;
-min-height:25px;
+	background-image:url('../img/check2.gif');
+	background-repeat:no-repeat;
+	background-position:center center;
+	min-width:25px;
+	min-height:25px;
+	background-color:#7bbf6a;
 }
 .sci-full,.sci-full *{
 text-align:left;

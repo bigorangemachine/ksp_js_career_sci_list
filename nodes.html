@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+	
+	<meta property="og:title" content="KSP - Kerbal Ion Node Calculator by bigorangemachine" /> 
+	<meta property="og:type" content="website" /> 
+	<meta property="og:url" content="http://bigorangemachine.github.io/ksp_js_career_sci_list/" />
+	<meta property="og:image" content="http://bigorangemachine.github.io/ksp_js_career_sci_list/img/screen-ion-segments.jpg" />
+	<meta property="og:description" content="Kerbal Space Program - Ion Node Splitter to be used with Precise Node.  Allows your maneuver nodes to be split into multiple sections by specifying recharge time, burn time and other important vectors " />
+	<meta name="description" content="Kerbal Space Program - Ion Node Splitter to be used with Precise Node.  Allows your maneuver nodes to be split into multiple sections by specifying recharge time, burn time and other important vectors"/>
+	<meta name="keywords" content="Kerbal Space Program, Maneuver, Node, Break Up, Computer Game, Tool, Utility" />
+
+    <title>KSP - Kerbal Ion Node Calculator by bigorangemachine</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700,700italic,400italic,900,900italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Numans' rel='stylesheet' type='text/css'>
+<link href='css/css.css' rel='stylesheet' type='text/css'>
+<style type="text/css">
+</style>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="js/jquery.cookie.js"></script>
+<script src="js/js.js"></script>
+<script src="js/tabler.js"></script>
+  </head>
+<body class="node-tool">
+    <div class="wrapper">
+      <header>
+		<img src="img/screen.jpg" class="hdn-tmb"/>
+        <h1>Kerbal Space Program - Ion Node Calculator</h1>
+        <p>A KSP Maneuver Tool to be used with a mod like <a href="http://forum.kerbalspaceprogram.com/index.php?/topic/44129-105-precise-node-121-precisely-edit-your-maneuver-nodes/" target="_blank">Precise Node</a></p>
+
+        <p class="view"><a href="https://github.com/bigorangemachine/ksp_js_career_sci_list">View the Project on GitHub <small>bigorangemachine/ksp_js_career_sci_list</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/bigorangemachine/ksp_js_career_sci_list/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/bigorangemachine/ksp_js_career_sci_list/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/bigorangemachine/ksp_js_career_sci_list">View On <strong>GitHub</strong></a></li>
+        </ul>
+		<p>If you think this is a great KSP tool please donate!</p>
+		<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="9DDM8M6XT7R3G">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+
+      </header>
+<section class="wrap">
+	<form class="calc-form">
+	<fieldset>
+		<legend>Vectors</legend>
+		<label for="timeUT"><img src="img/alarm.png" width="25" height="25"> <input type="number" step="any"  name="timeUT" id="timeUT" value="100000" /> Target Time (UT)</label><br/>
+		<label for="prograde-val"> <img src="img/Prograde.svg" width="25" height="25"/> <input type="number" step="any"  name="prograde-val" id="prograde-val" value="0" /> Prograde (&#x394; m/s)</label><br/>
+		<label for="normal-val"> <img src="img/Normal.svg" width="25" height="25"/> <input type="number" step="any"  name="normal-val" id="normal-val" value="0" /> Normal (&#x394; m/s)</label><br/>
+		<label for="radial-val"> <img src="img/Radial-in.svg" width="25" height="25"/> <input type="number" step="any"  name="radial-val" id="radial-val" value="0" /> Radial (&#x394; m/s)</label>
+	</fieldset>
+	<fieldset>
+		<legend>Maneuver Constraints</legend>
+		<label for="delta-avail"><input type="number" step="any"  name="delta-avail" id="delta-avail" value="300" /> &#x394; (m/s) per Maneuver</label><br/>
+		<label for="time-burn"><input type="number" step="any"  name="time-burn" id="time-burn" value="1" />  Burn Time (Minutes)</label><br/>
+		<label for="time-recharge"><input type="number" step="any"  name="time-recharge" id="time-recharge" value="30" />  Recharge Time (Minutes)</label>
+	</fieldset>
+	<button>Calculate</button>
+	</form>
+	<noscript type="text/html"><p id="no-js-msg">JavaScript is Required</p></noscript>
+
+</section>
+<section class="table-output"></section>
+<script type="text/javascript" src="js/nodeinit.js"></script>
+  <script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+  var pageTracker = _gat._getTracker("UA-32916794-3");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+
+</body>
+</html>
