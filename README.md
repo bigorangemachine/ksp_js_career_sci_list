@@ -18,6 +18,10 @@ The parser should be generic enough that someone else could develop a Delta V ca
 
 ###Change Log
 
+0.0.3
+==================
+- Added Ion Node Calculator
+
 0.0.2
 ==================
 - New Biomes

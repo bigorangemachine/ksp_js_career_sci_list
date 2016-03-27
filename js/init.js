@@ -1,9 +1,10 @@
-
+alert('add active contracts.  Adjust witty messages to put game type later');
 	document.body.className=document.body.className+' hasJS';
 	var loading_stages={
 			'error':'Something seems to have gone wrong',
 			'ready':'Please drop your career file into the box provided and have your ID ready for verification.',
 			'have_file':'Don\'t mind the radioactive goo; it always does that when there is someone new.',
+			'carrer_standout':'I see you\'ve made a name for yourself in [[holder]] mode.',
 			'searching_file':'Here we are!<br>Oh, Hello Jeb!  Sorry about that last test flight...',
 			'searching_science':'I always forget the parachutes; Fuel lines and structs are one thing... but parachutes!?<BR> Erm.....',
 			'reviewing_science':'You\'ve seemed to have recovered well though!<br>Let\'s see if we can make sense of this K-EB-A2',
@@ -16,12 +17,13 @@
 		page_data_schema={
 			'science_max_total':0,
 			'parsed_science':[],
+			'game_attribs':{},
 			'scenarios':{},
 			'scenarios_attribs':{},
 			'sciences':{},
 			'sciences_attribs':{}
 		},
-		surface_only_biome={'Kerbin':[/*'SPHMainBuildingRoof','VABMainBuildingRoof',*/'KSC','Administration','AstronautComplex','FlagPole','LaunchPad','Crawlerway','VAB','VABPodMemorial','VABMainBuilding','VABTanks','VABRoundTank','Runway','SPH','SPHMainBuilding','SPHWaterTower','SPHRoundTank','SPHTanks','TrackingStation','TrackingStationDishEast','TrackingStationDishSouth','TrackingStationDishNorth','TrackingStationHub','R&D','R&DCentralBuilding','R&DSmallLab','R&DMainBuilding','R&DObservatory','R&DCornerLab','R&DTanks','R&DWindTunnel','R&DSideLab','MissionControl']},
+		surface_only_biome={'Kerbin':['KSC','Administration','AstronautComplex','FlagPole','LaunchPad','Crawlerway','VAB','VABPodMemorial','VABMainBuilding','VABTanks','VABRoundTank','Runway','SPH','SPHMainBuilding','SPHWaterTower','SPHRoundTank','SPHTanks','TrackingStation','TrackingStationDishEast','TrackingStationDishSouth','TrackingStationDishNorth','TrackingStationHub','R&D','R&DCentralBuilding','R&DSmallLab','R&DMainBuilding','R&DObservatory','R&DCornerLab','R&DTanks','R&DWindTunnel','R&DSideLab','MissionControl']},
 		biome_names={'Kerbin':{
 			'AstronautComplex':'Astronaut Complex',
 			'FlagPole':'Flag Pole',
@@ -65,7 +67,7 @@
 			'EastFarsideCrater':'East Farside Crater',
 			'Canyons':'Canyons',
 			'FarsideCrater':'Farside Crater',
-			'EastCrater':'East CraterEast Crater',
+			'EastCrater':'East Crater',
 			'TwinCraters':'Twin Craters',
 			'SouthwestCrater':'Southwest Crater'
 		},'Minmus':{
@@ -73,9 +75,9 @@
 			'Midlands':'Midlands',
 			'Lowlands':'Lowlands',
 			'Slopes':'Slopes',
-			'LesserFlats':'LesserFlats',
+			'LesserFlats':'Lesser Flats',
 			'Flats':'Flats',
-			'GreaterFlats':'GreaterFlats',
+			'GreaterFlats':'Greater Flats',
 			'Poles':'Poles'
 		},'Moho':{
 			'CentralLowlands':'Central Lowlands',
@@ -217,8 +219,10 @@
 	function update_status_msg(keyIn,extraStr){
 		if(bdcheck_key(loading_stages,keyIn)){
 			var prefix=(bdcheck_key(extraStr,'pre')?extraStr.pre:''),
-				suffix=(bdcheck_key(extraStr,'end')?extraStr.end:'');
-			$(msg_obj).html(prefix+loading_stages[keyIn]+suffix);
+				suffix=(bdcheck_key(extraStr,'end')?extraStr.end:''),
+				holder=(bdcheck_key(extraStr,'holder')?extraStr.holder:''),
+				msg=loading_stages[keyIn].replace(/\[{2}holder\]{2}/,holder);
+			$(msg_obj).html(prefix+msg+suffix);
 			if(keyIn=='error'){$(msg_obj).removeClass('success').addClass('fail');}
 			else if($(msg_obj).hasClass('fail')){$(msg_obj).addClass('success').removeClass('fail');}
 			current_state_key=keyIn;
@@ -322,6 +326,9 @@
 				'sci_head':'sci-header',
 				'sci_cell':'cell-sci'
 			},
+			cell_html={
+				'sci_zero_prefix':'',
+			}
 			do_push_sci=function(valIn){
 				if(!show_all_sci){
 					if($.inArray(valIn,flatten_array(page_data.parsed_science,'science_ident'))!==-1){return true;}
@@ -425,7 +432,7 @@
 				pushUpObj[ (sciIdent) ].html_out=t_sci+'<br>'+'<span class="sml-txt">'+sci_cell.sci+'/'+sci_cell.cap+'<span>';
 			}else{
 				pushUpObj[ (sciIdent) ].add_class=cell_css.sci_zero;
-				pushUpObj[ (sciIdent) ].html_out='0';
+				pushUpObj[ (sciIdent) ].html_out=cell_html.sci_zero_prefix+'0';
 			}
 
 			pushUpObj[ (sciIdent) ].text=userSci[seekKey].text;
@@ -546,7 +553,7 @@
 						build_td_sci_cell(this_sci_index,sciArr[sa].ident,seek_u_sci_key,userSci);
 					}else{//no user data!
 						this_sci_index[ (sciArr[sa].ident) ].add_class=cell_css.sci_zero;
-						this_sci_index[ (sciArr[sa].ident) ].html_out='0';
+						this_sci_index[ (sciArr[sa].ident) ].html_out=cell_html.sci_zero_prefix+'0';
 					}
 //planet has biomes but not this experiment
 //planet has biomes normally
@@ -1066,6 +1073,42 @@ console.log('captured_sci_ids',captured_sci_ids,
 		FPSObj.add_once_callback(report_iter);
 		update_ui_msg('Sorting Relevant Data');
 	}
+	function read_game_attr_chunks(strIn,callback){
+		FPSObj.add_once_callback(function(){
+			//var game_attr=kspObj.chunk_reader('TMP'+"\r\n{\r\n"+strIn.replace(/\t+/gi,"$1\t")+"\r\n}\r\n",'GAME'),
+			var game_attr=kspObj.chunk_reader(strIn.replace(new RegExp('^(\t){2,}(.*)\r\n','gim'),''),'GAME'),//hack to get game attributes more effeciently.  Just regexp out all multi-tab'd lines
+				parsed_game_attr=(game_attr.length>0?kspObj.attr_reader(game_attr[0].clean_chunk):false);
+			if(parsed_game_attr!==false){
+				FPSObj.add_once_callback(function(){
+					//should rewrite to use a map
+					var it_game_keys=['Title','Mode','launchID','version'],//which keys are important?!
+						clean_game_attr={'title':false,'game_type':false,'launch_count':false,'version':false};
+					for(var g_type=0;g_type<it_game_keys.length;g_type++){
+						var seek=array_object_search(parsed_game_attr,{'key':true},it_game_keys[g_type]);
+						if(seek.length>0){
+							if(it_game_keys[g_type]==='Title'){
+								clean_game_attr.title=seek[0].val;
+							}else if(it_game_keys[g_type]==='Mode'){
+								clean_game_attr.game_type=seek[0].val;
+							}else if(it_game_keys[g_type]==='launchID'){
+								clean_game_attr.launch_count=seek[0].val;
+							}else if(it_game_keys[g_type]==='version'){
+								clean_game_attr.version=seek[0].val;
+							}
+						}
+					}
+					page_data.game_attribs=clean_game_attr;
+
+					if(page_data.game_attribs!==false && page_data.game_attribs.title!==false){
+						update_status_msg('carrer_standout',{'holder':page_data.game_attribs.title});
+						FPSObj.add_once_callback(callback);
+					}else{
+						FPSObj.add_once_callback(callback);
+					}
+				});
+			}
+		});
+	}
 	function read_scenario_chunks(strIn){
 		var scenario_inc=0,
 			use_data_set=false;
@@ -1073,7 +1116,6 @@ console.log('captured_sci_ids',captured_sci_ids,
 		if(page_data.scenarios.length==0){//error handling
 			update_status_msg('error');
 			return;}
-//console.log('page_data.scenarios',page_data.scenarios);
 		FPSObj.add_once_callback(function(){
 			update_status_msg('searching_science');
 			var scenario_iter=function(){
@@ -1100,7 +1142,7 @@ console.log('captured_sci_ids',captured_sci_ids,
 						if(use_data_set!==false){
 							on_chunk_found(use_data_set);
 						}else{
-							try{console.log(page_data.scenarios_attribs, page_data.scenarios);}catch(e){}
+							try{console.log('use_data_set IS FALSE','scenario_inc',scenario_inc,page_data.scenarios_attribs, page_data.scenarios);}catch(e){}
 						}
 						page_data.scenarios=false;
 						page_data.scenarios_attribs=false;
@@ -1199,9 +1241,13 @@ $('.file-browse,fieldset').css('display','none');
 				var inputstr=reader.result;
 				FPSObj.add_once_callback(function(){
 					update_status_msg('searching_file');
+					update_ui_msg('Reading File Contents');
 					setTimeout(function(){
-						update_ui_msg('Reading File Contents');
-						read_scenario_chunks(inputstr);
+						read_game_attr_chunks(inputstr,function(){//get basic game attributes
+							setTimeout(function(){
+								read_scenario_chunks(inputstr);//start getting 'scenario' aka science chunks
+							},base_delay);
+						});
 					},base_delay);
 				});
 			},base_delay);

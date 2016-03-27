@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Edited by hand -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="16" height="16">
+  <style type="text/css" >
+    <![CDATA[
+      path, circle {
+         fill:none;
+         stroke-width:1;
+         stroke:#00D6D6;
+      }
+    ]]>
+  </style>
+
+  <circle cx="8" cy="8" r="4" />
+  <path d="m 8,4 v 2" id="l" transform="rotate(45,8,8)" />
+  <use xlink:href="#l" transform="rotate(90,8,8)" />
+  <use xlink:href="#l" transform="rotate(180,8,8)" />
+  <use xlink:href="#l" transform="rotate(270,8,8)" />
+</svg>
