@@ -1,4 +1,4 @@
-/* Copyright bigorangemachine@github.com 2014 
+/* Copyright bigorangemachine@github.com 2014
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ kspParser.prototype.i_callback=function(hookIn,argsIn){//internal callback - plu
 		has_callback=false;
 	try{
 		//if(typeof(this.plugin[hookIn])=='object' &&  this.plugin[hookIn] instanceof Array){has_callback=true;}
-		//else 
+		//else
 		if(typeof(self.plugin[hookIn])=='function'){has_callback=true;}
 	}catch(e){}
 	if(has_callback){
@@ -175,7 +175,7 @@ console.log('found_str',found_str);
 	if(typeof(dataOutObj)=='object'){for(var k in attrs_as_obj){if(bdcheck_key(attrs_as_obj,k)){dataOutObj[k]=attrs_as_obj[k];}}}//push up values
 	return attrs;
 };
-			
+
 kspParser.prototype.chunk_reader=function(strIn,islandStr,doDebug){
 	//since this isn't a universal format we are just 'seeking' the start of the island we're looking for.  Then string manipulate the rest
 	var self=this,
@@ -295,7 +295,7 @@ function kspUniverse(){
 			'name':'Kerbin',
 			'orbiting_body':'Sun',
 			'body_type':'atm_rocky_liquid',
-			'biomes':['Grasslands','Highlands','Mountains','Deserts','Badlands','Tundra','IceCaps','Water','Shores','KSC','Administration','AstronautComplex','FlagPole','LaunchPad','Crawlerway','VAB','VABPodMemorial','VABMainBuilding','VABTanks','VABRoundTank','Runway','SPH','SPHMainBuilding','SPHWaterTower','SPHRoundTank','SPHTanks','TrackingStation','TrackingStationDishEast','TrackingStationDishSouth','TrackingStationDishNorth','TrackingStationHub','R&D','R&DCentralBuilding','R&DSmallLab','R&DMainBuilding','R&DObservatory','R&DCornerLab','R&DTanks','R&DWindTunnel','R&DSideLab','MissionControl']	//	Crawerlway	Administration	Astronaut Complex	Mission Control	Research and Development	Spaceplane Hanger	Tracking Station	Vehicle Assembly Building
+			'biomes':['Grasslands','Highlands','Mountains','Deserts','Badlands','Tundra','IceCaps','Water','Shores','KSC','Administration','AstronautComplex','FlagPole','LaunchPad','Crawlerway','VAB','VABPodMemorial','VABMainBuilding','VABSouthComplex','VABTanks','VABRoundTank','Runway','SPH','SPHMainBuilding','SPHWaterTower','SPHRoundTank','SPHTanks','TrackingStation','TrackingStationDishEast','TrackingStationDishSouth','TrackingStationDishNorth','TrackingStationHub','R&D','R&DCentralBuilding','R&DSmallLab','R&DMainBuilding','R&DObservatory','R&DCornerLab','R&DTanks','R&DWindTunnel','R&DSideLab','MissionControl']	//	Crawerlway	Administration	Astronaut Complex	Mission Control	Research and Development	Spaceplane Hanger	Tracking Station	Vehicle Assembly Building
 		},
 			{
 				'ident':'Mun',
@@ -346,7 +346,7 @@ kspUniverse.prototype.i_callback=function(hookIn,argsIn){//internal callback - p
 		has_callback=false;
 	try{
 		//if(typeof(this.plugin[hookIn])=='object' &&  this.plugin[hookIn] instanceof Array){has_callback=true;}
-		//else 
+		//else
 		if(typeof(self.plugin[hookIn])=='function'){has_callback=true;}
 	}catch(e){}
 	if(has_callback){
@@ -378,7 +378,7 @@ kspUniverse.prototype.add_body=function(orbitBodyId,ident,planetType,planetBios,
 	for(var kl=0;kl<key_list.length;kl++){_vr=key_list[kl];eval(_vr+' = _args.'+_vr+';');}delete key_list;delete _vr;//populate into this scope
 	///////\\\\\\\\\\END PLUGIN HOOK\\\\\\\\/////////
 
-	
+
 	self.celestial_bodies.push($.extend(true,{},add_line,{'biomes':[]}));//extending so the biomes go through the method.  for future plugin hooks!
 	for(var b in add_line.biomes){self.add_biome(add_line.ident,add_line.biomes[b]);}
 	if(orbitBodyId!==false){//if declared as orbiting something; add to its parent orbit list
@@ -586,7 +586,7 @@ kspSci.prototype.i_callback=function(hookIn,argsIn){//internal callback - plugin
 		has_callback=false;
 	try{
 		//if(typeof(this.plugin[hookIn])=='object' &&  this.plugin[hookIn] instanceof Array){has_callback=true;}
-		//else 
+		//else
 		if(typeof(self.plugin[hookIn])=='function'){has_callback=true;}
 	}catch(e){}
 	if(has_callback){
@@ -680,7 +680,7 @@ kspSci.prototype.get_rail_rules=function(scienceIdent,planetType,doDebug){
 
 	if($.inArray(planetType,array_keys(self.ksp_uni_obj.body_types_schema))===-1){return false;}//valid body type
 	if(!self.is_science(scienceIdent,science_data)){return false;}//valid science id
- 
+
 	var rules={//this was here before when we expanded the contexts from boolean into the object.  however I moved it to the add phase at it was probably more helpful to keep the tree expanded
 		'biome':$.extend(true,{},science_data.biome_context,{}),//must break js 'pass by reference'
 		'rail':$.extend(true,{},science_data.rail_context,{}) //must break js 'pass by reference'
@@ -708,7 +708,7 @@ if(doDebug){console.log('planet',planet,"\n",
 
 			if(science_data.meta.ignore_planet_rail==planetType || science_data.meta.ignore_planet_rail==true){has_rail_exception=true;}//old rule
 			else if(science_data.meta.ignore_planet_rail instanceof Array && $.inArray(planetType, science_data.meta.ignore_planet_rail)!==-1){has_rail_exception=true;}//old rule
-			
+
 			if(science_data.meta.require_atmosphere==pr || science_data.meta.require_atmosphere==true){has_atm_exception=true;}
 			else if(science_data.meta.require_atmosphere instanceof Array && $.inArray(pr,science_data.meta.require_atmosphere)!==-1){has_atm_exception=true;}
 			if(pr=='high_fly' || pr=='low_fly'){has_atm_exception=true;}//you can only fly if there is an atmosphere!
@@ -721,7 +721,7 @@ if(doDebug){console.log('planet',planet,"\n",
 			}else if(line_rule.planet_rule && science_data.meta.rails_as_groups && self.ksp_uni_obj.body_rails[pr].group_ident){//just for recovery?!
 				line_rule.rail=true;
 			}
-			
+
 			//apply scientific dependancies!
 			if(line_rule.rail===false){//no scientific rail... no biome!
 				line_rule.biome=false;}
@@ -736,7 +736,7 @@ if(doDebug){console.log('planet',planet,"\n",
 			self.i_callback('get_rail_rules_line',_args);
 			for(var kl=0;kl<key_list.length;kl++){_vr=key_list[kl];eval(_vr+' = _args.'+_vr+';');}delete key_list;delete _vr;//populate into this scope
 			///////\\\\\\\\\\END PLUGIN HOOK\\\\\\\\/////////
-			
+
 			//transfer to the return output
 			rules.rail[pr]=line_rule.rail;
 			rules.biome[pr]=line_rule.biome;
@@ -772,7 +772,7 @@ kspSci.prototype.parse_sci_id=function(sciIdIn){
 		rail_ids='',
 		rails_arr=[],
 		found_str=[];
-	
+
 	for(var br in self.ksp_uni_obj.body_rails){
 		if(bdcheck_key(self.ksp_uni_obj.body_rails,br)){
 			rails_arr.push(self.ksp_uni_obj.body_rails[br].ident);}}
@@ -840,7 +840,7 @@ if($.inArray(sciIdIn,testing_arr)!==-1){
 				biome='';//biome should not be relavent
 			}
 		}
-		
+
 		return {
 			'science_ident':science_ident,
 			'planet_ident':planet_ident,
@@ -875,7 +875,7 @@ kspSci.prototype.guess_body_type_from_sci=function(sciArrIn){//needs a array of 
 	this_body_rails=reduce_array_to_common_alias_values(this_body_rails,self.ksp_uni_obj.body_rails,'ident');//the list of rail_idents found! (non-group ids)
 	has_obj.found_rails=has_obj.found_rails.concat(this_body_rails);
 	delete this_body_rails;
-	
+
 	var flat_sci=flatten_array(this_body_sci,'science_ident'),
 		flat_rail_key=flatten_array(this_body_sci,'rail_ident');
 	for(var at=0;at<sci_atm.atm.length;at++){
@@ -931,7 +931,7 @@ kspSci.prototype.guess_science=function(sciId,sciArrIn){
 	atm_bodies=atm_bodies.concat((typeof(atm_bodies_obj.rocky)=='object'?atm_bodies_obj.rocky:[]),(typeof(atm_bodies_obj.lqd)=='object'?atm_bodies_obj.lqd:[]),(typeof(atm_bodies_obj.gas)=='object'?atm_bodies_obj.gas:[]));
 	atm_bodies=$.unique(atm_bodies);
 	delete atm_bodies_obj;
-	
+
 //console.log('sci_bodies',sci_bodies);
 	var is_atm_only=false,
 		is_lqd_rail=false,
@@ -942,8 +942,8 @@ kspSci.prototype.guess_science=function(sciId,sciArrIn){
 		non_atm_body_count=0,
 		lqd_body_count=0,
 		atm_flat=flatten_array(atm_bodies,'ident');//from the list of planets - AKA YES DEF!;//from the list of science
-		
-		
+
+
 	for(var sb=0;sb<sci_bodies.length;sb++){
 		if(sci_bodies[sb].rail==self.ksp_uni_obj.body_rails.high_orbit.ident || sci_bodies[sb].rail==self.ksp_uni_obj.body_rails.low_orbit.ident){//this experiment orbiting! Not Atmosphere dependant!
 			non_atm_body_count++;}
@@ -956,7 +956,7 @@ kspSci.prototype.guess_science=function(sciId,sciArrIn){
 			atm_body_count++;}
 		else{//this planet ident is not found, didn't fly and didn't splash not a planet with an atmosphere
 			non_atm_body_count++;}
-		
+
 		//ready the rails for further examination
 		if(basic_check(sci_bodies[sb].rail)){
 			raw_rail_count++;
@@ -969,7 +969,7 @@ kspSci.prototype.guess_science=function(sciId,sciArrIn){
 	found_rails=$.unique(found_rails);
 	found_biomes=reduce_array_to_common_alias_values(found_biomes,self.ksp_uni_obj.body_rails,'ident');
 	found_rails=reduce_array_to_common_alias_values(found_rails,self.ksp_uni_obj.body_rails,'ident');//the list of rail_idents found! (non-group ids)
-	
+
 	for(var fr=0;fr<found_rails.length;fr++){
 		if(bdcheck_key(rail_context,(found_rails[fr]))){
 			if(found_rails[fr]=='splash'){lqd_body_count++;}
@@ -986,7 +986,7 @@ kspSci.prototype.guess_science=function(sciId,sciArrIn){
 	//new_meta.ignore_planet_rail=true;//true if ???? attr not used
 	if(is_atm_only){//true if experiement only appears in bodies that have atmospheres
 		new_meta.require_atmosphere=true;}
-	
+
 	if(found_biomes.length==0 && found_rails.length==0 && raw_rail_count>0){//true if rails are not standard; aka group reference used such as recovery
 		new_meta.rails_as_groups=true;}
 	return {'sci_id':sciId,'biome_context':biome_context,'rail_context':rail_context,'meta':$.extend(true,{},new_meta,{'name':sciId})};
