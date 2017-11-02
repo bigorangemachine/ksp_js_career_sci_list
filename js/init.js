@@ -23,7 +23,7 @@ alert('add active contracts.  Adjust witty messages to put game type later');
 			'sciences':{},
 			'sciences_attribs':{}
 		},
-		surface_only_biome={'Kerbin':['KSC','Administration','AstronautComplex','FlagPole','LaunchPad','Crawlerway','VAB','VABPodMemorial','VABMainBuilding','VABTanks','VABRoundTank','Runway','SPH','SPHMainBuilding','SPHWaterTower','SPHRoundTank','SPHTanks','TrackingStation','TrackingStationDishEast','TrackingStationDishSouth','TrackingStationDishNorth','TrackingStationHub','R&D','R&DCentralBuilding','R&DSmallLab','R&DMainBuilding','R&DObservatory','R&DCornerLab','R&DTanks','R&DWindTunnel','R&DSideLab','MissionControl']},
+		surface_only_biome={'Kerbin':['KSC','Administration','AstronautComplex','FlagPole','LaunchPad','Crawlerway','VAB','VABPodMemorial','VABMainBuilding','VABSouthComplex','VABTanks','VABRoundTank','Runway','SPH','SPHMainBuilding','SPHWaterTower','SPHRoundTank','SPHTanks','TrackingStation','TrackingStationDishEast','TrackingStationDishSouth','TrackingStationDishNorth','TrackingStationHub','R&D','R&DCentralBuilding','R&DSmallLab','R&DMainBuilding','R&DObservatory','R&DCornerLab','R&DTanks','R&DWindTunnel','R&DSideLab','MissionControl']},
 		biome_names={'Kerbin':{
 			'AstronautComplex':'Astronaut Complex',
 			'FlagPole':'Flag Pole',
@@ -31,6 +31,7 @@ alert('add active contracts.  Adjust witty messages to put game type later');
 			'VABPodMemorial':'VAB Pod Memorial',
 			'VABMainBuilding':'VAB Main Building',
 			//'VABMainBuildingRoof':'VAB Main Building Roof',
+			'VABSouthComplex':'VAB South Complex',
 			'VABTanks':'VAB Tanks',
 			'VABRoundTank':'VAB Round Tank',
 			'Runway':'Runway',
@@ -191,7 +192,7 @@ alert('add active contracts.  Adjust witty messages to put game type later');
 		drag_target = $('#holder'),
 		msg_obj = $('#status'),
 		asteroid_sample_ident='asteroidSample';
-		
+
 		//tableObj.plugin.table=function(packObj){/*$(packObj.table_dom_obj).attr('border',1);*/};
 		page_data=$.extend(true,{},page_data_schema);//break pass by reference - populate defaults
 
@@ -215,7 +216,7 @@ alert('add active contracts.  Adjust witty messages to put game type later');
 
 
 //console.log(kspObj.attr_reader("\r\n\t\t\tid = crewReport@KerbinSrfLandedLaunchPad\r\n\t\t\ttitle = Crew Report from LaunchPad\r\n\t\t\tdsc = 1\r\n\t\t\tscv = 0\r\n\t\t\tsbv = 0.3\r\n\t\t\tsci = 1.5\r\n\t\t\tcap = 1.5",true));
-		
+
 	function update_status_msg(keyIn,extraStr){
 		if(bdcheck_key(loading_stages,keyIn)){
 			var prefix=(bdcheck_key(extraStr,'pre')?extraStr.pre:''),
@@ -244,7 +245,7 @@ alert('add active contracts.  Adjust witty messages to put game type later');
 
 				clock_str='<BR>'+' Seconds: '+(clock_diff/1000).toFixed(3);
 				if(rep_count<do_max){dot_num=rep_count+1;dot_num_hide=do_max-dot_num;}
-				
+
 				if(msg==default_ui_msg){dot_num=0;clock_str='';}
 				else if($.inArray(msg,ui_no_anim_array)!==-1){dot_num=0;}
 				$('p',drag_target).html(msg+(dot_num>0?'<br>'+'<span class="dot-show">'+str_rep(rchr,dot_num)+'</span>'+'<span class="dot-hide">'+str_rep(rchr,dot_num_hide)+'</span>':'')+clock_str);
@@ -286,7 +287,7 @@ alert('add active contracts.  Adjust witty messages to put game type later');
 			altTableObj.plugin=old_plugs;
 		delete old_plugs;
 		// \\clear the old
-		
+
 		//variable declarations
 		var head_filler=[
 				'',//body
@@ -426,7 +427,7 @@ alert('add active contracts.  Adjust witty messages to put game type later');
 			else if(p_num>=33 && p_num<=66){t_class=t_class+' '+cell_css.sci_rate_mid;}/*33%-66%*/
 			else if(p_num>=66 && p_num<100){t_class=t_class+' '+cell_css.sci_rate_high;}/*66%-<100%*/
 			else if(p_num>=100){t_class=t_class+' '+cell_css.sci_rate_full;}/*>100%*/
-			
+
 			if(p_num>=1){
 				pushUpObj[ (sciIdent) ].add_class=t_class;
 				pushUpObj[ (sciIdent) ].html_out=t_sci+'<br>'+'<span class="sml-txt">'+sci_cell.sci+'/'+sci_cell.cap+'<span>';
@@ -469,7 +470,7 @@ alert('add active contracts.  Adjust witty messages to put game type later');
 							valid_sci.biome=true;}}
 //if(planetObj.ident=='Mun' && sciArr[sa].ident=='temperatureScan' && (biome=='HighlandCraters' || biome=='NorthernBasin')){console.log('biome',biome,'rail',rail,'sci_rails',sci_rails,'grouped_biome_context',grouped_biome_context,'$.inArray(true,grouped_biome_context)',$.inArray(true,grouped_biome_context),"\n",'---valid_sci',valid_sci);}
 					delete grouped_biome_context;
-				}else{//not expansion rail?					
+				}else{//not expansion rail?
 					if(sci_data_obj.meta.rails_as_groups){rails_as_groups=true;}//weird merge for as groups
 					if(planet_rails.rails[rail.key]){
 						if(sci_rails.rail_context[rail.key]){valid_sci.rail=true;}
@@ -566,7 +567,7 @@ alert('add active contracts.  Adjust witty messages to put game type later');
 				}
 				this_sci_index[ (sciArr[sa].ident) ].valid_sci=$.extend(true,{},valid_sci);//break pass by reference
 				this_sci_index[ (sciArr[sa].ident) ].rails_as_groups=rails_as_groups;
-				
+
 //console.log(sa,sciArr[sa].ident,'sci_rails',sci_rails,'seek_u_sci_key',seek_u_sci_key);
 				//this_sci_row.push();
 				sciArr[sa];
@@ -579,7 +580,7 @@ alert('add active contracts.  Adjust witty messages to put game type later');
 			}*/
 			for(var sa=0;sa<sciArr.length;sa++){//prase out
 //console.log('this_sci_index[ (sciArr[sa].ident) ]',this_sci_index[ (sciArr[sa].ident) ],'this_sci_index[ (sciArr[sa].ident) ].html_out',this_sci_index[ (sciArr[sa].ident) ].html_out);
-				
+
 				this_sci_row.push((basic_check(this_sci_index[ (sciArr[sa].ident) ].html_out)?this_sci_index[ (sciArr[sa].ident) ].html_out:''));
 				row_meta.add_class.push((basic_check(this_sci_index[ (sciArr[sa].ident) ].add_class)?this_sci_index[ (sciArr[sa].ident) ].add_class:''));
 				row_meta.title_txt.push((basic_check(this_sci_index[ (sciArr[sa].ident) ].text)?this_sci_index[ (sciArr[sa].ident) ].text:''));
@@ -650,7 +651,7 @@ alert('add active contracts.  Adjust witty messages to put game type later');
 				}else{
 					this_line.push(this_rail.label);//output rail
 					this_line.push('');//biome
-					
+
 					var arr_fill=repeat_val_into_arr('',this_line.length),
 						sci_arr=build_td_sci_vals(build_count,planetObj,this_rail,false,sciArr,found_user_sci);
 					sci_arr.meta.title_txt=arr_fill.concat(sci_arr.meta.title_txt);
@@ -723,7 +724,7 @@ alert('add active contracts.  Adjust witty messages to put game type later');
 					if(bdcheck_key(rail_rules.rails,r)){
 						if(rail_rules.rails[r]===true){
 							t_rail.push(r);}}}
-				
+
 				var user_sci=array_object_search(page_data.parsed_science,'planet_ident',planet_data.ident),extra_rail=[];
 				for(var us=0;us<user_sci.length;us++){
 					if(inObject(user_sci[us].rail,flat_rail_groups)===-1 && inObject(user_sci[us].rail,flat_rail_idents)===-1){
@@ -1014,7 +1015,7 @@ console.log('-------YES',$.inArray(page_data.parsed_science[s].biome_ident,flatt
 				}
 				update_found_counts(captured_sci_ids.length,captured_body_ids.length,captured_biome_ids.length);
 			}
-			
+
 			if(all_stop){return;}//if no rail we should just stop
 			if(captured_sci_ids.length==0 && captured_biome_ids.length==0 && captured_biome_ids.length==0){
 				//FPSObj.remove_callback(report_iter);//if I wasn't using 'FPSObj.add_once_callback()'
@@ -1045,7 +1046,7 @@ console.log('-------YES',$.inArray(page_data.parsed_science[s].biome_ident,flatt
 						var new_sci=captured_sci_ids[si];
 //console.log('new_sci',new_sci);
 						var new_sci_obj=kspSciObj.guess_science(new_sci,page_data.parsed_science);
-						
+
 //console.log(new_sci, 'biome_context',biome_context, 'rail_context',rail_context, $.extend(true,{},new_meta,{'name':new_sci}));
 						if(kspSciObj.add_science(new_sci_obj.sci_id, new_sci_obj.biome_context, new_sci_obj.rail_context, new_sci_obj.meta)){
 							did_add=true;
@@ -1127,7 +1128,7 @@ console.log('captured_sci_ids',captured_sci_ids,
 				};
 				page_data.scenarios_attribs=kspObj.attr_reader(page_data.scenarios[scenario_inc].clean_chunk);
 				kspObj.plugin.attr_reader_line=false;//unset
-				
+
 				if(page_data.scenarios_attribs.length>0){
 //console.log('-'+scenario_inc,'page_data.scenarios_attribs',$.extend(true,{},page_data.scenarios_attribs));
 					for(var a=0;a<page_data.scenarios_attribs.length;a++){
@@ -1191,10 +1192,10 @@ console.log('captured_sci_ids',captured_sci_ids,
 			sci_inc++;
 			FPSObj.add_callback(chunk_tick);//stop from stacking
 		};
-	
+
 		page_data.sciences=kspObj.chunk_reader(dataSetIn.chunk,'Science');
 //console.log('page_data.sciences',page_data.sciences);
-		
+
 		setTimeout(function(){
 			update_status_msg('count_off_science',{'pre':sci_inc,'end':(sci_inc!=1?'s':'')});
 			FPSObj.add_callback(chunk_tick);
@@ -1210,7 +1211,7 @@ console.log('captured_sci_ids',captured_sci_ids,
 //console.log('e',e,e.target.files,$('#file-browse').get(0).files[0]);
 		$(this).removeClass('hover');
 		if($('body').hasClass(body_busy_class)){return;}
-		
+
 		show_all_sci=$('#show-sci').prop('checked');
 		show_all_bodies=$('#show-all-bodies').prop('checked');
 		show_roids=$('#show-roids').prop('checked');
